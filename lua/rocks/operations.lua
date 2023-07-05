@@ -151,6 +151,78 @@ local function remove(name)
   vim.notify("Successfully removed '" .. name .. "' rock.")
 end
 
+--- Check if any rock in the current tree is outdated
+---@return table
+---@private
+local function check_updates()
+  -- NOTE: this is just a PoC, will probably get refactored later.
+  local outdated = vim.split(vim.fn.system({
+    "luarocks",
+    "--lua-version=" .. constants.LUA_VERSION,
+    "list",
+    "--tree",
+    cfg.rocks_path,
+    "--outdated",
+    "--porcelain",
+  }), "\n")
+
+  if outdated == "" then
+    vim.notify("All rocks are up-to-date. Nothing has to be done.")
+    return {}
+  else
+    -- If there is only one outdated rock then fast return it
+    if outdated[2] == "" then
+      local rock = vim.split(outdated[1], "\t")
+
+      vim.notify(
+        "There is an update for '"
+        .. rock[1]
+        .. "' rock in '"
+        .. rock[4]
+        .. "'\nVersion: "
+        .. rock[2]
+        .. " -> "
+        .. rock[3]
+      )
+      return {
+        rock[1], -- rock name
+        rock[2], -- current version
+        rock[3], -- upstream version
+        rock[4], -- rock host, e.g. https://luarocks.org
+      }
+    end
+
+    local rocks = {}
+    for idx, rock in ipairs(outdated) do
+      -- Last table item will always be an empty string
+      if rock ~= "" then
+        ---@diagnostic disable-next-line
+        rock = vim.split(rock, "\t")
+
+        rocks[idx] = {
+          rock[1], -- rock name
+          rock[2], -- current version
+          rock[3], -- upstream version
+          rock[4], -- rock host, e.g. https://luarocks.org
+        }
+
+        vim.notify(
+          "There is an update for '"
+          .. rock[1]
+          .. "' rock in '"
+          .. rock[4]
+          .. "'\nVersion: "
+          .. rock[2]
+          .. " -> "
+          .. rock[3]
+        )
+      end
+    end
+
+    return rocks
+  end
+end
+
 --- Read configuration file and make operations work
 --- FIXME: this should not be automagically doing stuff I think, this is just for testing purposes so might need a refactor later
 function operations.read_config()
@@ -186,6 +258,8 @@ function operations.read_config()
     end
   end
   for _, installed_rock in ipairs(installed_rock_names) do
+    -- FIXME: this seems to be removing rocks that are dependencies of some plugins as they are not listed
+    --        explicitly in the `rocks.toml` file. We have to fix this as soon as possible.
     if not vim.tbl_contains(vim.tbl_keys(config_rocks), installed_rock) then
       ops.remove[#ops.remove + 1] = installed_rock
     end
@@ -206,6 +280,8 @@ function operations.read_config()
   for _, rock in ipairs(ops.remove) do
     remove(rock)
   end
+
+  check_updates()
 
   --- Hijack Neovim runtimepath ---
   ---------------------------------
