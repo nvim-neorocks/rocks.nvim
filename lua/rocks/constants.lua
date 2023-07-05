@@ -30,10 +30,6 @@ constants.LUA_VERSION = "5.1"
 ---@type string
 constants.ROCKS_VERSION = "0.1.0"
 
---- System separator, '/' for *nix systems and '\\' for Windows
----@type string
-constants.SYS_SEPARATOR = package.config:sub(1, 1)
-
 --- Default configuration file contents
 ---@type string
 constants.DEFAULT_CONFIG = [[

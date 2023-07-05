@@ -28,16 +28,15 @@ local constants = require("rocks.constants")
 ---@private
 local function bootstrap()
   local cfg = _G.__rocks_config
-  local sep = constants.SYS_SEPARATOR
 
   -- First set up the paths then check if toml rock is installed or not
   local luarocks_path = {
-    table.concat({ cfg.rocks_path, "share", "lua", "5.1", "?.lua" }, sep),
-    table.concat({ cfg.rocks_path, "share", "lua", "5.1", "?", "init.lua" }, sep),
+    vim.fs.joinpath(cfg.rocks_path, "share", "lua", "5.1", "?.lua"),
+    vim.fs.joinpath(cfg.rocks_path, "share", "lua", "5.1", "?", "init.lua"),
   }
   package.path = package.path .. ";" .. table.concat(luarocks_path, ";")
 
-  local luarocks_cpath = table.concat({ cfg.rocks_path, "lib64", "lua", "5.1", "?.so" }, sep)
+  local luarocks_cpath = vim.fs.joinpath(cfg.rocks_path, "lib64", "lua", "5.1", "?.so")
   package.cpath = package.cpath .. ";" .. luarocks_cpath
 
   -- Is toml rock installed? No? Well let's install it now!

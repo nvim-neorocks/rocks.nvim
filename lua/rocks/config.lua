@@ -19,17 +19,15 @@
 --
 --- Code:
 
-local separator = require("rocks.constants").SYS_SEPARATOR
-
 --- rocks.nvim configuration
 ---@type table
 local config = {
   --- Local path in your filesystem to install rocks
   ---@type string
-  rocks_path = vim.fn.stdpath("data") .. separator .. "rocks",
+  rocks_path = vim.fs.joinpath(vim.fn.stdpath("data"), "rocks"),
   --- Rocks declaration file path
   ---@type string
-  config_path = vim.fn.stdpath("config") .. separator .. "rocks.toml",
+  config_path = vim.fs.joinpath(vim.fn.stdpath("config"), "rocks.toml"),
 }
 
 return config
