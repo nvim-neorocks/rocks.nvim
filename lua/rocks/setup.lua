@@ -36,23 +36,28 @@ local function bootstrap()
   }
   package.path = package.path .. ";" .. table.concat(luarocks_path, ";")
 
-  local luarocks_cpath = vim.fs.joinpath(cfg.rocks_path, "lib64", "lua", "5.1", "?.so")
-  package.cpath = package.cpath .. ";" .. luarocks_cpath
+  local luarocks_cpath = {
+      vim.fs.joinpath(cfg.rocks_path, "lib", "lua", "5.1", "?.so"),
+      vim.fs.joinpath(cfg.rocks_path, "lib64", "lua", "5.1", "?.so"),
+  }
+  package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
 
   -- Is toml rock installed? No? Well let's install it now!
   local is_toml_installed, _ = pcall(require, "toml")
+
   if not is_toml_installed then
     vim.notify("Installing 'toml' dependency by using luarocks. This requires compiling C++ code so it may take a while, please wait ...")
+
     vim.fn.system({
       "luarocks",
       "--lua-version=" .. constants.LUA_VERSION,
       "install",
-      "--tree",
-      cfg.rocks_path,
+      "--tree=" .. cfg.rocks_path,
       "toml",
     })
 
     vim.cmd.redraw()
+
     if vim.v.shell_error ~= 0 then
       -- As toml is the first thing that gets installed it is safe to completely nuke the Neovim luarocks tree
       -- if the installation failed so we do not keep any kind of residual junk when retrying the installation
