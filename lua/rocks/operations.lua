@@ -82,9 +82,10 @@ local function get_installed_rocks(rocks_path, add_metadata)
   return rocks
 end
 
---- Install a Lua rock
+--- Install a Lua rock, return a boolean depending on the succeed or failure
 ---@param name string Rock name
 ---@param version string Rock version
+---@return boolean
 ---@private
 local function install(name, version)
   -- If not using a valid version then scream at the user
@@ -115,16 +116,19 @@ local function install(name, version)
       "Failed to install '" .. name .. "@" .. version .. "', please relaunch Neovim to try again.",
       vim.log.levels.ERROR
     )
+    return false
   else
     vim.notify(
       "Successfully installed '" .. name .. "@" .. version .. "' at '" .. cfg.rocks_path .. "'.",
       vim.log.levels.INFO
     )
+    return true
   end
 end
 
---- Uninstall a Lua rock
+--- Uninstall a Lua rock, return a boolean
 ---@param name string Rock name
+---@return boolean
 ---@private
 local function remove(name)
   vim.notify("Removing '" .. name .. "' rock by using luarocks, please wait ...")
@@ -140,6 +144,8 @@ local function remove(name)
   -- NOTE: perhaps add error checking here too?
   vim.cmd.redraw()
   vim.notify("Successfully removed '" .. name .. "' rock.")
+
+  return true
 end
 
 --- Read configuration file and make operations work
@@ -184,12 +190,20 @@ function operations.read_config()
 
   -- Installation process
   for rock, metadata in pairs(ops.install) do
+    -- NOTE: perhaps we can simplify the was_installed logic?
+    local was_installed = false
     if type(metadata) == "table" then
       -- only pass the rock name and its version as we do not need whole metadata from the config file
-      install(rock, metadata.version)
+      was_installed = install(rock, metadata.version)
+      if was_installed then
+        installed_rocks[#installed_rocks + 1] = { rock, metadata.version }
+      end
     else
       -- rock, version
-      install(rock, metadata)
+      was_installed = install(rock, metadata)
+      if was_installed then
+        installed_rocks[#installed_rocks + 1] = { rock, metadata }
+      end
     end
   end
 
