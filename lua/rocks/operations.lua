@@ -281,7 +281,9 @@ function operations.read_config()
     remove(rock)
   end
 
-  check_updates()
+  -- Check for updates
+  -- NOTE: we are not automatically enabling it for testing as it locks the editor
+  -- check_updates()
 
   --- Hijack Neovim runtimepath ---
   ---------------------------------
