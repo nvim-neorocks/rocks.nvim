@@ -23,6 +23,8 @@
 local setup = {}
 
 local constants = require("rocks.constants")
+local operations = require("rocks.operations")
+local config = require("rocks.config")
 
 --- Add luarocks Neovim tree paths to LUA_PATH and LUA_CPATH and download required rocks to work
 ---@private
@@ -48,31 +50,8 @@ local function bootstrap()
   if not is_toml_installed then
     vim.notify("Installing 'toml' dependency by using luarocks. This requires compiling C++ code so it may take a while, please wait ...")
 
-    vim.fn.system({
-      "luarocks",
-      "--lua-version=" .. constants.LUA_VERSION,
-      "install",
-      "--tree=" .. cfg.rocks_path,
-      "toml",
-    })
-
-    vim.cmd.redraw()
-
-    if vim.v.shell_error ~= 0 then
-      -- As toml is the first thing that gets installed it is safe to completely nuke the Neovim luarocks tree
-      -- if the installation failed so we do not keep any kind of residual junk when retrying the installation
-      vim.fn.delete(cfg.rocks_path, "rf")
-
-      vim.notify(
-        "Failed to install 'toml', please relaunch Neovim to try again.",
-        vim.log.levels.ERROR
-      )
-    else
-      vim.notify(
-        "Successfully installed 'toml' at '" .. cfg.rocks_path .. "'.",
-        vim.log.levels.INFO
-      )
-    end
+    operations.install("toml", "0.3.0-0")
+    operations.install("nui.nvim", "0.1.0-0")
   end
 end
 
@@ -81,10 +60,8 @@ function setup.init()
   -- Run bootstrap process, install dependencies if required
   bootstrap()
 
-  -- We cannot require it at top-level as operations depends on bootstrapping process
-  local operations = require("rocks.operations")
   -- Read configuration file and proceed with any task that has to be done with the plugins
-  operations.read_config()
+  local config = 
 end
 
 return setup

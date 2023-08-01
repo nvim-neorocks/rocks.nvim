@@ -39,23 +39,21 @@ constants.DEFAULT_CONFIG = [[
 # [plugins]
 # nvim-treesitter = "semver_version-rev"  # e.g. "1.0.0-0"
 #
-# If the plugin name contains a dot then you must add quotes to the key name!
 # Here is another example if you want to tweak your plugins even more:
-#
+
 # [plugins.nvim-treesitter]
 # version = "semver_version-rev"
 # config  = "plugins/nvim-treesitter.lua"  # <- ~/.config/nvim/lua
 # rock_flags = "--additional-luarocks-install-flags=here"
-#
-# If you want more information about the possible and valid options, please
-# take a look at our schema in 
 
 [rocks]
 toml = "0.3.0-0"      # rocks.nvim can manage its own runtime dependencies too, goated!
 # magick = "1.6.0-1"  # I am using magick for testing stuff sometimes, so lets keep it here
 
 [plugins]
-# "rocks.nvim" = "0.1.0-1"  # rocks.nvim can also manage itself, why not?
+# If the plugin name contains a dot then you must add quotes to the key name!
+#
+# "rocks.nvim" = "0.1.0-1"  # rocks.nvim can also manage itself :D
 "sweetie.nvim" = "1.2.1-1"
 ]]
 

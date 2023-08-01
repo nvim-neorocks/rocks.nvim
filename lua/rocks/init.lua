@@ -25,9 +25,7 @@ local setup = require("rocks.setup")
 local config = require("rocks.config")
 
 function rocks.setup(opts)
-  -- NOTE: as much as I hate global namespaces, it seems to be the only way to
-  --       get everything working as expected with no hassle lol
-  _G.__rocks_config = vim.tbl_deep_extend("force", config, opts or {})
+  config = vim.tbl_deep_extend("force", config, opts or {})
 
   setup.init()
 end
