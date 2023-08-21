@@ -23,34 +23,29 @@ local state = {}
 
 local constants = require("rocks.constants")
 local config = require("rocks.config")
+local nio = require("nio")
 
----@alias Rock { name: string, version: string, target_version?: string }
+---@type fun(): {[string]: Rock}
+---@async
+state.installed_rocks = nio.create(function()
+    ---@type {[string]: Rock}
+    local rocks = {}
 
---- 
----@param callback fun(installed: {[string]: Rock})
-function state.installed_rocks(callback)
-    local _callback = function(obj)
-        ---@type {[string]: Rock}
-        local rocks = {}
+    local future = nio.control.future()
 
-        for name, version in obj.stdout:gmatch("([^%s]+)%s+(%d+%.%d+%.%d+%-%d+)%s+installed%s+[^%s]+") do
-            rocks[name] = { name = name, version = version }
-        end
+    vim.system({"luarocks", "--lua-version=" .. constants.LUA_VERSION, "--tree=" .. config.rocks_path, "list", "--porcelain"}, {text = true}, function(obj)
+        -- TODO: Error handling
+        future.set(obj.stdout)
+    end)
 
-        if callback then
-            callback(rocks)
-        else
-            return rocks
-        end
+    local installed_rock_list = future.wait()
+
+    for name, version in installed_rock_list:gmatch("([^%s]+)%s+(%d+%.%d+%.%d+%-%d+)%s+installed%s+[^%s]+") do
+        rocks[name] = { name = name, version = version }
     end
 
-    if callback then
-        vim.system({"luarocks", "--lua-version=" .. constants.LUA_VERSION, "--tree=" .. config.rocks_path, "list", "--porcelain"}, _callback)
-    else
-        local rocklist = vim.system({"luarocks", "--lua-version=" .. constants.LUA_VERSION, "--tree=" .. config.rocks_path, "list", "--porcelain"}):wait()
-        return _callback(rocklist)
-    end
-end
+    return rocks
+end)
 
 ---@param callback fun(installed: {[string]: Rock})
 function state.outdated_rocks(callback)

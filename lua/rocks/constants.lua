@@ -48,7 +48,6 @@ constants.DEFAULT_CONFIG = [[
 
 [rocks]
 toml = "0.3.0-0"      # rocks.nvim can manage its own runtime dependencies too, goated!
-# magick = "1.6.0-1"  # I am using magick for testing stuff sometimes, so lets keep it here
 
 [plugins]
 # If the plugin name contains a dot then you must add quotes to the key name!

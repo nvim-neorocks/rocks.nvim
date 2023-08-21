@@ -22,9 +22,12 @@
 
 local setup = {}
 
--- local constants = require("rocks.constants")
--- local operations = require("rocks.operations")
+local constants = require("rocks.constants")
 local config = require("rocks.config")
+
+local function bootstrap_install(name, version)
+    vim.system({ "luarocks", "--lua-version=" .. constants.LUA_VERSION, "--tree=" .. config.rocks_path, "install", name, version }):wait()
+end
 
 --- Initialize rocks.nvim
 --- Add luarocks Neovim tree paths to LUA_PATH and LUA_CPATH and download required rocks to work
@@ -46,10 +49,11 @@ function setup.init()
     local is_toml_installed, _ = pcall(require, "toml")
 
     if not is_toml_installed then
-        vim.notify("Installing 'toml' dependency by using luarocks. This requires compiling C++ code so it may take a while, please wait ...")
-
-        -- operations.install("toml", "0.3.0-0")
-        -- operations.install("nui.nvim", "0.1.0-0")
+        vim.ui.select({ "Ok" }, { prompt = "Installing 'toml' dependency by using luarocks. This requires compiling C++ code so it may take a while, please wait ..." }, function()
+            vim.schedule(function()
+                bootstrap_install("toml", "0.3.0-0")
+            end)
+        end)
     end
 end
 
