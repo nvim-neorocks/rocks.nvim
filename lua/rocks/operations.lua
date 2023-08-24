@@ -33,21 +33,17 @@ local operations = {}
 operations.install = function(name, version)
     -- TODO(vhyrro): Input checking on name and version
     local future = nio.control.future()
-    vim.system(
-        {
-            "luarocks",
-            "--lua-version=" .. constants.LUA_VERSION,
-            "--tree=" .. config.rocks_path,
-            "install",
-            name,
-            version,
-        },
-        {},
-        function(...)
-            -- TODO: Raise an error with set_error on the future if something goes wrong
-            future.set(...)
-        end
-    )
+    vim.system({
+        "luarocks",
+        "--lua-version=" .. constants.LUA_VERSION,
+        "--tree=" .. config.rocks_path,
+        "install",
+        name,
+        version,
+    }, {}, function(...)
+        -- TODO: Raise an error with set_error on the future if something goes wrong
+        future.set(...)
+    end)
     return future
 end
 
@@ -104,7 +100,7 @@ operations.sync = function(user_rocks)
             elseif not user_rocks[key] and rocks[key] then
                 table.insert(actions, function()
                     -- NOTE: This will fail if it breaks dependencies.
-                    -- That is generall good, although we definitely want a handler
+                    -- That is generally good, although we definitely want a handler
                     -- that ignores this.
                     -- To my knowledge there is no way to query all rocks that are *not*
                     -- dependencies.
@@ -123,33 +119,57 @@ operations.sync = function(user_rocks)
 
         if not vim.tbl_isempty(actions) then
             -- TODO: Error handling
-            local _tasks = nio.gather(actions)
-            vim.print("Everything is now in-sync!")
-        else
-            vim.print("Nothing to synchronize!")
+            nio.gather(actions)
         end
+        vim.print("done!")
     end)
 end
 
 operations.update = function()
-    nio.run(function()
+    require("nio").run(function()
+        local Split = require("nui.split")
+        local NuiText = require("nui.text")
+
         local outdated_rocks = state.outdated_rocks()
         local actions = {}
 
-        for name, rock in pairs(outdated_rocks) do
-            table.insert(actions, function()
-                return operations.install(name, rock.target_version).wait()
-            end)
+        nio.scheduler()
+
+        local split = Split({
+            relative = "editor",
+            position = "right",
+            size = "33%",
+        })
+
+        for i = 1, vim.tbl_count(outdated_rocks) - 1 do
+            vim.api.nvim_buf_set_lines(split.bufnr, i, i, true, { "" })
         end
+
+        local linenr = 1
+
+        for name, rock in pairs(outdated_rocks) do
+            local display_text = "Updating '" .. name .. "'"
+            local text = NuiText(display_text)
+            local linenr_copy = linenr
+
+            text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, display_text:len())
+
+            table.insert(actions, function()
+                local ret = operations.install(name, rock.target_version).wait()
+                nio.scheduler()
+                text:set("Updated '" .. name .. "'")
+                text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, display_text:len())
+                return ret
+            end)
+
+            linenr = linenr + 1
+        end
+
+        split:mount()
 
         if not vim.tbl_isempty(actions) then
-            nio.gather(actions)
-            vim.print("Update complete!")
-        else
-            vim.print("Nothing to update!")
+            return nio.gather(actions)
         end
-
-        -- TODO: Update the user configuration to reflect the new state.
     end)
 end
 

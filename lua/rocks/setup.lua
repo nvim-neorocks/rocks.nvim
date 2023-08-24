@@ -33,8 +33,7 @@ local function bootstrap_install(name, version)
         "install",
         name,
         version,
-    })
-        :wait()
+    }):wait()
 end
 
 --- Initialize rocks.nvim
@@ -57,17 +56,14 @@ function setup.init()
     local is_toml_installed, _ = pcall(require, "toml")
 
     if not is_toml_installed then
-        vim.ui.select(
-            { "Ok" },
-            {
-                prompt = "Installing 'toml' dependency by using luarocks. This requires compiling C++ code so it may take a while, please wait ...",
-            },
-            function()
-                vim.schedule(function()
-                    bootstrap_install("toml", "0.3.0-0")
-                end)
-            end
-        )
+        vim.ui.select({ "Ok" }, {
+            prompt = "Installing 'toml' dependency by using luarocks. This requires compiling C++ code so it may take a while, please wait ...",
+        }, function()
+            vim.schedule(function()
+                bootstrap_install("toml", "0.3.0-0")
+                bootstrap_install("nui.nvim", "0.2.0-1")
+            end)
+        end)
     end
 end
 

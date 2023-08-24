@@ -57,21 +57,17 @@ state.outdated_rocks = nio.create(function()
 
     local future = nio.control.future()
 
-    vim.system(
-        {
-            "luarocks",
-            "--lua-version=" .. constants.LUA_VERSION,
-            "--tree=" .. config.rocks_path,
-            "list",
-            "--porcelain",
-            "--outdated",
-        },
-        { text = true },
-        function(obj)
-            -- TODO: Error handling
-            future.set(obj.stdout)
-        end
-    )
+    vim.system({
+        "luarocks",
+        "--lua-version=" .. constants.LUA_VERSION,
+        "--tree=" .. config.rocks_path,
+        "list",
+        "--porcelain",
+        "--outdated",
+    }, { text = true }, function(obj)
+        -- TODO: Error handling
+        future.set(obj.stdout)
+    end)
 
     local installed_rock_list = future.wait()
 
