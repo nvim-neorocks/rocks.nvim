@@ -33,10 +33,14 @@ state.installed_rocks = nio.create(function()
 
     local future = nio.control.future()
 
-    vim.system({"luarocks", "--lua-version=" .. constants.LUA_VERSION, "--tree=" .. config.rocks_path, "list", "--porcelain"}, {text = true}, function(obj)
-        -- TODO: Error handling
-        future.set(obj.stdout)
-    end)
+    vim.system(
+        { "luarocks", "--lua-version=" .. constants.LUA_VERSION, "--tree=" .. config.rocks_path, "list", "--porcelain" },
+        { text = true },
+        function(obj)
+            -- TODO: Error handling
+            future.set(obj.stdout)
+        end
+    )
 
     local installed_rock_list = future.wait()
 
@@ -47,30 +51,37 @@ state.installed_rocks = nio.create(function()
     return rocks
 end)
 
----@param callback fun(installed: {[string]: Rock})
-function state.outdated_rocks(callback)
-    local _callback = function(obj)
-        ---@type {[string]: Rock}
-        local rocks = {}
+state.outdated_rocks = nio.create(function()
+    ---@type {[string]: Rock}
+    local rocks = {}
 
-        vim.print(obj.stdout)
-        for name, version, target_version in obj.stdout:gmatch("([^%s]+)%s+(%d+%.%d+%.%d+%-%d+)%s+(%d+%.%d+%.%d+%-%d+)%s+[^%s]+") do
-            rocks[name] = { name = name, version = version, target_version = target_version }
-        end
+    local future = nio.control.future()
 
-        if callback then
-            callback(rocks)
-        else
-            return rocks
+    vim.system(
+        {
+            "luarocks",
+            "--lua-version=" .. constants.LUA_VERSION,
+            "--tree=" .. config.rocks_path,
+            "list",
+            "--porcelain",
+            "--outdated",
+        },
+        { text = true },
+        function(obj)
+            -- TODO: Error handling
+            future.set(obj.stdout)
         end
+    )
+
+    local installed_rock_list = future.wait()
+
+    for name, version, target_version in
+        installed_rock_list:gmatch("([^%s]+)%s+(%d+%.%d+%.%d+%-%d+)%s+(%d+%.%d+%.%d+%-%d+)%s+[^%s]+")
+    do
+        rocks[name] = { name = name, version = version, target_version = target_version }
     end
 
-    if callback then
-        vim.system({"luarocks", "--lua-version=" .. constants.LUA_VERSION, "--tree=" .. config.rocks_path, "list", "--porcelain", "--outdated"}, _callback)
-    else
-        local rocklist = vim.system({"luarocks", "--lua-version=" .. constants.LUA_VERSION, "--tree=" .. config.rocks_path, "list", "--porcelain", "--outdated"}):wait()
-        return _callback(rocklist)
-    end
-end
+    return rocks
+end)
 
 return state

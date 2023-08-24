@@ -37,19 +37,34 @@ local operations = {}
 operations.install = function(name, version)
     -- TODO(vhyrro): Input checking on name and version
     local future = nio.control.future()
-    vim.system({ "luarocks", "--lua-version=" .. constants.LUA_VERSION, "--tree=" .. config.rocks_path, "install", name, version }, {}, function(...)
-        -- TODO: Raise an error with set_error on the future if something goes wrong
-        future.set(...)
-    end)
+    vim.system(
+        {
+            "luarocks",
+            "--lua-version=" .. constants.LUA_VERSION,
+            "--tree=" .. config.rocks_path,
+            "install",
+            name,
+            version,
+        },
+        {},
+        function(...)
+            -- TODO: Raise an error with set_error on the future if something goes wrong
+            future.set(...)
+        end
+    )
     return future
 end
 
 operations.remove = function(name)
     local future = nio.control.future()
-    vim.system({ "luarocks", "--lua-version=" .. constants.LUA_VERSION, "--tree=" .. config.rocks_path, "remove", name }, {}, function(...)
-        -- TODO: Raise an error with set_error on the future if something goes wrong
-        future.set(...)
-    end)
+    vim.system(
+        { "luarocks", "--lua-version=" .. constants.LUA_VERSION, "--tree=" .. config.rocks_path, "remove", name },
+        {},
+        function(...)
+            -- TODO: Raise an error with set_error on the future if something goes wrong
+            future.set(...)
+        end
+    )
     return future
 end
 
@@ -70,7 +85,6 @@ operations.sync = function(user_rocks)
         for name, data in pairs(user_rocks) do
             -- TODO(vhyrro): Good error checking
             if type(data) == "string" then
-
                 user_rocks[name] = {
                     name = name,
                     version = data,
@@ -113,12 +127,33 @@ operations.sync = function(user_rocks)
 
         if not vim.tbl_isempty(actions) then
             -- TODO: Error handling
-            local tasks = nio.gather(actions)
+            local _tasks = nio.gather(actions)
+            vim.print("Everything is now in-sync!")
+        else
+            vim.print("Nothing to synchronize!")
+        end
+    end)
+end
 
-            vim.schedule(function() vim.print(tasks) end)
+operations.update = function()
+    nio.run(function()
+        local outdated_rocks = state.outdated_rocks()
+        local actions = {}
+
+        for name, rock in pairs(outdated_rocks) do
+            table.insert(actions, function()
+                return operations.install(name, rock.target_version).wait()
+            end)
         end
 
-        vim.print("Complete!")
+        if not vim.tbl_isempty(actions) then
+            nio.gather(actions)
+            vim.print("Update complete!")
+        else
+            vim.print("Nothing to update!")
+        end
+
+        -- TODO: Update the user configuration to reflect the new state.
     end)
 end
 
