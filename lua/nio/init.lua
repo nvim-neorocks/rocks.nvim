@@ -64,7 +64,7 @@ end
 ---
 --- This is useful for APIs where users don't want to create async
 --- contexts but which are still used in async contexts internally.
----@param func async fun(...)
+---@param func async fun(...): any
 ---@param argc? integer The number of arguments of func. Must be included if there are arguments.
 function nio.create(func, argc)
   return tasks.create(func, argc)
