@@ -25,9 +25,9 @@ local setup = require("rocks.setup")
 local config = require("rocks.config")
 
 function rocks.setup(opts)
-  config = vim.tbl_deep_extend("force", config, opts or {})
+    config = vim.tbl_deep_extend("force", config, opts or {})
 
-  setup.init()
+    setup.init()
 end
 
 return rocks
