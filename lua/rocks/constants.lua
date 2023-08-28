@@ -5,8 +5,8 @@
 -- Version:    0.1.0
 -- License:    GPLv3
 -- Created:    05 Jul 2023
--- Updated:    05 Jul 2023
--- Homepage:   https://github.com/NTBBloodbath/rocks.nvim
+-- Updated:    27 Aug 2023
+-- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainer: NTBBloodbath <bloodbathalchemist@protonmail.com>
 --
 -------------------------------------------------------------------------------
