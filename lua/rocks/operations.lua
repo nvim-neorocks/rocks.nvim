@@ -158,6 +158,7 @@ operations.sync = function(user_rocks)
             nio.gather(actions)
         else
             split:unmount()
+            vim.notify("Everything is in-sync!")
         end
     end)
 end
