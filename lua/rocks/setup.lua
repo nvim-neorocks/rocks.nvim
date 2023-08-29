@@ -57,7 +57,7 @@ function setup.init()
 
     if not is_toml_installed then
         vim.ui.select({ "Ok" }, {
-            prompt = "Installing 'toml' dependency by using luarocks. This requires compiling C++ code so it may take a while, please wait ...",
+            prompt = "Installing 'toml' dependency via luarocks. This requires compiling C++ code so it may take a while, please wait...",
         }, function()
             vim.schedule(function()
                 bootstrap_install("toml", "0.3.0-0")
