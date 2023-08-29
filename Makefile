@@ -2,4 +2,4 @@ format:
 	stylua -v --verify lua/rocks/
 
 check:
-	luacheck lua/
+	luacheck lua/rocks
