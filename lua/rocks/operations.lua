@@ -99,31 +99,30 @@ operations.sync = function(user_rocks)
             size = "33%",
         })
 
-        for i = 1, #key_list do
-            vim.api.nvim_buf_set_lines(split.bufnr, i, i, true, { "" })
-        end
-
-        local linenr = 1
+        local line_nr = 1
 
         for _, key in ipairs(key_list) do
-            local linenr_copy = linenr
+            local linenr_copy = line_nr
+            local expand_ui = true
 
             if user_rocks[key] and not rocks[key] then
                 local text = NuiText("Installing '" .. key .. "'")
-                text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, text:content():len())
+                local msg_length = text:content():len()
+                text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
 
                 table.insert(actions, function()
                     local ret = operations.install(user_rocks[key].name, user_rocks[key].version).wait()
 
                     nio.scheduler()
                     text:set("Installed '" .. key .. "'")
-                    text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, text:content():len())
+                    text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
 
                     return ret
                 end)
             elseif not user_rocks[key] and rocks[key] then
                 local text = NuiText("Removing '" .. key .. "'")
-                text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, text:content():len())
+                local msg_length = text:content():len()
+                text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
 
                 table.insert(actions, function()
                     -- NOTE: This will fail if it breaks dependencies.
@@ -135,7 +134,7 @@ operations.sync = function(user_rocks)
 
                     nio.scheduler()
                     text:set("Removed '" .. key .. "'")
-                    text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, text:content():len())
+                    text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
 
                     return ret
                 end)
@@ -147,9 +146,14 @@ operations.sync = function(user_rocks)
                     local installed = operations.install(user_rocks[key].name, user_rocks[key].version).wait()
                     return { removed, installed }
                 end)
+            else
+                expand_ui = false
             end
 
-            linenr = linenr + 1
+            if expand_ui and line_nr > 1 then
+                vim.api.nvim_buf_set_lines(split.bufnr, line_nr, line_nr, true, { "" })
+                line_nr = line_nr + 1
+            end
         end
 
         if not vim.tbl_isempty(actions) then
