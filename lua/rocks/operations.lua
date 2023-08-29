@@ -94,8 +94,6 @@ operations.sync = function(user_rocks)
 
         local actions = {}
 
-        nio.scheduler()
-
         local split = Split({
             relative = "editor",
             position = "right",
@@ -155,11 +153,12 @@ operations.sync = function(user_rocks)
             linenr = linenr + 1
         end
 
-        split:mount()
-
         if not vim.tbl_isempty(actions) then
+            split:mount()
             -- TODO: Error handling
             nio.gather(actions)
+        else
+            split:unmount()
         end
     end)
 end
