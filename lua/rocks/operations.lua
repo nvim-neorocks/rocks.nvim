@@ -84,6 +84,9 @@ operations.sync = function(user_rocks)
             end
         end
 
+        local Split = require("nui.split")
+        local NuiText = require("nui.text")
+
         local rocks = state.installed_rocks()
 
         ---@type string[]
@@ -91,20 +94,53 @@ operations.sync = function(user_rocks)
 
         local actions = {}
 
+        nio.scheduler()
+
+        local split = Split({
+            relative = "editor",
+            position = "right",
+            size = "33%",
+        })
+
+        for i = 1, #key_list do
+            vim.api.nvim_buf_set_lines(split.bufnr, i, i, true, { "" })
+        end
+
+        local linenr = 1
+
         for _, key in ipairs(key_list) do
+            local linenr_copy = linenr
+
             if user_rocks[key] and not rocks[key] then
+                local text = NuiText("Installing '" .. key .. "'")
+                text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, text:content():len())
+
                 table.insert(actions, function()
-                    return operations.install(user_rocks[key].name, user_rocks[key].version).wait()
-                    -- TODO: After the operation is complete update a UI
+                    local ret = operations.install(user_rocks[key].name, user_rocks[key].version).wait()
+
+                    nio.scheduler()
+                    text:set("Installed '" .. key .. "'")
+                    text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, text:content():len())
+
+                    return ret
                 end)
             elseif not user_rocks[key] and rocks[key] then
+                local text = NuiText("Removing '" .. key .. "'")
+                text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, text:content():len())
+
                 table.insert(actions, function()
                     -- NOTE: This will fail if it breaks dependencies.
                     -- That is generally good, although we definitely want a handler
                     -- that ignores this.
                     -- To my knowledge there is no way to query all rocks that are *not*
                     -- dependencies.
-                    return operations.remove(rocks[key].name).wait()
+                    local ret = operations.remove(rocks[key].name).wait()
+
+                    nio.scheduler()
+                    text:set("Removed '" .. key .. "'")
+                    text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, text:content():len())
+
+                    return ret
                 end)
             elseif user_rocks[key].version ~= rocks[key].version then
                 table.insert(actions, function()
@@ -115,13 +151,16 @@ operations.sync = function(user_rocks)
                     return { removed, installed }
                 end)
             end
+
+            linenr = linenr + 1
         end
+
+        split:mount()
 
         if not vim.tbl_isempty(actions) then
             -- TODO: Error handling
             nio.gather(actions)
         end
-        vim.print("done!")
     end)
 end
 
