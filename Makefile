@@ -1,5 +1,5 @@
 format:
-	stylua -v --verify lua/rocks/
+	stylua -v --verify lua/rocks/ plugin/
 
 check:
-	luacheck lua/rocks
+	luacheck lua/rocks plugin/
