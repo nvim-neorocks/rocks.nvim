@@ -63,7 +63,6 @@ end
 --- Synchronizes the state inside of rocks.toml with the physical state on the current
 --- machine.
 ---@param user_rocks? { [string]: Rock|string }
----@type fun(user_rocks: { [string]: Rock|string })
 operations.sync = function(user_rocks)
     nio.run(function()
         if user_rocks == nil then
@@ -163,6 +162,8 @@ operations.sync = function(user_rocks)
     end)
 end
 
+--- Attempts to update every available plugin if it is not pinned.
+--- This function invokes a UI.
 operations.update = function()
     require("nio").run(function()
         local Split = require("nui.split")
@@ -203,10 +204,12 @@ operations.update = function()
             linenr = linenr + 1
         end
 
-        split:mount()
-
         if not vim.tbl_isempty(actions) then
-            return nio.gather(actions)
+            split:mount()
+            nio.gather(actions)
+        else
+            split:unmount()
+            vim.notify("Nothing to update!")
         end
     end)
 end
