@@ -48,12 +48,12 @@ constants.DEFAULT_CONFIG = [[
 
 [rocks]
 toml = "0.3.0-0"      # rocks.nvim can manage its own runtime dependencies too, goated!
+"nui.nvim" = "0.2.0-1"
 
 [plugins]
 # If the plugin name contains a dot then you must add quotes to the key name!
 #
 # "rocks.nvim" = "0.1.0-1"  # rocks.nvim can also manage itself :D
-"sweetie.nvim" = "1.2.1-1"
 ]]
 
 return constants
