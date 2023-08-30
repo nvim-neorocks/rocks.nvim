@@ -139,12 +139,21 @@ operations.sync = function(user_rocks)
                     return ret
                 end)
             elseif user_rocks[key].version ~= rocks[key].version then
+                local is_downgrading = vim.version.parse(user_rocks[key].version)
+                    < vim.version.parse(rocks[key].version)
+
+                local text = NuiText((is_downgrading and "Downgrading" or "Updating") .. " '" .. key .. "'")
+                local msg_length = text:content():len()
+                text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
+
                 table.insert(actions, function()
-                    -- TODO: Clean this up?
-                    -- `nio.first` seems to cause luarocks to throw some error, look into that.
-                    local removed = operations.remove(rocks[key].name).wait()
-                    local installed = operations.install(user_rocks[key].name, user_rocks[key].version).wait()
-                    return { removed, installed }
+                    local ret = operations.install(user_rocks[key].name, user_rocks[key].version).wait()
+
+                    nio.scheduler()
+                    text:set((is_downgrading and "Downgraded" or "Updated") .. " '" .. key .. "'")
+                    text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
+
+                    return ret
                 end)
             else
                 expand_ui = false
