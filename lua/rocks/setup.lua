@@ -39,7 +39,7 @@ end
 --- Initialize rocks.nvim
 --- Add luarocks Neovim tree paths to LUA_PATH and LUA_CPATH and download required rocks to work
 function setup.init()
-    -- First set up the paths then check if toml rock is installed or not
+    -- Set up the paths then check if toml rock is installed or not
     local luarocks_path = {
         vim.fs.joinpath(config.rocks_path, "share", "lua", "5.1", "?.lua"),
         vim.fs.joinpath(config.rocks_path, "share", "lua", "5.1", "?", "init.lua"),
@@ -51,6 +51,8 @@ function setup.init()
         vim.fs.joinpath(config.rocks_path, "lib64", "lua", "5.1", "?.so"),
     }
     package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
+
+    vim.opt.runtimepath:append(vim.fs.joinpath(config.rocks_path, "lib", "luarocks", "rocks-5.1", "*", "*"))
 
     -- Is toml rock installed? No? Well let's install it now!
     local is_toml_installed, _ = pcall(require, "toml")
