@@ -47,7 +47,8 @@ constants.DEFAULT_CONFIG = [[
 # rock_flags = "--additional-luarocks-install-flags=here"
 
 [rocks]
-toml = "0.3.0-0"      # rocks.nvim can manage its own runtime dependencies too, goated!
+toml = "0.3.0-0"    # `rocks.nvim` can manage its own runtime dependencies too, goated!
+toml-edit = "0.1.4-1"
 "nui.nvim" = "0.2.0-1"
 
 [plugins]
