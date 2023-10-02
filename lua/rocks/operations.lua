@@ -29,7 +29,6 @@ local nio = require("nio")
 local operations = {}
 
 ---@alias Rock {name: string, version: string}
----
 operations.install = function(name, version)
     -- TODO(vhyrro): Input checking on name and version
     local future = nio.control.future()
@@ -40,9 +39,15 @@ operations.install = function(name, version)
         "install",
         name,
         version,
-    }, {}, function(...)
-        -- TODO: Raise an error with set_error on the future if something goes wrong
-        future.set(...)
+    }, {}, function(obj)
+        if obj.code ~= 0 then
+            future.set_error(obj.stderr)
+        else
+            future.set({
+                name = name,
+                version = obj.stdout:match(name .. "%s+(%d+%.%d+%.%d+%-%d+)"),
+            })
+        end
     end)
     return future
 end
