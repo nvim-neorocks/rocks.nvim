@@ -184,7 +184,7 @@ end
 --- Attempts to update every available plugin if it is not pinned.
 --- This function invokes a UI.
 operations.update = function()
-    require("nio").run(function()
+    nio.run(function()
         local Split = require("nui.split")
         local NuiText = require("nui.text")
 
@@ -230,6 +230,32 @@ operations.update = function()
             split:unmount()
             vim.notify("Nothing to update!")
         end
+    end)
+end
+
+--- Adds a new rock and updates the `rocks.toml` file
+---@param rock_name string #The rock name
+---@param version? string #The version of the rock to use
+operations.add = function(rock_name, version)
+    vim.notify("Installing " .. rock_name)
+
+    nio.run(function()
+        local installed_rock = operations.install(rock_name, version).wait()
+        vim.schedule(function()
+            local user_rocks =
+                require("toml_edit").parse(fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG))
+            -- FIXME(vhyrro): This currently works in a half-baked way.
+            -- The `toml-edit` libary will create a new empty table here, but if you were to try
+            -- and populate the table upfront then none of the values will be registered by `toml-edit`.
+            -- This should be fixed ASAP.
+            if not user_rocks.plugins then
+                user_rocks.plugins = {}
+            end
+
+            user_rocks.plugins[installed_rock.name] = installed_rock.version
+            fs.write_file(config.config_path, "w", tostring(user_rocks))
+            vim.notify("Successfully installed " .. rock_name)
+        end)
     end)
 end
 
