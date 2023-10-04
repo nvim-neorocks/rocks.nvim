@@ -60,7 +60,11 @@ function setup.init()
     if not is_toml_installed then
         vim.ui.select({ "Ok" }, {
             prompt = "Installing the 'toml' and `toml-edit` dependencies via luarocks. This requires compiling C++ and Rust code so it may take a while, please wait...",
-        }, function()
+        }, function(choice)
+            if choice == nil then
+                vim.cmd.qa()
+            end
+
             vim.schedule(function()
                 bootstrap_install("toml", "0.3.0-0")
                 bootstrap_install("toml-edit", "0.1.4-1")
