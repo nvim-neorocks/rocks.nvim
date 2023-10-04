@@ -93,8 +93,10 @@ operations.sync = function(user_rocks)
 
         local rocks = state.installed_rocks()
 
+        -- The following code uses `nio.fn.keys` instead of `vim.tbl_keys`
+        -- which invokes the scheduler and works in async contexts.
         ---@type string[]
-        local key_list = nio.fn.uniq(vim.list_extend(vim.tbl_keys(rocks), vim.tbl_keys(user_rocks)))
+        local key_list = nio.fn.keys(vim.tbl_deep_extend("force", rocks, user_rocks))
 
         local actions = {}
 
@@ -164,7 +166,7 @@ operations.sync = function(user_rocks)
                 expand_ui = false
             end
 
-            if expand_ui and line_nr > 1 then
+            if expand_ui and line_nr >= 1 then
                 vim.api.nvim_buf_set_lines(split.bufnr, line_nr, line_nr, true, { "" })
                 line_nr = line_nr + 1
             end
@@ -237,7 +239,7 @@ end
 ---@param rock_name string #The rock name
 ---@param version? string #The version of the rock to use
 operations.add = function(rock_name, version)
-    vim.notify("Installing " .. rock_name)
+    vim.notify("Installing '" .. rock_name .. "'...")
 
     nio.run(function()
         local installed_rock = operations.install(rock_name, version).wait()
@@ -254,7 +256,7 @@ operations.add = function(rock_name, version)
 
             user_rocks.plugins[installed_rock.name] = installed_rock.version
             fs.write_file(config.config_path, "w", tostring(user_rocks))
-            vim.notify("Successfully installed " .. rock_name)
+            vim.notify("Installation successful: " .. installed_rock.name .. " -> " .. installed_rock.version)
         end)
     end)
 end
