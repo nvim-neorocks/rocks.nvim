@@ -103,7 +103,7 @@ operations.sync = function(user_rocks)
         local split = Split({
             relative = "editor",
             position = "right",
-            size = "33%",
+            size = "40%",
         })
 
         local line_nr = 1
@@ -134,7 +134,7 @@ operations.sync = function(user_rocks)
                 table.insert(actions, function()
                     -- NOTE: This will fail if it breaks dependencies.
                     -- That is generally good, although we definitely want a handler
-                    -- that ignores this.
+                    -- that ignores this and doesn't display the "Removing" text for.
                     -- To my knowledge there is no way to query all rocks that are *not*
                     -- dependencies.
                     local ret = operations.remove(rocks[key].name).wait()
@@ -198,13 +198,14 @@ operations.update = function()
         local split = Split({
             relative = "editor",
             position = "right",
-            size = "33%",
+            size = "40%",
         })
 
         for i = 1, vim.tbl_count(outdated_rocks) - 1 do
             vim.api.nvim_buf_set_lines(split.bufnr, i, i, true, { "" })
         end
 
+        local user_rocks = require("toml_edit").parse(fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG))
         local linenr = 1
 
         for name, rock in pairs(outdated_rocks) do
@@ -216,10 +217,10 @@ operations.update = function()
 
             table.insert(actions, function()
                 local ret = operations.install(name, rock.target_version).wait()
+                user_rocks.plugins[ret.name] = ret.version
                 nio.scheduler()
-                text:set("Updated '" .. name .. "'")
+                text:set("Updated '" .. name .. "' to " .. rock.target_version)
                 text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, display_text:len())
-                return ret
             end)
 
             linenr = linenr + 1
@@ -228,6 +229,7 @@ operations.update = function()
         if not vim.tbl_isempty(actions) then
             split:mount()
             nio.gather(actions)
+            fs.write_file(config.config_path, "w", tostring(user_rocks))
         else
             split:unmount()
             vim.notify("Nothing to update!")
