@@ -16,8 +16,15 @@ end
 vim.api.nvim_create_user_command("Rocks", rocks, {
     nargs = "+",
     desc = "Interacts with currently installed rocks",
-    complete = function()
-        -- TODO(vhyrro): Improve
-        return { "update", "sync", "install" }
+    complete = function(arg_lead, cmdline, _)
+        local commands = { "update", "sync", "install" }
+
+        if cmdline:match("^Rocks%s+%w*$") then
+            return vim.iter(commands)
+                :filter(function(command)
+                    return command:find(arg_lead) ~= nil
+                end)
+                :totable()
+        end
     end,
 })
