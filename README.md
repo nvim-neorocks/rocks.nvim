@@ -2,7 +2,7 @@
 
 A modern approach to Neovim plugin management.
 
-> *Note*
+> **Note**
 > The following plugin is perfectly usable, but its user interfaces are a **work in progress**.
 >
 > They will be fledged out soon! :)
@@ -20,7 +20,7 @@ A modern approach to Neovim plugin management.
 <!-- Nix users have a skill issue here what else can I say.
 Just joking - add an entry for nix users as well. -->
 
-> *Important*
+> **Important**
 > Ensure you have [`luarocks`](https://luarocks.org) installed on your system and accessible in your shell.
 
 <!-- TODO: Maybe make a bootstrap script? -->
