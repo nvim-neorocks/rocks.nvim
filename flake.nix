@@ -54,7 +54,8 @@
           src = self;
           hooks = {
             alejandra.enable = true;
-            stylua.enable = true;
+            # FIXME: Uncomment when stylua has a --respect-ignores flag
+            # stylua.enable = true;
             luacheck.enable = true;
             editorconfig-checker.enable = true;
           };
