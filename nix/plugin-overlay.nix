@@ -2,7 +2,7 @@
   name,
   self,
 }: final: prev: {
-  vimPlugins.rocks-nvim = final.pkgs.vimUtils.buildVimPluginFrom2Nix {
+  vimPlugins.rocks-nvim = final.pkgs.vimUtils.buildVimPlugin {
     inherit name;
     src = self;
   };
