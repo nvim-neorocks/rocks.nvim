@@ -64,13 +64,17 @@
         devShell = pkgs.mkShell {
           name = "rocks.nvim devShell";
           inherit (pre-commit-check) shellHook;
-          buildInputs = with pre-commit-hooks.packages.${system}; [
-            alejandra
-            lua-language-server
-            stylua
-            luacheck
-            editorconfig-checker
-          ];
+          buildInputs = with pre-commit-hooks.packages.${system};
+            [
+              alejandra
+              lua-language-server
+              stylua
+              luacheck
+              editorconfig-checker
+            ]
+            ++ (with pkgs; [
+              luarocks
+            ]);
         };
       in {
         devShells = {
