@@ -18,14 +18,11 @@
 
 local setup = {}
 
-local constants = require("rocks.constants")
 local config = require("rocks.config")
+local luarocks = require("rocks.luarocks")
 
 local function bootstrap_install(name, version)
-    vim.system({
-        "luarocks",
-        "--lua-version=" .. constants.LUA_VERSION,
-        "--tree=" .. config.rocks_path,
+    luarocks.cli({
         "install",
         name,
         version,

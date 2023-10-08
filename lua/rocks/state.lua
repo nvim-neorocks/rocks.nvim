@@ -17,8 +17,7 @@
 
 local state = {}
 
-local constants = require("rocks.constants")
-local config = require("rocks.config")
+local luarocks = require("rocks.luarocks")
 local nio = require("nio")
 
 ---@type fun(): {[string]: Rock}
@@ -29,14 +28,13 @@ state.installed_rocks = nio.create(function()
 
     local future = nio.control.future()
 
-    vim.system(
-        { "luarocks", "--lua-version=" .. constants.LUA_VERSION, "--tree=" .. config.rocks_path, "list", "--porcelain" },
-        { text = true },
-        function(obj)
-            -- TODO: Error handling
-            future.set(obj.stdout)
-        end
-    )
+    luarocks.cli({
+        "list",
+        "--porcelain",
+    }, function(obj)
+        -- TODO: Error handling
+        future.set(obj.stdout)
+    end, { text = true })
 
     local installed_rock_list = future.wait()
 
@@ -55,17 +53,14 @@ state.outdated_rocks = nio.create(function()
 
     local future = nio.control.future()
 
-    vim.system({
-        "luarocks",
-        "--lua-version=" .. constants.LUA_VERSION,
-        "--tree=" .. config.rocks_path,
+    luarocks.cli({
         "list",
         "--porcelain",
         "--outdated",
-    }, { text = true }, function(obj)
+    }, function(obj)
         -- TODO: Error handling
         future.set(obj.stdout)
-    end)
+    end, { text = true })
 
     local installed_rock_list = future.wait()
 

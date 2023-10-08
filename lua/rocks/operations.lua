@@ -20,6 +20,7 @@ local constants = require("rocks.constants")
 local fs = require("rocks.fs")
 local config = require("rocks.config")
 local state = require("rocks.state")
+local luarocks = require("rocks.luarocks")
 local nio = require("nio")
 
 local operations = {}
@@ -31,16 +32,13 @@ operations.install = function(name, version)
     -- TODO(vhyrro): Input checking on name and version
     local future = nio.control.future()
     local install_cmd = {
-        "luarocks",
-        "--lua-version=" .. constants.LUA_VERSION,
-        "--tree=" .. config.rocks_path,
         "install",
         name,
     }
     if version then
         table.insert(install_cmd, version)
     end
-    vim.system(install_cmd, {}, function(obj)
+    luarocks.cli(install_cmd, function(obj)
         if obj.code ~= 0 then
             future.set_error(obj.stderr)
         else
@@ -57,13 +55,10 @@ end
 ---@return nio.control.Future
 operations.remove = function(name)
     local future = nio.control.future()
-    vim.system({
-        "luarocks",
-        "--lua-version=" .. constants.LUA_VERSION,
-        "--tree=" .. config.rocks_path,
+    luarocks.cli({
         "remove",
         name,
-    }, {}, function(...)
+    }, function(...)
         -- TODO: Raise an error with set_error on the future if something goes wrong
         future.set(...)
     end)
