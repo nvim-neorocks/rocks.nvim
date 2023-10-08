@@ -1,4 +1,4 @@
---- setup.lua --- rocks.nvim setup module
+---@mod rocks.setup
 --
 -- Copyright (C) 2023 NTBBloodbath
 --
@@ -9,16 +9,12 @@
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainer: NTBBloodbath <bloodbathalchemist@protonmail.com>
 --
--------------------------------------------------------------------------------
---
---- Commentary:
+---@brief [[
 --
 -- This module helps us setting up the environment for using Luarocks
 -- like modifying the `package.path` and `package.cpath` Lua variables.
 --
--------------------------------------------------------------------------------
---
---- Code:
+---@brief ]]
 
 local setup = {}
 

@@ -1,4 +1,4 @@
---- operations.lua --- rocks.nvim operations module
+---@mod rocks.operations
 --
 -- Copyright (C) 2023 NTBBloodbath
 --
@@ -9,16 +9,12 @@
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainer: NTBBloodbath <bloodbathalchemist@protonmail.com>
 --
--------------------------------------------------------------------------------
---
---- Commentary:
+---@brief [[
 --
 -- This module handles all the operations that has something to do with
 -- luarocks. Installing, uninstalling, updating, etc.
 --
--------------------------------------------------------------------------------
---
---- Code:
+---@brief ]]
 
 local constants = require("rocks.constants")
 local fs = require("rocks.fs")
@@ -28,18 +24,23 @@ local nio = require("nio")
 
 local operations = {}
 
----@alias Rock {name: string, version: string}
+---@param name string
+---@param version? string
+---@return nio.control.Future
 operations.install = function(name, version)
     -- TODO(vhyrro): Input checking on name and version
     local future = nio.control.future()
-    vim.system({
+    local install_cmd = {
         "luarocks",
         "--lua-version=" .. constants.LUA_VERSION,
         "--tree=" .. config.rocks_path,
         "install",
         name,
-        version,
-    }, {}, function(obj)
+    }
+    if version then
+        table.insert(install_cmd, version)
+    end
+    vim.system(install_cmd, {}, function(obj)
         if obj.code ~= 0 then
             future.set_error(obj.stderr)
         else
@@ -52,27 +53,34 @@ operations.install = function(name, version)
     return future
 end
 
+---@param name string
+---@return nio.control.Future
 operations.remove = function(name)
     local future = nio.control.future()
-    vim.system(
-        { "luarocks", "--lua-version=" .. constants.LUA_VERSION, "--tree=" .. config.rocks_path, "remove", name },
-        {},
-        function(...)
-            -- TODO: Raise an error with set_error on the future if something goes wrong
-            future.set(...)
-        end
-    )
+    vim.system({
+        "luarocks",
+        "--lua-version=" .. constants.LUA_VERSION,
+        "--tree=" .. config.rocks_path,
+        "remove",
+        name,
+    }, {}, function(...)
+        -- TODO: Raise an error with set_error on the future if something goes wrong
+        future.set(...)
+    end)
     return future
 end
 
---- Synchronizes the state inside of rocks.toml with the physical state on the current
---- machine.
----@param user_rocks? { [string]: Rock|string }
+--- Synchronizes the user rocks with the physical state on the current machine.
+--- - Installs missing rocks
+--- - Ensues that the correct versions are installed
+--- - Uninstalls unneeded rocks
+---@param user_rocks? { [string]: Rock|string } loaded from rocks.toml if `nil`
 operations.sync = function(user_rocks)
     nio.run(function()
         if user_rocks == nil then
             -- Read or create a new config file and decode it
-            local user_config = require("toml").decode(fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG))
+            local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
+            local user_config = require("toml").decode(config_file)
 
             -- Merge `rocks` and `plugins` fields as they are just an eye-candy separator for clarity purposes
             user_rocks = vim.tbl_deep_extend("force", user_config.rocks, user_config.plugins)
@@ -91,13 +99,15 @@ operations.sync = function(user_rocks)
         local Split = require("nui.split")
         local NuiText = require("nui.text")
 
-        local rocks = state.installed_rocks()
+        local installed_rocks = state.installed_rocks()
 
         -- The following code uses `nio.fn.keys` instead of `vim.tbl_keys`
         -- which invokes the scheduler and works in async contexts.
         ---@type string[]
-        local key_list = nio.fn.keys(vim.tbl_deep_extend("force", rocks, user_rocks))
+        ---@diagnostic disable-next-line: invisible
+        local key_list = nio.fn.keys(vim.tbl_deep_extend("force", installed_rocks, user_rocks))
 
+        ---@type (fun():any)[]
         local actions = {}
 
         local split = Split({
@@ -112,7 +122,7 @@ operations.sync = function(user_rocks)
             local linenr_copy = line_nr
             local expand_ui = true
 
-            if user_rocks[key] and not rocks[key] then
+            if user_rocks[key] and not installed_rocks[key] then
                 local text = NuiText("Installing '" .. key .. "'")
                 local msg_length = text:content():len()
                 text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
@@ -126,7 +136,7 @@ operations.sync = function(user_rocks)
 
                     return ret
                 end)
-            elseif not user_rocks[key] and rocks[key] then
+            elseif not user_rocks[key] and installed_rocks[key] then
                 local text = NuiText("Removing '" .. key .. "'")
                 local msg_length = text:content():len()
                 text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
@@ -137,7 +147,7 @@ operations.sync = function(user_rocks)
                     -- that ignores this and doesn't display the "Removing" text for.
                     -- To my knowledge there is no way to query all rocks that are *not*
                     -- dependencies.
-                    local ret = operations.remove(rocks[key].name).wait()
+                    local ret = operations.remove(installed_rocks[key].name).wait()
 
                     nio.scheduler()
                     text:set("Removed '" .. key .. "'")
@@ -145,9 +155,9 @@ operations.sync = function(user_rocks)
 
                     return ret
                 end)
-            elseif user_rocks[key].version ~= rocks[key].version then
+            elseif user_rocks[key].version ~= installed_rocks[key].version then
                 local is_downgrading = vim.version.parse(user_rocks[key].version)
-                    < vim.version.parse(rocks[key].version)
+                    < vim.version.parse(installed_rocks[key].version)
 
                 local text = NuiText((is_downgrading and "Downgrading" or "Updating") .. " '" .. key .. "'")
                 local msg_length = text:content():len()
@@ -205,7 +215,8 @@ operations.update = function()
             vim.api.nvim_buf_set_lines(split.bufnr, i, i, true, { "" })
         end
 
-        local user_rocks = require("toml_edit").parse(fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG))
+        local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
+        local user_rocks = require("toml_edit").parse(config_file)
         local linenr = 1
 
         for name, rock in pairs(outdated_rocks) do
@@ -246,8 +257,8 @@ operations.add = function(rock_name, version)
     nio.run(function()
         local installed_rock = operations.install(rock_name, version).wait()
         vim.schedule(function()
-            local user_rocks =
-                require("toml_edit").parse(fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG))
+            local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
+            local user_rocks = require("toml_edit").parse(config_file)
             -- FIXME(vhyrro): This currently works in a half-baked way.
             -- The `toml-edit` libary will create a new empty table here, but if you were to try
             -- and populate the table upfront then none of the values will be registered by `toml-edit`.

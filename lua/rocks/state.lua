@@ -1,4 +1,4 @@
---- state.lua --- rocks.nvim config module
+---@mod rocks.state
 --
 -- Copyright (C) 2023 NTBBloodbath
 --
@@ -9,15 +9,11 @@
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>
 --
--------------------------------------------------------------------------------------------
+---@brief [[
 --
---- Commentary:
+-- Functions for keeping track of the state of installed packages.
 --
--- rocks.nvim configuration options
---
--------------------------------------------------------------------------------------------
---
---- Code:
+---@brief ]]
 
 local state = {}
 
@@ -51,6 +47,8 @@ state.installed_rocks = nio.create(function()
     return rocks
 end)
 
+---@type fun(): {[string]: Rock}
+---@async
 state.outdated_rocks = nio.create(function()
     ---@type {[string]: Rock}
     local rocks = {}

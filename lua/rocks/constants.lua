@@ -1,4 +1,4 @@
---- constants.lua --- rocks.nvim contants module
+---@mod rocks.constants
 --
 -- Copyright (C) 2023 NTBBloodbath
 --
@@ -9,15 +9,11 @@
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainer: NTBBloodbath <bloodbathalchemist@protonmail.com>
 --
--------------------------------------------------------------------------------
---
---- Commentary:
+---@brief [[
 --
 -- rocks.nvim constant variables that I do not want to write twice
 --
--------------------------------------------------------------------------------
---
---- Code:
+---@brief ]]
 
 ---@type table
 local constants = {}
