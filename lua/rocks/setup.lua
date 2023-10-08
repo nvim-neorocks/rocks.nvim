@@ -22,11 +22,13 @@ local config = require("rocks.config")
 local luarocks = require("rocks.luarocks")
 
 local function bootstrap_install(name, version)
-    luarocks.cli({
-        "install",
-        name,
-        version,
-    }):wait()
+    luarocks
+        .cli({
+            "install",
+            name,
+            version,
+        })
+        :wait()
 end
 
 --- Initialize rocks.nvim
