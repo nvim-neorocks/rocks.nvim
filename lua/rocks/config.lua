@@ -1,4 +1,4 @@
---- config.lua --- rocks.nvim config module
+---@mod rocks.config rocks.nvim configuration
 --
 -- Copyright (C) 2023 NTBBloodbath
 --
@@ -9,24 +9,22 @@
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>
 --
--------------------------------------------------------------------------------------------
---
---- Commentary:
+---@brief [[
 --
 -- rocks.nvim configuration options
 --
--------------------------------------------------------------------------------------------
---
---- Code:
+---@brief ]]
 
---- rocks.nvim configuration
----@type table
+---@class (exact) RocksConfig
+---@field rocks_path string Local path in your filesystem to install rocks
+---@field config_path string Rocks declaration file path
+
+--- rocks.nvim default configuration
+---@type RocksConfig
 local config = {
-    --- Local path in your filesystem to install rocks
-    ---@type string
+    ---@diagnostic disable-next-line: param-type-mismatch
     rocks_path = vim.fs.joinpath(vim.fn.stdpath("data"), "rocks"),
-    --- Rocks declaration file path
-    ---@type string
+    ---@diagnostic disable-next-line: param-type-mismatch
     config_path = vim.fs.joinpath(vim.fn.stdpath("config"), "rocks.toml"),
 }
 
