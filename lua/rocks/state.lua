@@ -73,4 +73,37 @@ state.outdated_rocks = nio.create(function()
     return rocks
 end)
 
+---List the dependencies of an installed Rock
+---@type fun(rock:Rock): {[string]: RockDependency}
+---@async
+state.rock_dependencies = nio.create(function(rock)
+    ---@type {[string]: RockDependency}
+    local dependencies = {}
+
+    local future = nio.control.future()
+
+    luarocks.cli({
+        "show",
+        "--deps",
+        rock.name,
+    }, function(obj)
+        -- TODO: Error handling
+        future.set(obj.stdout)
+    end, { text = true })
+
+    local dependency_list = future.wait()
+
+    for line in string.gmatch(dependency_list, "[^%s*][^\n]+") do
+        local name, version = line:match("([^%s]+)%s[^%s]+%s([^%s]+)")
+        if not name then
+            name = line:match("([^%s]+)")
+        end
+        if name and name ~= "lua" then
+            dependencies[name] = { name = name, version = version }
+        end
+    end
+
+    return dependencies
+end)
+
 return state

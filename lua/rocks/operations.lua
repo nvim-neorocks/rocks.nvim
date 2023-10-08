@@ -113,6 +113,11 @@ operations.sync = function(user_rocks)
 
         local line_nr = 1
 
+        ---@type {[string]: RockDependency}
+        local dependencies = {}
+        ---@type string[]
+        local to_remove_keys = {}
+
         for _, key in ipairs(key_list) do
             local linenr_copy = line_nr
             local expand_ui = true
@@ -127,25 +132,6 @@ operations.sync = function(user_rocks)
 
                     nio.scheduler()
                     text:set("Installed '" .. key .. "'")
-                    text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
-
-                    return ret
-                end)
-            elseif not user_rocks[key] and installed_rocks[key] then
-                local text = NuiText("Removing '" .. key .. "'")
-                local msg_length = text:content():len()
-                text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
-
-                table.insert(actions, function()
-                    -- NOTE: This will fail if it breaks dependencies.
-                    -- That is generally good, although we definitely want a handler
-                    -- that ignores this and doesn't display the "Removing" text for.
-                    -- To my knowledge there is no way to query all rocks that are *not*
-                    -- dependencies.
-                    local ret = operations.remove(installed_rocks[key].name).wait()
-
-                    nio.scheduler()
-                    text:set("Removed '" .. key .. "'")
                     text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
 
                     return ret
@@ -167,8 +153,40 @@ operations.sync = function(user_rocks)
 
                     return ret
                 end)
+            elseif not user_rocks[key] and installed_rocks[key] then
+                table.insert(to_remove_keys, key)
+                expand_ui = false
             else
                 expand_ui = false
+            end
+
+            vim.tbl_extend("force", dependencies, state.rock_dependencies(user_rocks[key]))
+
+            if expand_ui and line_nr >= 1 then
+                vim.api.nvim_buf_set_lines(split.bufnr, line_nr, line_nr, true, { "" })
+                line_nr = line_nr + 1
+            end
+        end
+
+        for _, key in ipairs(to_remove_keys) do
+            local linenr_copy = line_nr
+            local is_dependency = dependencies[key] ~= nil
+            local expand_ui = not is_dependency
+
+            if not is_dependency then
+                local text = NuiText("Removing '" .. key .. "'")
+                local msg_length = text:content():len()
+                text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
+
+                table.insert(actions, function()
+                    local ret = operations.remove(installed_rocks[key].name).wait()
+
+                    nio.scheduler()
+                    text:set("Removed '" .. key .. "'")
+                    text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
+
+                    return ret
+                end)
             end
 
             if expand_ui and line_nr >= 1 then

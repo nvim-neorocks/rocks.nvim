@@ -19,4 +19,8 @@
 ---@field public name string
 ---@field public version string
 
+---@class (exact) RockDependency
+---@field public name string
+---@field public version? string
+
 --- internal-types.lua ends here
