@@ -7,7 +7,9 @@ local nio = {}
 ---@class nio.tests
 nio.tests = {}
 
-local with_timeout = function(func, timeout)
+---@param func async fun()
+---@param timeout? number
+nio.tests.with_timeout = function(func, timeout)
   local success, err
   return function()
     local task = tasks.run(func, function(success_, err_)
@@ -32,17 +34,17 @@ end
 ---@param name string
 ---@param async_func function
 nio.tests.it = function(name, async_func)
-  it(name, with_timeout(async_func, tonumber(vim.env.PLENARY_TEST_TIMEOUT)))
+  it(name, nio.tests.with_timeout(async_func, tonumber(vim.env.PLENARY_TEST_TIMEOUT)))
 end
 
 ---@param async_func function
 nio.tests.before_each = function(async_func)
-  before_each(with_timeout(async_func))
+  before_each(nio.tests.with_timeout(async_func))
 end
 
 ---@param async_func function
 nio.tests.after_each = function(async_func)
-  after_each(with_timeout(async_func))
+  after_each(nio.tests.with_timeout(async_func))
 end
 
 return nio.tests

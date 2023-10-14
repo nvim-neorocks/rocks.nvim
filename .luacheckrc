@@ -1,6 +1,10 @@
 globals = {
     "_",
-    "vim"
+    "vim",
+    "describe",
+    "it",
+    "assert",
+    "stub",
 }
 
 ignore = {
