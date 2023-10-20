@@ -87,10 +87,10 @@ state.rock_dependencies = nio.create(function(rock)
         "--deps",
         "--porcelain",
         rock.name,
-    }, function(obj)
+    }, vim.schedule_wrap(function(obj)
         -- TODO: Error handling
         future.set(obj.stdout)
-    end, { text = true })
+    end, { text = true }))
 
     local dependency_list = future.wait()
 
