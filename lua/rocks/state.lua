@@ -85,6 +85,7 @@ state.rock_dependencies = nio.create(function(rock)
     luarocks.cli({
         "show",
         "--deps",
+        "--porcelain",
         rock.name,
     }, function(obj)
         -- TODO: Error handling
