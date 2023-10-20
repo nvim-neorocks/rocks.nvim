@@ -115,6 +115,7 @@ operations.sync = function(user_rocks)
 
         ---@type {[string]: RockDependency}
         local dependencies = {}
+
         ---@type string[]
         local to_remove_keys = {}
 
@@ -136,7 +137,11 @@ operations.sync = function(user_rocks)
 
                     return ret
                 end)
-            elseif user_rocks[key].version ~= installed_rocks[key].version then
+            elseif
+                user_rocks[key]
+                and installed_rocks[key]
+                and user_rocks[key].version ~= installed_rocks[key].version
+            then
                 local is_downgrading = vim.version.parse(user_rocks[key].version)
                     < vim.version.parse(installed_rocks[key].version)
 
@@ -160,9 +165,14 @@ operations.sync = function(user_rocks)
                 expand_ui = false
             end
 
-            vim.tbl_extend("force", dependencies, state.rock_dependencies(user_rocks[key]))
+            -- NOTE(vhyrro): It is not possible to use the vim.tbl_extend or vim.tbl_deep_extend
+            -- functions here within the async context. It simply refuses to work.
+            for k, v in pairs(state.rock_dependencies(user_rocks[key] or installed_rocks[key])) do
+                dependencies[k] = v
+            end
 
             if expand_ui and line_nr >= 1 then
+                nio.scheduler()
                 vim.api.nvim_buf_set_lines(split.bufnr, line_nr, line_nr, true, { "" })
                 line_nr = line_nr + 1
             end
@@ -174,6 +184,7 @@ operations.sync = function(user_rocks)
             local expand_ui = not is_dependency
 
             if not is_dependency then
+                nio.scheduler()
                 local text = NuiText("Removing '" .. key .. "'")
                 local msg_length = text:content():len()
                 text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
