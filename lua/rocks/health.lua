@@ -43,7 +43,7 @@ local lua_dependencies = {
         info = "Required for TOML config serialization.",
     },
     {
-        module = "toml-edit",
+        module = "toml_edit",
         optional = function()
             return true
         end,
@@ -55,6 +55,8 @@ local lua_dependencies = {
 ---@class (exact) ExternalDependency
 ---@field name string Name of the dependency
 ---@field get_binaries fun():string[]Function that returns the binaries to check for
+---@field version_flag? string
+---@field parse_version? fun(stdout:string):string
 ---@field optional fun():boolean Function that returns whether the dependency is optional
 ---@field url string URL (markdown)
 ---@field info string Additional information
@@ -70,13 +72,17 @@ local external_dependencies = {
         optional = function()
             return true
         end,
-        url = "[laurocks](https://luarocks.org/#quick-start)",
+        url = "[luarocks](https://luarocks.org/#quick-start)",
         info = "LuaRocks is the package manager for Lua modules.",
     },
     {
         name = "lua",
         get_binaries = function()
             return { "lua" }
+        end,
+        version_flag = "-v",
+        parse_version = function(stdout)
+            return stdout:match("^Lua%s(%d+%.%d+%.%d+)")
         end,
         optional = function()
             return true
@@ -106,16 +112,11 @@ local check_installed = function(dep)
     local binaries = dep.get_binaries()
     for _, binary in ipairs(binaries) do
         if vim.fn.executable(binary) == 1 then
-            local handle = io.popen(binary .. " --version")
-            if handle then
-                local binary_version, error_msg = handle:read("*a")
-                handle:close()
-                if error_msg then
-                    return true
-                end
-                return true, binary_version
-            end
-            return true
+            local systemObj = vim.system({ binary, dep.version_flag or "--version" }):wait()
+            local version = binary == "lua" -- (╯°□°)╯︵ ┻━┻
+                    and systemObj.stderr
+                or systemObj.stdout
+            return true, version
         end
     end
     return false
