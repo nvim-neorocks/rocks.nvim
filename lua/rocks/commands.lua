@@ -1,12 +1,16 @@
 ---@mod rocks.commands rocks.nvim commands
+---
 ---@brief [[
--- `:Rocks [command [args?]]`
---
--- command	  	                    action
---------------------------------------------------------------------------------------
--- install [package] [version?]  	install rock {package} with {version (optional)}.
--- sync                             synchronize installed rocks with rocks.toml.
--- update                           search for updated rocks and install them.
+---
+--- `:Rocks [command [args?]]`
+---
+--- command	  	                     action
+---------------------------------------------------------------------------------
+---
+--- install [rock] [version?]  	     install {rock} with optional {version}.
+--- sync                             synchronize installed rocks with rocks.toml.
+--- update                           search for updated rocks and install them.
+---
 ---@brief ]]
 ---
 
@@ -51,6 +55,7 @@ local function rocks(opts)
     command(args)
 end
 
+---@package
 function commands.create_commands()
     vim.api.nvim_create_user_command("Rocks", rocks, {
         nargs = "+",

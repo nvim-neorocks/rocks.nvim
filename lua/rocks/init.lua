@@ -1,11 +1,12 @@
 ---@toc rocks.contents
---
----@mod intro Introduction
----@brief [[
----A luarocks plugin manager for Neovim.
----@brief ]]
+
+---@mod rocks rocks.nvim
 ---
----@mod rocks
+---@brief [[
+---
+---A luarocks plugin manager for Neovim.
+---
+---@brief ]]
 
 -- Copyright (C) 2023 NTBBloodbath
 --
@@ -30,7 +31,6 @@ local function bootstrap_install(name, version)
 end
 
 ---@package
----@nodoc
 function rocks.init()
     ---@type RocksConfig
     local config = require("rocks.config.internal")
@@ -70,5 +70,3 @@ function rocks.init()
 end
 
 return rocks
-
---- init.lua ends here

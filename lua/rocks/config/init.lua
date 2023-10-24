@@ -1,9 +1,14 @@
 ---@mod rocks.config rocks.nvim configuration
 ---
 ---@brief [[
---
--- rocks.nvim configuration options
---
+---
+--- rocks.nvim configuration options
+---
+--->
+--- ---@type RocksOpts
+--- vim.g.rocks_nvim
+---<
+---
 ---@brief ]]
 
 local config = {}
