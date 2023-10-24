@@ -1,6 +1,6 @@
 describe("operations", function()
     local operations = require("rocks.operations")
-    local config = require("rocks.config")
+    local config = require("rocks.config.internal")
     vim.system({ "mkdir", "-p", config.rocks_path })
     it("install", function()
         operations.install("plenary.nvim").wait_sync()

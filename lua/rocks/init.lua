@@ -17,18 +17,6 @@
 
 local rocks = {}
 
-local setup = require("rocks.setup")
-local config = require("rocks.config")
-
----@param opts RocksOptions
-function rocks.setup(opts)
-    assert(vim.version() >= vim.version.parse("0.10.0-dev"), "rocks.nvim requires Neovim 0.10.0 or later!")
-
-    config = vim.tbl_deep_extend("force", config, opts or {})
-
-    setup.init()
-end
-
 return rocks
 
 --- init.lua ends here

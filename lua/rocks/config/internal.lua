@@ -1,4 +1,4 @@
----@mod rocks.config rocks.nvim configuration
+---@mod rocks.config.internal rocks.nvim internal configuration
 --
 -- Copyright (C) 2023 NTBBloodbath
 --
@@ -11,7 +11,7 @@
 --
 ---@brief [[
 --
--- rocks.nvim configuration options
+-- rocks.nvim configuration options (internal)
 --
 ---@brief ]]
 
@@ -21,12 +21,23 @@
 
 --- rocks.nvim default configuration
 ---@type RocksConfig
-local config = {
+local default_config = {
     ---@diagnostic disable-next-line: param-type-mismatch
     rocks_path = vim.fs.joinpath(vim.fn.stdpath("data"), "rocks"),
     ---@diagnostic disable-next-line: param-type-mismatch
     config_path = vim.fs.joinpath(vim.fn.stdpath("config"), "rocks.toml"),
 }
+
+---@type RocksOpts
+local opts = type(vim.g.rocks_nvim) == "function" and vim.g.rocks_nvim() or vim.g.rocks_nvim or {}
+
+local config = vim.tbl_deep_extend("force", {}, default_config, opts)
+
+local check = require("rocks.config.check")
+local ok, err = check.validate(config)
+if not ok then
+    vim.notify("Rocks: " .. err, vim.log.levels.ERROR)
+end
 
 return config
 
