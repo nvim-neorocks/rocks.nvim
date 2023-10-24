@@ -9,6 +9,8 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
+    neorocks.url = "github:nvim-neorocks/neorocks";
+
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     pre-commit-hooks = {
@@ -20,6 +22,7 @@
   outputs = inputs @ {
     self,
     nixpkgs,
+    neorocks,
     flake-parts,
     pre-commit-hooks,
     ...
@@ -28,6 +31,9 @@
 
     plugin-overlay = import ./nix/plugin-overlay.nix {
       inherit name self;
+    };
+    test-overlay = import ./nix/test-overlay.nix {
+      inherit self;
     };
   in
     flake-parts.lib.mkFlake {inherit inputs;} {
@@ -47,6 +53,8 @@
           inherit system;
           overlays = [
             plugin-overlay
+            neorocks.overlays.default
+            test-overlay
           ];
         };
 
@@ -87,8 +95,13 @@
           inherit (pkgs.vimPlugins) rocks-nvim;
         };
 
+        # TODO: add integration-stable when ready
         checks = {
           lints = pre-commit-check;
+          inherit
+            (pkgs)
+            integration-nightly
+            ;
         };
       };
       flake = {

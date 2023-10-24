@@ -13,7 +13,7 @@ jobs:
       with:
         name: neorocks
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - run: nix flake check -L --accept-flake-config
+    - run: nix flake check -L --accept-flake-config --option sandbox false
   shell:
     runs-on: ubuntu-latest
     steps:

@@ -25,9 +25,13 @@ local nio = require("nio")
 
 local operations = {}
 
+---@class (exact) Future
+---@field wait fun() Wait in an async context. Does not block in a sync context
+---@field wait_sync fun() Wait in a sync context
+
 ---@param name string
 ---@param version? string
----@return nio.control.Future
+---@return Future
 operations.install = function(name, version)
     -- TODO(vhyrro): Input checking on name and version
     local future = nio.control.future()
@@ -38,7 +42,7 @@ operations.install = function(name, version)
     if version then
         table.insert(install_cmd, version)
     end
-    luarocks.cli(install_cmd, function(obj)
+    local systemObj = luarocks.cli(install_cmd, function(obj)
         if obj.code ~= 0 then
             future.set_error(obj.stderr)
         else
@@ -48,21 +52,31 @@ operations.install = function(name, version)
             })
         end
     end)
-    return future
+    return {
+        wait = future.wait,
+        wait_sync = function()
+            systemObj:wait()
+        end,
+    }
 end
 
 ---@param name string
----@return nio.control.Future
+---@return Future
 operations.remove = function(name)
     local future = nio.control.future()
-    luarocks.cli({
+    local systemObj = luarocks.cli({
         "remove",
         name,
     }, function(...)
         -- TODO: Raise an error with set_error on the future if something goes wrong
         future.set(...)
     end)
-    return future
+    return {
+        wait = future.wait,
+        wait_sync = function()
+            systemObj:wait()
+        end,
+    }
 end
 
 --- Synchronizes the user rocks with the physical state on the current machine.
