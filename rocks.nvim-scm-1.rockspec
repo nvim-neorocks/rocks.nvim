@@ -6,10 +6,16 @@ rockspec_format = "3.0"
 package = "rocks.nvim"
 version = _MODREV .. _SPECREV
 
+dependencies = {
+    "lua >= 5.1",
+    "toml-edit",
+    "toml",
+}
+
 test_dependencies = {
     "lua >= 5.1",
-    -- "toml-edit",
-    -- "toml",
+    "toml-edit",
+    "toml",
 }
 
 source = {

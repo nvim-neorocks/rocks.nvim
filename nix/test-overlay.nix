@@ -8,8 +8,7 @@
         neovim = nvim;
         luaPackages = ps:
           with ps; [
-            # FIXME: https://github.com/NixOS/nixpkgs/pull/261116
-            # toml-edit
+            toml-edit
             toml
             plenary-nvim
           ];
