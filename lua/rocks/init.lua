@@ -27,7 +27,6 @@ function rocks.setup(opts)
     config = vim.tbl_deep_extend("force", config, opts or {})
 
     setup.init()
-    setup.bootstrap_dependencies()
 end
 
 return rocks
