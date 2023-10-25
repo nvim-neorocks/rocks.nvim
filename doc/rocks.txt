@@ -1,0 +1,48 @@
+==============================================================================
+Table of Contents                                               *rocks.contents*
+
+rocks.nvim ····························································· |rocks|
+rocks.nvim commands ··········································· |rocks.commands|
+rocks.nvim configuration ········································ |rocks.config|
+
+==============================================================================
+rocks.nvim                                                               *rocks*
+
+
+A luarocks plugin manager for Neovim.
+
+
+==============================================================================
+rocks.nvim commands                                             *rocks.commands*
+
+
+ `:Rocks [command [args?]]`
+
+ command	  	                     action
+------------------------------------------------------------------------------
+
+ install [rock] [version?]  	     install {rock} with optional {version}.
+ sync                             synchronize installed rocks with rocks.toml.
+ update                           search for updated rocks and install them.
+
+
+==============================================================================
+rocks.nvim configuration                                          *rocks.config*
+
+
+ rocks.nvim configuration options
+
+>
+ ---@type RocksOpts
+ vim.g.rocks_nvim
+<
+
+
+RocksOpts                                                            *RocksOpts*
+
+    Fields: ~
+        {rocks_path?}   (string)  Local path in your filesystem to install rocks. Defaults to a `rocks` directory in `vim.fn.stdpath("data")`.
+        {config_path?}  (string)  Rocks declaration file path. Defaults to `rocks.toml` in `vim.fn.stdpath("config")`.
+
+
+vim:tw=78:ts=8:noet:ft=help:norl:

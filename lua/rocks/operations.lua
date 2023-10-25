@@ -18,7 +18,7 @@
 
 local constants = require("rocks.constants")
 local fs = require("rocks.fs")
-local config = require("rocks.config")
+local config = require("rocks.config.internal")
 local state = require("rocks.state")
 local luarocks = require("rocks.luarocks")
 local nio = require("nio")

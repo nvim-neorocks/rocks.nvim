@@ -24,7 +24,19 @@
           export HOME=$(realpath .)
         '';
       };
+
+  docgen = final.writeShellApplication {
+    name = "docgen";
+    runtimeInputs = with final; [
+      lemmy-help
+    ];
+    text = ''
+      mkdir -p doc
+      lemmy-help lua/rocks/{init,commands,config/init}.lua > doc/rocks.txt
+    '';
+  };
 in {
   integration-stable = mkNeorocksTest "integration-stable" final.neovim;
   integration-nightly = mkNeorocksTest "integration-nightly" final.neovim-nightly;
+  inherit docgen;
 }

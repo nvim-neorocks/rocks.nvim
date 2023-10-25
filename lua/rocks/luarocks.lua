@@ -18,7 +18,7 @@
 local luarocks = {}
 
 local constants = require("rocks.constants")
-local config = require("rocks.config")
+local config = require("rocks.config.internal")
 
 ---@param args string[] luarocks CLI arguments
 ---@param on_exit (function|nil) Called asynchronously when the luarocks command exits.

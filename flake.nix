@@ -93,7 +93,11 @@
         packages = rec {
           default = rocks-nvim;
           inherit (pkgs.vimPlugins) rocks-nvim;
-          inherit (pkgs) neovim-with-rocks;
+          inherit
+            (pkgs)
+            neovim-with-rocks
+            docgen
+            ;
         };
 
         # TODO: add integration-stable when ready
