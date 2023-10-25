@@ -61,8 +61,23 @@ function commands.create_commands()
         nargs = "+",
         desc = "Interacts with currently installed rocks",
         complete = function(arg_lead, cmdline, _)
+            local search = require("rocks.search")
             local rocks_commands = vim.tbl_keys(rocks_command_tbl)
 
+            local name, version_query = cmdline:match("^Rocks install%s([^%s]+)%s(.+)$")
+            -- name followed by space, but no version?
+            name = name or cmdline:match("^Rocks install%s([^%s]+)%s$")
+            if version_query or name then
+                local version_list = search.complete_versions(name, version_query)
+                if #version_list > 0 then
+                    return version_list
+                end
+            end
+            local name_query = cmdline:match("^Rocks install%s(.*)$")
+            local rocks_list = search.complete_names(name_query)
+            if #rocks_list > 0 then
+                return rocks_list
+            end
             if cmdline:match("^Rocks%s+%w*$") then
                 return vim.iter(rocks_commands)
                     :filter(function(command)
