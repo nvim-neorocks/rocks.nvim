@@ -48,7 +48,9 @@ operations.install = function(name, version)
         else
             future.set({
                 name = name,
-                version = obj.stdout:match(name .. "%s+(%d+%.%d+%.%d+%-%d+)"),
+                -- The `gsub` makes sure to escape all punctuation characters
+                -- so they do not get misinterpeted by the lua pattern engine.
+                version = obj.stdout:match(name:gsub("%p", "%%%1") .. "%s+(%d+%.%d+%.%d+%-%d+)"),
             })
         end
     end)
