@@ -50,7 +50,7 @@ operations.install = function(name, version)
                 name = name,
                 -- The `gsub` makes sure to escape all punctuation characters
                 -- so they do not get misinterpeted by the lua pattern engine.
-                version = obj.stdout:match(name:gsub("%p", "%%%1") .. "%s+(%d+%.%d+%.%d+%-%d+)"),
+                version = obj.stdout:match(name:gsub("%p", "%%%1") .. "%s+(%S+)"),
             })
         end
     end)

@@ -43,7 +43,7 @@ local populate_cache = nio.create(function()
         _cache = nil
         return
     end
-    for name, version in result:gmatch("([^%s]+)%s+(%d+%.%d+%.%d+%-%d+)%s+") do
+    for name, version in result:gmatch("([^%s]+)%s+(%S+)%s+") do
         table.insert(_cache, { name = name, version = version })
     end
     if #_cache == 0 then

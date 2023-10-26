@@ -38,7 +38,7 @@ state.installed_rocks = nio.create(function()
 
     local installed_rock_list = future.wait()
 
-    for name, version in installed_rock_list:gmatch("([^%s]+)%s+(%d+%.%d+%.%d+%-%d+)%s+installed%s+[^%s]+") do
+    for name, version in installed_rock_list:gmatch("(%S+)%s+(%S+)%s+installed%s+%S+") do
         rocks[name] = { name = name, version = version }
     end
 
@@ -64,9 +64,7 @@ state.outdated_rocks = nio.create(function()
 
     local installed_rock_list = future.wait()
 
-    for name, version, target_version in
-        installed_rock_list:gmatch("([^%s]+)%s+(%d+%.%d+%.%d+%-%d+)%s+(%d+%.%d+%.%d+%-%d+)%s+[^%s]+")
-    do
+    for name, version, target_version in installed_rock_list:gmatch("(%S+)%s+(%S+)%s+(%S+)%s+%S+") do
         rocks[name] = { name = name, version = version, target_version = target_version }
     end
 
@@ -82,22 +80,25 @@ state.rock_dependencies = nio.create(function(rock)
 
     local future = nio.control.future()
 
-    luarocks.cli({
-        "show",
-        "--deps",
-        "--porcelain",
-        rock.name,
-    }, vim.schedule_wrap(function(obj)
-        -- TODO: Error handling
-        future.set(obj.stdout)
-    end, { text = true }))
+    luarocks.cli(
+        {
+            "show",
+            "--deps",
+            "--porcelain",
+            rock.name,
+        },
+        vim.schedule_wrap(function(obj)
+            -- TODO: Error handling
+            future.set(obj.stdout)
+        end, { text = true })
+    )
 
     local dependency_list = future.wait()
 
-    for line in string.gmatch(dependency_list, "[^%s*][^\n]+") do
-        local name, version = line:match("([^%s]+)%s[^%s]+%s([^%s]+)")
+    for line in string.gmatch(dependency_list, "%S*[^\n]+") do
+        local name, version = line:match("(%S+)%s%S+%s(%S+)")
         if not name then
-            name = line:match("([^%s]+)")
+            name = line:match("(%S+)")
         end
         if name and name ~= "lua" then
             dependencies[name] = { name = name, version = version }
