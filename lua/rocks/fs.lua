@@ -1,6 +1,6 @@
 ---@mod rocks.fs
 --
--- Copyright (C) 2023 NTBBloodbath
+-- Copyright (C) 2023 Neorocks Org.
 --
 -- Version:    0.1.0
 -- License:    GPLv3
