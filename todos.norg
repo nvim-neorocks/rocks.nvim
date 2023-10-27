@@ -9,4 +9,4 @@
   - ( ) Bootstrap installation should not fully hang the editor - the user should have some live preview of the progress.
   - ( ) Add live information to the installation/update processes.
   - ( ) Allow for parsing of more complex tables within the `rocks.toml` file.
-  - ( ) Sort plugin versions from newest to oldest when completing versions
+  - (x) Sort plugin versions from newest to oldest when completing versions
