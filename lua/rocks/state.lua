@@ -32,8 +32,11 @@ state.installed_rocks = nio.create(function()
         "list",
         "--porcelain",
     }, function(obj)
-        -- TODO: Error handling
-        future.set(obj.stdout)
+        if obj.code ~= 0 then
+            future.set_error(obj.stderr)
+        else
+            future.set(obj.stdout)
+        end
     end, { text = true })
 
     local installed_rock_list = future.wait()
@@ -58,8 +61,11 @@ state.outdated_rocks = nio.create(function()
         "--porcelain",
         "--outdated",
     }, function(obj)
-        -- TODO: Error handling
-        future.set(obj.stdout)
+        if obj.code ~= 0 then
+            future.set_error(obj.stderr)
+        else
+            future.set(obj.stdout)
+        end
     end, { text = true })
 
     local installed_rock_list = future.wait()
@@ -80,18 +86,18 @@ state.rock_dependencies = nio.create(function(rock)
 
     local future = nio.control.future()
 
-    luarocks.cli(
-        {
-            "show",
-            "--deps",
-            "--porcelain",
-            rock.name,
-        },
-        vim.schedule_wrap(function(obj)
-            -- TODO: Error handling
+    luarocks.cli({
+        "show",
+        "--deps",
+        "--porcelain",
+        rock.name,
+    }, function(obj)
+        if obj.code ~= 0 then
+            future.set_error(obj.stderr)
+        else
             future.set(obj.stdout)
-        end, { text = true })
-    )
+        end
+    end, { text = true })
 
     local dependency_list = future.wait()
 
