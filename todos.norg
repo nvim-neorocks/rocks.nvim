@@ -5,8 +5,8 @@
   - (x) When syncing, do not attempt to remove plugins that are dependencies of another project.
         To achieve this, you must first attempt to remove the dependency, see if luarocks allows you to, and if it does mark it as removed.
   - (!) Improve error messages across the whole repository, they're currently pretty bad.
-  - (?) Running `:Rocks update` should not update core rocks in the `[rocks]` table
-        UPDATE: Perhaps just pin the plugins instead?
+  - ( ) Running `:Rocks update` should not update core rocks in the `[rocks]` table
   - ( ) Bootstrap installation should not fully hang the editor - the user should have some live preview of the progress.
   - ( ) Add live information to the installation/update processes.
   - ( ) Allow for parsing of more complex tables within the `rocks.toml` file.
+  - ( ) Sort plugin versions from newest to oldest when completing versions
