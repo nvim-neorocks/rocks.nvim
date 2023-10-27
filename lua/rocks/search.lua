@@ -70,7 +70,12 @@ search.complete_versions = function(name, query)
     for _, rock in pairs(matching_rocks) do
         unique_versions[rock.version] = rock
     end
-    return vim.tbl_keys(unique_versions)
+
+    local unique_keys = vim.tbl_keys(unique_versions)
+    table.sort(unique_keys, function(a, b)
+        return a > b
+    end)
+    return unique_keys
 end
 
 ---@param query string | nil
