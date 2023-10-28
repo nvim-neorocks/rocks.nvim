@@ -107,7 +107,13 @@ local function install()
         local start, end_, name, width = line:find("%[([^:]+):([0-9]+)%]")
         if start then
             acquire_buffer_lock(buffer, function()
-                vim.api.nvim_buf_set_text(buffer, i - 1, start - 1, i - 1, end_, { string.rep(" ", width) })
+                vim.api.nvim_buf_set_text(buffer, i - 1, start - 1, i - 1, end_, { string.rep("x", width) })
+
+                vim.cmd(tostring(i) .. "center")
+                local difference = (width - (end_ - start)) / 2
+
+                start = start - difference
+                end_ = end_ - difference
             end)
 
             local subbuffer = vim.api.nvim_create_buf(false, true)
