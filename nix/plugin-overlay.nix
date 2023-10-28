@@ -10,6 +10,7 @@
       lua,
       toml,
       toml-edit,
+      nui-nvim,
     }:
       buildLuarocksPackage {
         pname = name;
@@ -17,7 +18,7 @@
         knownRockspec = "${self}/rocks.nvim-scm-1.rockspec";
         src = self;
         disabled = luaOlder "5.1";
-        propagatedBuildInputs = [toml toml-edit];
+        propagatedBuildInputs = [toml toml-edit nui-nvim];
       }) {};
   };
   lua5_1 = prev.lua5_1.override {
