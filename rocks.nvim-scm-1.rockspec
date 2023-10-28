@@ -10,12 +10,14 @@ dependencies = {
     "lua >= 5.1",
     "toml-edit",
     "toml",
+    "nui.nvim",
 }
 
 test_dependencies = {
     "lua >= 5.1",
     "toml-edit",
     "toml",
+    "nui.nvim",
 }
 
 source = {

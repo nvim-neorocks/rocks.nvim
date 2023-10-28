@@ -11,6 +11,7 @@
             toml-edit
             toml
             plenary-nvim
+            nui-nvim
           ];
 
         extraPackages = [
