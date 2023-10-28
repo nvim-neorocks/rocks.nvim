@@ -79,7 +79,7 @@ This installer supports using the mouse.
 Once you start editing a value, you may exit it by pressing Enter or by clicking elsewhere.
 
 
-Rocks installation path: [install_path:40]
+Rocks installation path: [install_path:50:{{vim.fs.joinpath(vim.fn.stdpath('data'), "rocks")}}]
     ]],
         "\n",
         { plain = true }
@@ -104,19 +104,21 @@ local function install()
     local input_fields = {}
 
     for i, line in ipairs(vim.api.nvim_buf_get_lines(buffer, 0, -1, true)) do
-        local start, end_, name, width = line:find("%[([^:]+):([0-9]+)%]")
+        local start, end_, name, width, default_value = line:find("%[([^:]+):([0-9]+):%{%{(.+)%}%}%]")
         if start then
+            default_value = assert(loadstring("return " .. default_value))()
             acquire_buffer_lock(buffer, function()
-                vim.api.nvim_buf_set_text(buffer, i - 1, start - 1, i - 1, end_, { string.rep("x", width) })
+                vim.api.nvim_buf_set_text(buffer, i - 1, start - 1, i - 1, end_, { string.rep("_", width) })
 
                 vim.cmd(tostring(i) .. "center")
-                local difference = (width - (end_ - start)) / 2
+                local difference = math.floor((width - (end_ - start)) / 2)
 
                 start = start - difference
                 end_ = end_ - difference
             end)
 
             local subbuffer = vim.api.nvim_create_buf(false, true)
+            vim.api.nvim_buf_set_lines(subbuffer, 0, -1, true, { default_value })
 
             local win_id = vim.api.nvim_open_win(subbuffer, false, {
                 width = tonumber(width),
