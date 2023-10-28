@@ -48,6 +48,10 @@
 - [`luarocks`](https://luarocks.org/) installed on your system
   and accessible in your shell.
 
+> **Important**
+> In the future we will provide the dependencies [already compiled through rocks](https://github.com/nvim-neorocks/rocks.nvim/pull/15#discussion_r1375252696)
+> and the C/C++ and Rust compilers will no longer be necessary.
+
 ## :hammer: Installation
 
 ### :snowflake: Nix
