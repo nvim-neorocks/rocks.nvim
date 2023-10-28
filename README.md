@@ -54,13 +54,6 @@
 
 ## :hammer: Installation
 
-### :snowflake: Nix
-
-<!-- Nix users have a skill issue here what else can I say.
-Just joking - add an entry for nix users as well. -->
-
-TODO...
-
 ### :zap: Installation script (recommended)
 
 The days of bootstrapping and editing your configuration are over.
