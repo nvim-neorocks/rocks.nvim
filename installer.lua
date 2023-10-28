@@ -75,6 +75,9 @@ rocks.nvim is a modern approach to Neovim plugin management.
 This page lists all of the most important tweakable aspects of the installation process.
 To edit a value, move your cursor over it and modify the value using regular Neovim keybinds.
 
+This installer supports using the mouse.
+Once you start editing a value, you may exit it by pressing Enter or by clicking elsewhere.
+
 
 Rocks installation path: [install_path:20]
     ]],
@@ -127,6 +130,7 @@ local function install()
                 window = win_id,
                 buffer = subbuffer,
                 width = width,
+                data = "",
             }
 
             vim.keymap.set({ "n", "i" }, "<CR>", function()
@@ -137,6 +141,13 @@ local function install()
                 vim.api.nvim_win_set_cursor(window, current_cursor_pos)
                 vim.api.nvim_set_current_win(window)
             end, { buffer = subbuffer })
+
+            vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+                buffer = subbuffer,
+                callback = function()
+                    input_fields[name].data = vim.api.nvim_buf_get_lines(subbuffer, 0, -1, true)[1]
+                end,
+            })
         end
     end
 
