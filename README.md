@@ -21,6 +21,7 @@ A modern approach to Neovim plugin management.
 
 ## :pencil: Requirements
 
+- An up-to-date `Neovim` nightly (>= 0.10) installation.
 - A C/C++ compiler of your choice (must be compatible with `C++17`!) + [`CMake`](https://cmake.org/).
 - [`rust`](https://www.rust-lang.org/) toolchain (recommended latest stable version).
 - [`luarocks`](https://luarocks.org/) installed on your system and accessible in your shell.
