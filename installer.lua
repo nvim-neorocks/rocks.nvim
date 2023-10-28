@@ -79,7 +79,7 @@ This installer supports using the mouse.
 Once you start editing a value, you may exit it by pressing Enter or by clicking elsewhere.
 
 
-Rocks installation path: [install_path:20]
+Rocks installation path: [install_path:40]
     ]],
         "\n",
         { plain = true }
