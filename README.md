@@ -50,6 +50,6 @@ You just have to run the following command inside your editor and the installer 
 
 TODO...
 
-## License
+## :book: License
 
 rocks.nvim is licensed under GPLv3.
