@@ -14,7 +14,7 @@ A modern approach to Neovim plugin management.
 ## :star2: Features
 
 - `Cargo`-like `rocks.toml` file for declaring all your plugins.
-- Name-based installation (`use "nvim-neorg/neorg"` becomes `:Rocks install neorg` instead).
+- Name-based installation (` "nvim-neorg/neorg" ` becomes `:Rocks install neorg` instead).
 - Automatic dependency and build script management.
 - True semver versioning!
 - (WIP) Automatic running of test suites.
