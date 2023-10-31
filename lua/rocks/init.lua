@@ -21,13 +21,17 @@ local rocks = {}
 
 local function bootstrap_install(name, version)
     local luarocks = require("rocks.luarocks")
-    luarocks
+    local obj = luarocks
         .cli({
             "install",
             name,
             version,
         })
         :wait()
+    if obj.code ~= 0 then
+        local err_msg=string.format("module %s failed to install, err is: %s", name, obj.stderr)
+        vim.notify(err_msg, vim.log.levels.ERROR)
+    end
 end
 
 ---@package
