@@ -29,7 +29,7 @@ local function bootstrap_install(name, version)
         })
         :wait()
     if obj.code ~= 0 then
-        local err_msg=string.format("module %s failed to install, err is: %s", name, obj.stderr)
+        local err_msg=string.format("failed to bootstrap package %s, err is: %s", name, obj.stderr)
         vim.notify(err_msg, vim.log.levels.ERROR)
     end
 end
