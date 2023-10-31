@@ -32,7 +32,7 @@ luarocks.cli = function(args, on_exit, opts)
         "--lua-version=" .. constants.LUA_VERSION,
         "--tree=" .. config.rocks_path,
     }, args)
-    return vim.system(luarocks_cmd, opts, vim.schedule_wrap(on_exit))
+    return vim.system(luarocks_cmd, opts, on_exit and vim.schedule_wrap(on_exit))
 end
 
 return luarocks
