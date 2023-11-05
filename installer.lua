@@ -1,7 +1,20 @@
--- GENERAL TODOs: make resizing workw with windows
+---@author Vhyrro
+---@license GPLv3
 
+-- This file activates an installer window within Neovim that allows for a fully fledged `rocks.nvim` installation.
+-- This file is usually source from an external hosting provider like Github.
+
+-- GENERAL TODOs: make resizing work with windows
+
+--- The buffer ID of the main UI
+---@type number
 local buffer = vim.api.nvim_create_buf(false, true)
+
+--- The window ID of the main UI
+---@type number
 local window = vim.api.nvim_get_current_win()
+
+-- STEP 1: Set up appropriate variables for newly created buffer.
 
 vim.api.nvim_buf_set_name(buffer, "rocks.nvim installer")
 vim.api.nvim_buf_set_option(buffer, "expandtab", true)
@@ -18,16 +31,19 @@ vim.api.nvim_set_option_value("virtualedit", "all", {
     win = window,
 })
 
--- local ns = vim.api.nvim_create_namespace("rocks.nvim/installer")
+-----------------------------------------------------------------
 
---- UTILITY FUNCTIONS
-
+--- Temporarily sets a buffer to modifiable before running a callback
+--- and making the buffer unmodifiable again.
+---@param id number #The buffer ID of the buffer to unlock
+---@param callback fun() #The callback to execute
 local function acquire_buffer_lock(id, callback)
     vim.api.nvim_buf_set_option(id, "modifiable", true)
     callback()
     vim.api.nvim_buf_set_option(id, "modifiable", false)
 end
 
+--- Resizes the user interface and readjusts all text and other UI elements.
 --- TODO(vhyrro): Add logic for when the screen is too small to display text.
 local function resize_ui()
     acquire_buffer_lock(buffer, function()
@@ -38,6 +54,7 @@ local function resize_ui()
     end)
 end
 
+--- Creates the main banner and introduction text for the installer.
 local function create_body()
     local title = [[
  _ __ ___   ___| | _____   _ ____   _(_)_ __ ___
@@ -46,6 +63,7 @@ local function create_body()
 |_|  \___/ \___|_|\_\___(_)_| |_|\_/ |_|_| |_| |_|
 ]]
 
+    ---@type string[]
     local title_lines = vim.split(title, "\n", { plain = true, trimempty = true })
 
     -- Padding logic
@@ -63,6 +81,14 @@ local function create_body()
         end
     end
 
+    --- The introductory text for the `rocks.nvim` installer.
+    --- Segments where input should be permitted are defined by the following syntax:
+    ---
+    ---     [name:length:{{lua_code()}}]
+    ---
+    --- The return value of the executed lua becomes the default value for that entry.
+    --- The default value section may be ommitted.
+    ---@type string[]
     local introduction = vim.split(
         [[
 
@@ -85,13 +111,11 @@ Rocks installation path: [install_path:50:{{vim.fs.joinpath(vim.fn.stdpath('data
         { plain = true }
     )
 
-    -- Replace all `[number]` with a string of `number` amount of spaces and a window in that location
-    -- track all windows and their ranges. When the cursor moves into the specific position
-
     vim.api.nvim_buf_set_lines(buffer, 0, -1, true, vim.list_extend(title_lines, introduction))
     vim.api.nvim_buf_set_option(buffer, "modifiable", false)
 end
 
+--- The main function of the installer.
 local function install()
     vim.api.nvim_create_autocmd("VimResized", {
         buffer = buffer,
@@ -101,12 +125,24 @@ local function install()
     create_body()
     resize_ui()
 
+    -- This section goes through all input declarations and parses them, creating new windows
+    -- where applicable (see the `introduction` variable in the `create_body` function).
+    ---@see create_body
+
+    --- Stores all of the input fields (window IDs, buffer IDs, content)
+    ---@type table<{window: number, buffer: number, width: number, content: string}>
     local input_fields = {}
 
     for i, line in ipairs(vim.api.nvim_buf_get_lines(buffer, 0, -1, true)) do
+        -- Try to find an input declaration and parse it.
+        ---@type number, number, string, number, string
         local start, end_, name, width, default_value = line:find("%[([^:]+):([0-9]+):%{%{(.+)%}%}%]")
+
         if start then
+            -- Attempt to execute the code that will give us the default value
             default_value = assert(loadstring("return " .. default_value))()
+
+            -- Create necessary padding for the input window and recenter the line where we placed the new window.
             acquire_buffer_lock(buffer, function()
                 vim.api.nvim_buf_set_text(buffer, i - 1, start - 1, i - 1, end_, { string.rep("_", width) })
 
@@ -117,6 +153,7 @@ local function install()
                 end_ = end_ - difference
             end)
 
+            -- Create a subbuffer for the input window which will contain editable text.
             local subbuffer = vim.api.nvim_create_buf(false, true)
             vim.api.nvim_buf_set_lines(subbuffer, 0, -1, true, { default_value })
 
@@ -150,6 +187,8 @@ local function install()
                 vim.api.nvim_set_current_win(window)
             end, { buffer = subbuffer })
 
+            -- Every time the value within the input window changes also update the data
+            -- in the input_fields table to reflect that data.
             vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
                 buffer = subbuffer,
                 callback = function()
@@ -159,11 +198,14 @@ local function install()
         end
     end
 
+    -- If the user moves their cursor into the area of a window then move the cursor /into/ that
+    -- window. This allows editable parts of text in an otherwise uneditable buffer.
     vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         buffer = buffer,
         callback = function()
             local current_cursor_pos = vim.api.nvim_win_get_cursor(window)
 
+            -- Go through every active input field and see if we are in its area.
             for _, data in pairs(input_fields) do
                 local win_pos = vim.api.nvim_win_get_position(data.window)
                 local width = data.width
