@@ -58,6 +58,59 @@
           ];
         };
 
+        mkTypeCheck = {
+          nvim-api ? [],
+          disabled-diagnostics ? [],
+        }:
+          pre-commit-hooks.lib.${system}.run {
+            src = self;
+            hooks = {
+              lua-ls.enable = true;
+            };
+            settings = {
+              lua-ls = {
+                config = {
+                  runtime.version = "LuaJIT";
+                  Lua = {
+                    workspace = {
+                      library =
+                        nvim-api
+                        ++ (with pkgs.lua51Packages; [
+                          "${toml-edit}/lib/lua/5.1/"
+                          "${toml}/lib/lua/5.1/"
+                          "${nui-nvim}/share/lua/5.1"
+                        ])
+                        ++ [
+                          "\${3rd}/busted/library"
+                          "\${3rd}/luassert/library"
+                        ];
+                      ignoreDir = [
+                        ".git"
+                        ".github"
+                        ".direnv"
+                        "result"
+                        "nix"
+                        "doc"
+                        "lua/nio"
+                      ];
+                    };
+                    diagnostics = {
+                      libraryFiles = "Disable";
+                      disable = disabled-diagnostics;
+                    };
+                  };
+                };
+              };
+            };
+          };
+
+        type-check-nightly = mkTypeCheck {
+          nvim-api = [
+            "${pkgs.neovim-nightly}/share/nvim/runtime/lua"
+            "${pkgs.vimPlugins.neodev-nvim}/types/nightly"
+          ];
+        };
+
         pre-commit-check = pre-commit-hooks.lib.${system}.run {
           src = self;
           hooks = {
@@ -102,7 +155,10 @@
 
         # TODO: add integration-stable when ready
         checks = {
-          lints = pre-commit-check;
+          inherit
+            pre-commit-check
+            type-check-nightly
+            ;
           inherit
             (pkgs)
             integration-nightly
