@@ -24,7 +24,7 @@
 </div>
 <!-- markdownlint-restore -->
 
-> **Note**
+> [!NOTE]
 >
 > The following plugin is perfectly usable,
 > but its user interfaces are a **work in progress**.
@@ -48,7 +48,7 @@
 - [`luarocks`](https://luarocks.org/) installed on your system
   and accessible in your shell.
 
-> **Important**
+> [!IMPORTANT]
 > In the future we will provide the dependencies [already compiled through rocks](https://github.com/nvim-neorocks/rocks.nvim/pull/15#discussion_r1375252696)
 > and the C/C++ and Rust compilers will no longer be necessary.
 
@@ -66,7 +66,7 @@ and the installer will do the rest!
 :source https://raw.githubusercontent.com/nvim-neorocks/rocks.nvim/installer/installer.lua
 ```
 
-> **Important**
+> [!IMPORTANT]
 >
 > For security reasons, we recommend that you read `:help :source`
 > and the installer code before running it so you know exactly what it does.
