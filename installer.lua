@@ -279,7 +279,7 @@ local function install()
                 "--lua-version=5.1",
                 "--tree=" .. install_path,
                 "install",
-                "neorg", -- TODO: Change to rocks.nvim once we host that on luarocks
+                "rocks.nvim",
             }):wait()
 
             vim.print("Installation successful!")
