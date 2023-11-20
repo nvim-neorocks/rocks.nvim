@@ -121,6 +121,39 @@ Should rocks.nvim set up luarocks?: [setup_luarocks:5:{{vim.fn.executable('luaro
     vim.api.nvim_buf_set_option(buffer, "modifiable", false)
 end
 
+--- Sets up luarocks for use with rocks.nvim
+local function set_up_luarocks(install_path)
+    -- TODO: Check running OS here
+    -- TODO: Error checking
+
+    local tempdir = vim.fs.joinpath(vim.fn.stdpath("run"), "luarocks")
+
+    vim.system({
+        "git",
+        "clone",
+        "https://github.com/luarocks/luarocks.git",
+        tempdir,
+        "--depth=1",
+    }):wait()
+
+    vim.system({
+        "sh",
+        "configure",
+        "--prefix=" .. install_path,
+        "--lua-version=5.1",
+        "--force-config",
+    }, {
+        cwd = tempdir,
+    }):wait()
+
+    vim.system({
+        "make",
+        "install",
+    }, {
+        cwd = tempdir,
+    }):wait()
+end
+
 --- The main function of the installer.
 local function install()
     vim.api.nvim_create_autocmd("VimResized", {
@@ -181,7 +214,7 @@ local function install()
                 window = win_id,
                 buffer = subbuffer,
                 width = width,
-                data = "",
+                data = default_value,
             }
 
             vim.keymap.set({ "n", "i" }, "<CR>", function()
@@ -231,7 +264,12 @@ local function install()
         local line = vim.trim(vim.api.nvim_buf_get_lines(0, cursor - 1, cursor, true)[1])
 
         if line == "<OK>" then
-            vim.notify("Ready to go!")
+            local install_path = input_fields.install_path.data
+            local setup_luarocks = input_fields.setup_luarocks.data == "true"
+
+            if setup_luarocks then
+                set_up_luarocks(install_path)
+            end
         end
     end, { buffer = 0 })
 end
