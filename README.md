@@ -25,7 +25,6 @@
 <!-- markdownlint-restore -->
 
 > [!NOTE]
->
 > The following plugin is perfectly usable,
 > but its user interfaces are a **work in progress**.
 >
