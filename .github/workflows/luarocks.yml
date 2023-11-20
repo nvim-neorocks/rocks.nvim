@@ -25,3 +25,16 @@ jobs:
         with:
           version: ${{ env.LUAROCKS_VERSION }}
           test_interpreters: null
+          dependencies: |
+            toml-edit
+            toml
+            nui.nvim
+          labels: |
+            neovim
+          summary: "Neovim plugin management inspired by `Cargo`."
+          detailed_description: |
+            Rocks.nvim is an all in one solution for installing and managing
+            Neovim plugins through the luarocks package manager.
+
+            Rocks.nvim supports dependency management, build scripts, test suites,
+            all defined from a single rocks.toml file.
