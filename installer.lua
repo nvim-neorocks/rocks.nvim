@@ -275,7 +275,7 @@ local function install()
             end
 
             vim.system({
-                "luarocks",
+                luarocks_binary,
                 "--lua-version=5.1",
                 "--tree=" .. install_path,
                 "install",
