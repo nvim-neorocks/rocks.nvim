@@ -267,9 +267,22 @@ local function install()
             local install_path = input_fields.install_path.data
             local setup_luarocks = input_fields.setup_luarocks.data == "true"
 
+            local luarocks_binary = "luarocks"
+
             if setup_luarocks then
                 set_up_luarocks(install_path)
+                luarocks_binary = vim.fs.joinpath(install_path, "bin", "luarocks")
             end
+
+            vim.system({
+                "luarocks",
+                "--lua-version=5.1",
+                "--tree=" .. install_path,
+                "install",
+                "neorg", -- TODO: Change to rocks.nvim once we host that on luarocks
+            }):wait()
+
+            vim.print("Installation successful!")
         end
     end, { buffer = 0 })
 end
