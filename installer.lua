@@ -106,6 +106,8 @@ Once you start editing a value, you may exit it by pressing Enter or by clicking
 
 
 Rocks installation path: [install_path:50:{{vim.fs.joinpath(vim.fn.stdpath('data'), "rocks")}}]
+
+Should rocks.nvim set up luarocks?: [setup_luarocks:5:{{vim.fn.executable('luarocks') == 0}}]
     ]],
         "\n",
         { plain = true }
@@ -140,7 +142,7 @@ local function install()
 
         if start then
             -- Attempt to execute the code that will give us the default value
-            default_value = assert(loadstring("return " .. default_value))()
+            default_value = assert(loadstring("return tostring(" .. default_value .. ")"))()
 
             -- Create necessary padding for the input window and recenter the line where we placed the new window.
             acquire_buffer_lock(buffer, function()
