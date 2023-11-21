@@ -19,21 +19,6 @@
 
 local rocks = {}
 
-local function bootstrap_install(name, version)
-    local luarocks = require("rocks.luarocks")
-    local obj = luarocks
-        .cli({
-            "install",
-            name,
-            version,
-        })
-        :wait()
-    if obj.code ~= 0 then
-        local err_msg=string.format("failed to bootstrap package %s, err is: %s", name, obj.stderr)
-        vim.notify(err_msg, vim.log.levels.ERROR)
-    end
-end
-
 ---@package
 function rocks.init()
     ---@type RocksConfig
@@ -51,26 +36,6 @@ function rocks.init()
     package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
 
     vim.opt.runtimepath:append(vim.fs.joinpath(config.rocks_path, "lib", "luarocks", "rocks-5.1", "*", "*"))
-
-    -- Is the toml rock installed? No? Well let's install it now!
-    local is_toml_installed, _ = pcall(require, "toml")
-
-    if not is_toml_installed then
-        vim.ui.select({ "Ok" }, {
-            prompt = "Rocks: Installing the 'toml' and `toml-edit` dependencies via luarocks. This may require compiling C++ and Rust code, so it may take a while, please wait...",
-        }, function(choice)
-            if choice == nil then
-                vim.cmd.qa()
-            end
-
-            vim.schedule(function()
-                bootstrap_install("toml", "0.3.0-0")
-                bootstrap_install("toml-edit", "0.1.4-1")
-                bootstrap_install("nui.nvim", "0.2.0-1")
-                vim.notify("Installation complete! Please restart your editor.")
-            end)
-        end)
-    end
 end
 
 return rocks
