@@ -50,6 +50,7 @@ local function resize_ui()
         local size = vim.api.nvim_win_get_width(window)
 
         vim.opt.textwidth = size % 2 == 0 and size or size - 1
+
         vim.cmd("%center")
     end)
 end
@@ -242,10 +243,18 @@ local function install()
     vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
         buffer = buffer,
         callback = function()
+            if not vim.api.nvim_win_is_valid(window) then
+                return true
+            end
+
             local current_cursor_pos = vim.api.nvim_win_get_cursor(window)
 
             -- Go through every active input field and see if we are in its area.
             for _, data in pairs(input_fields) do
+                if not vim.api.nvim_win_is_valid(data.window) then
+                    return true
+                end
+
                 local win_pos = vim.api.nvim_win_get_position(data.window)
                 local width = data.width
 
@@ -282,7 +291,47 @@ local function install()
                 "rocks.nvim",
             }):wait()
 
-            vim.print("Installation successful!")
+            for _, data in pairs(input_fields) do
+                pcall(vim.api.nvim_buf_delete, data.buffer, { force = true })
+                pcall(vim.api.nvim_win_close, data.window, true)
+            end
+
+            acquire_buffer_lock(buffer, function()
+                vim.api.nvim_buf_set_lines(buffer, 0, -1, true, {
+                    "Installation complete!",
+                    "",
+                    "You are almost ready. Please take the following code snippet and paste it in your `init.lua`:",
+                    "",
+                    ">lua",
+                    "local rocks_config = {",
+                    '    rocks_path = "' .. install_path .. '"',
+                    "}",
+                    "",
+                    "vim.g.rocks_nvim = rocks_config",
+                    "",
+                    "local luarocks_path = {",
+                    '    vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?.lua"),',
+                    '    vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?", "init.lua"),',
+                    "}",
+                    'package.path = package.path .. ";" .. table.concat(luarocks_path, ";")',
+                    "",
+                    "local luarocks_cpath = {",
+                    '    vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.so"),',
+                    '    vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.so"),',
+                    "}",
+                    'package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")',
+                    "",
+                    'vim.opt.runtimepath:append(vim.fs.joinpath(rocks_config.rocks_path, "lib", "luarocks", "rocks-5.1", "*", "*"))',
+                    "<",
+                })
+
+                local size = vim.api.nvim_win_get_width(window)
+
+                vim.opt.textwidth = size % 2 == 0 and size or size - 1
+                vim.cmd("1center")
+
+                vim.api.nvim_buf_set_option(buffer, "filetype", "help")
+            end)
         end
     end, { buffer = 0 })
 end
