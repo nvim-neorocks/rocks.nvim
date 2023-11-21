@@ -42,15 +42,13 @@ constants.DEFAULT_CONFIG = [[
 # config  = "plugins/nvim-treesitter.lua"  # <- ~/.config/nvim/lua
 # rock_flags = "--additional-luarocks-install-flags=here"
 
+# Place your non-neovim rocks here
 [rocks]
-toml = "0.3.0-0"    # `rocks.nvim` can manage its own runtime dependencies too, goated!
-toml-edit = "0.1.4-1"
-"nui.nvim" = "0.2.0-1"
 
 [plugins]
 # If the plugin name contains a dot then you must add quotes to the key name!
 #
-# "rocks.nvim" = "0.1.0-1"  # rocks.nvim can also manage itself :D
+"rocks.nvim" = "0.1.0-1" # rocks.nvim can also manage itself :D
 ]]
 
 return constants
