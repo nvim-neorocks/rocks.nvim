@@ -2,9 +2,13 @@
 ---@license GPLv3
 
 -- This file activates an installer window within Neovim that allows for a fully fledged `rocks.nvim` installation.
--- This file is usually source from an external hosting provider like Github.
+-- This file is usually sourced from an external hosting provider like Github.
 
--- GENERAL TODOs: make resizing work with windows
+-- GENERAL TODOs:
+-- - Make resizing work with windows
+-- - Remove some code duplication
+-- - Make code work on all platforms
+-- - Add proper error handling
 
 --- The buffer ID of the main UI
 ---@type number
@@ -112,7 +116,7 @@ Rocks installation path: [install_path:50:{{vim.fs.joinpath(vim.fn.stdpath('data
 
 Should rocks.nvim set up luarocks?: [setup_luarocks:5:{{vim.fn.executable('luarocks') == 0}}]
 
-<OK>
+< OK >
     ]],
         "\n",
         { plain = true }
@@ -272,7 +276,7 @@ local function install()
         local cursor = vim.api.nvim_win_get_cursor(0)[1]
         local line = vim.trim(vim.api.nvim_buf_get_lines(0, cursor - 1, cursor, true)[1])
 
-        if line == "<OK>" then
+        if line == "< OK >" then
             local install_path = input_fields.install_path.data
             local setup_luarocks = input_fields.setup_luarocks.data == "true"
 
@@ -298,11 +302,43 @@ local function install()
 
             acquire_buffer_lock(buffer, function()
                 vim.api.nvim_buf_set_lines(buffer, 0, -1, true, {
-                    "Installation complete!",
+                    "INSTALLATION COMPLETE",
                     "",
-                    "You are almost ready. Please take the following code snippet and paste it in your `init.lua`:",
-                    "",
+                    "You are almost ready! Please take the following code snippet and paste it in your `init.lua`.",
+                    "The code has already been copied to your clipboard:",
                     ">lua",
+                    " local rocks_config = {",
+                    '     rocks_path = "' .. install_path .. '"',
+                    " }",
+                    " ",
+                    " vim.g.rocks_nvim = rocks_config",
+                    " ",
+                    " local luarocks_path = {",
+                    '     vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?.lua"),',
+                    '     vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?", "init.lua"),',
+                    " }",
+                    ' package.path = package.path .. ";" .. table.concat(luarocks_path, ";")',
+                    " ",
+                    " local luarocks_cpath = {",
+                    '     vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.so"),',
+                    '     vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.so"),',
+                    " }",
+                    ' package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")',
+                    " ",
+                    ' vim.opt.runtimepath:append(vim.fs.joinpath(rocks_config.rocks_path, "lib", "luarocks", "rocks-5.1", "*", "*"))',
+                    "<",
+                    "Thank you for installing rocks.nvim!",
+                    "",
+                    "<< OPEN INIT.LUA >>",
+                })
+
+                local size = vim.api.nvim_win_get_width(window)
+
+                vim.opt.textwidth = size % 2 == 0 and size or size - 1
+                vim.cmd("1center")
+                vim.cmd("$-2,$center")
+
+                vim.fn.setreg('"', {
                     "local rocks_config = {",
                     '    rocks_path = "' .. install_path .. '"',
                     "}",
@@ -322,16 +358,14 @@ local function install()
                     'package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")',
                     "",
                     'vim.opt.runtimepath:append(vim.fs.joinpath(rocks_config.rocks_path, "lib", "luarocks", "rocks-5.1", "*", "*"))',
-                    "<",
-                })
-
-                local size = vim.api.nvim_win_get_width(window)
-
-                vim.opt.textwidth = size % 2 == 0 and size or size - 1
-                vim.cmd("1center")
+                }, "l")
 
                 vim.api.nvim_buf_set_option(buffer, "filetype", "help")
             end)
+        elseif line == "<< OPEN INIT.LUA >>" then
+            vim.cmd.edit(vim.fs.joinpath(vim.fn.stdpath("config"), "init.lua"))
+            vim.cmd("write ++p")
+            pcall(vim.api.nvim_buf_delete, buffer, { force = true })
         end
     end, { buffer = 0 })
 end
