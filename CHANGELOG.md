@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v1.0.0...v1.0.1) (2023-11-22)
+
+
+### Bug Fixes
+
+* **operations:** only find dependencies of rocks that exist ([#21](https://github.com/nvim-neorocks/rocks.nvim/issues/21)) ([6d3810d](https://github.com/nvim-neorocks/rocks.nvim/commit/6d3810dfaa3eabd9a23fa433e0f308fc7b16102d))
+
 ## 1.0.0 (2023-11-20)
 
 
