@@ -181,10 +181,12 @@ operations.sync = function(user_rocks)
                 expand_ui = false
             end
 
-            -- NOTE(vhyrro): It is not possible to use the vim.tbl_extend or vim.tbl_deep_extend
-            -- functions here within the async context. It simply refuses to work.
-            for k, v in pairs(state.rock_dependencies(user_rocks[key] or installed_rocks[key])) do
-                dependencies[k] = v
+            if installed_rocks[key] then
+                -- NOTE(vhyrro): It is not possible to use the vim.tbl_extend or vim.tbl_deep_extend
+                -- functions here within the async context. It simply refuses to work.
+                for k, v in pairs(state.rock_dependencies(installed_rocks[key])) do
+                    dependencies[k] = v
+                end
             end
 
             if expand_ui and line_nr >= 1 then
