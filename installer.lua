@@ -141,6 +141,8 @@ local function set_up_luarocks(install_path)
         "--depth=1",
     }):wait()
 
+    vim.notify("Configuring luarocks...")
+
     vim.system({
         "sh",
         "configure",
@@ -150,6 +152,8 @@ local function set_up_luarocks(install_path)
     }, {
         cwd = tempdir,
     }):wait()
+
+    vim.notify("Installing luarocks...")
 
     vim.system({
         "make",
@@ -287,6 +291,7 @@ local function install()
                 luarocks_binary = vim.fs.joinpath(install_path, "bin", "luarocks")
             end
 
+            vim.notify("Installing rocks.nvim...")
             vim.system({
                 luarocks_binary,
                 "--lua-version=5.1",
