@@ -291,6 +291,7 @@ local function install()
                 luarocks_binary,
                 "--lua-version=5.1",
                 "--tree=" .. install_path,
+                "--server='https://nvim-neorocks.github.io/rocks-binaries/'",
                 "install",
                 "rocks.nvim",
             }):wait()
