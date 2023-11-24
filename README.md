@@ -42,10 +42,8 @@
 ## :pencil: Requirements
 
 - An up-to-date `Neovim` nightly (>= 0.10) installation.
-- A C/C++ compiler of your choice (must be compatible with `C++17`!) + [`CMake`](https://cmake.org/).
-- [`rust`](https://www.rust-lang.org/) toolchain (recommended latest stable version).
-- [`luarocks`](https://luarocks.org/) installed on your system
-  and accessible in your shell.
+- `git`
+- If on a UNIX system: `wget` or `curl` - required for the remote `:source` command to work
 
 > [!IMPORTANT]
 > In the future we will provide the dependencies [already compiled through rocks](https://github.com/nvim-neorocks/rocks.nvim/pull/15#discussion_r1375252696)
