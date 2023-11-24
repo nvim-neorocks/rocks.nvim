@@ -42,19 +42,21 @@
 ## :pencil: Requirements
 
 - An up-to-date `Neovim` nightly (>= 0.10) installation.
-- `git`
-- If on a UNIX system: `wget` or `curl` - required for the remote `:source` command to work
+- The `git` command line utility.
+- `wget` or `curl` (if running on a UNIX system) - required for the remote `:source` command to work.
 
 > [!IMPORTANT]
-> In the future we will provide the dependencies [already compiled through rocks](https://github.com/nvim-neorocks/rocks.nvim/pull/15#discussion_r1375252696)
-> and the C/C++ and Rust compilers will no longer be necessary.
+> If you are running on Windows or an esoteric architecture, `rocks.nvim` will
+> attempt to compile its dependencies instead of pulling a prebuilt binary. For
+> the process to succeed you must have a **C++17 parser** and **Rust
+> toolchain** installed on your system.
 
 ## :hammer: Installation
 
 ### :zap: Installation script (recommended)
 
 The days of bootstrapping and editing your configuration are over.
-rocks.nvim can be installed directly through an interactive installer within Neovim.
+`rocks.nvim` can be installed directly through an interactive installer within Neovim.
 
 You just have to run the following command inside your editor
 and the installer will do the rest!
