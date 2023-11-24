@@ -315,7 +315,8 @@ local function install()
                     "The code has already been copied to your clipboard:",
                     ">lua",
                     " local rocks_config = {",
-                    '     rocks_path = "' .. install_path .. '"',
+                    '     rocks_path = "' .. install_path .. '",',
+                    '     luarocks_binary = "' .. luarocks_binary .. '",',
                     " }",
                     " ",
                     " vim.g.rocks_nvim = rocks_config",
@@ -348,6 +349,7 @@ local function install()
                 vim.fn.setreg('"', {
                     "local rocks_config = {",
                     '    rocks_path = "' .. install_path .. '"',
+                    '    luarocks_binary = "' .. luarocks_binary .. '",',
                     "}",
                     "",
                     "vim.g.rocks_nvim = rocks_config",
