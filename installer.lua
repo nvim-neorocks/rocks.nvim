@@ -348,7 +348,7 @@ local function install()
 
                 vim.fn.setreg('"', {
                     "local rocks_config = {",
-                    '    rocks_path = "' .. install_path .. '"',
+                    '    rocks_path = "' .. install_path .. '",',
                     '    luarocks_binary = "' .. luarocks_binary .. '",',
                     "}",
                     "",
