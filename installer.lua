@@ -127,14 +127,35 @@ It is highly recommended that you allow rocks.nvim to set up luarocks for you.
     vim.api.nvim_buf_set_option(buffer, "modifiable", false)
 end
 
+---@param dep string
+---@return boolean is_missing
+local function guard_set_up_luarocks_dependency_missing(dep)
+    if vim.fn.executable(dep) ~= 1 then
+        vim.notify(dep .. " must be installed to set up luarocks.", vim.log.levels.ERROR)
+        return true
+    end
+    return false
+end
+
 --- Sets up luarocks for use with rocks.nvim
+---@param install_path string
+---@return boolean success
 local function set_up_luarocks(install_path)
     -- TODO: Check running OS here
-    -- TODO: Error checking
+    if guard_set_up_luarocks_dependency_missing("git") then
+        return false
+    end
+    if guard_set_up_luarocks_dependency_missing("sh") then
+        -- TODO: Add support for Windows?
+        return false
+    end
+    if guard_set_up_luarocks_dependency_missing("make") then
+        return false
+    end
 
     local tempdir = vim.fs.joinpath(vim.fn.stdpath("run"), "luarocks")
 
-    vim.system({
+    local sc = vim.system({
         "git",
         "clone",
         "https://github.com/luarocks/luarocks.git",
@@ -142,9 +163,14 @@ local function set_up_luarocks(install_path)
         "--depth=1",
     }):wait()
 
+    if sc.code ~= 0 then
+        vim.notify("Cloning luarocks failed: " .. sc.stderr, vim.log.levels.ERROR)
+        return false
+    end
+
     vim.notify("Configuring luarocks...")
 
-    vim.system({
+    sc = vim.system({
         "sh",
         "configure",
         "--prefix=" .. install_path,
@@ -154,14 +180,26 @@ local function set_up_luarocks(install_path)
         cwd = tempdir,
     }):wait()
 
+    if sc.code ~= 0 then
+        vim.notify("Configuring luarocks failed: " .. sc.stderr, vim.log.levels.ERROR)
+        return false
+    end
+
     vim.notify("Installing luarocks...")
 
-    vim.system({
+    sc = vim.system({
         "make",
         "install",
     }, {
         cwd = tempdir,
     }):wait()
+
+    if sc.code ~= 0 then
+        vim.notify("Installing luarocks failed: " .. sc.stderr, vim.log.levels.ERROR)
+        return false
+    end
+
+    return true
 end
 
 --- The main function of the installer.
@@ -292,12 +330,22 @@ local function install()
             local luarocks_binary = "luarocks"
 
             if setup_luarocks then
-                set_up_luarocks(install_path)
+                local success = set_up_luarocks(install_path)
+                if not success then
+                    return
+                end
                 luarocks_binary = vim.fs.joinpath(install_path, "bin", "luarocks")
+            elseif vim.fn.executable(luarocks_binary) ~= 1 then
+                vim.notify(
+                    luarocks_binary
+                        .. " not found. Please ensure luarocks is installed or configure the instllert to setup luarocks automatically",
+                    vim.log.levels.ERROR
+                )
+                return
             end
 
             vim.notify("Installing rocks.nvim...")
-            vim.system({
+            local sc = vim.system({
                 luarocks_binary,
                 "--lua-version=5.1",
                 "--tree=" .. install_path,
@@ -305,6 +353,11 @@ local function install()
                 "install",
                 "rocks.nvim",
             }):wait()
+
+            if sc.code ~= 0 then
+                vim.notify("Installing rocks.nvim failed: " .. sc.stderr, vim.log.levels.ERROR)
+                return
+            end
 
             for _, data in pairs(input_fields) do
                 pcall(vim.api.nvim_buf_delete, data.buffer, { force = true })
