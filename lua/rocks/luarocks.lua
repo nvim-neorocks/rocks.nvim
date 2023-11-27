@@ -31,6 +31,7 @@ luarocks.cli = function(args, on_exit, opts)
         "luarocks",
         "--lua-version=" .. constants.LUA_VERSION,
         "--tree=" .. config.rocks_path,
+        "--server='https://nvim-neorocks.github.io/rocks-binaries/'",
     }, args)
     return vim.system(luarocks_cmd, opts, on_exit and vim.schedule_wrap(on_exit))
 end
