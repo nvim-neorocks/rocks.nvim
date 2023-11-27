@@ -28,11 +28,15 @@
 in {
   inherit lua5_1 lua51Packages;
 
-  vimPlugins.rocks-nvim = final.neovimUtils.buildNeovimPlugin {
-    pname = name;
-    version = "dev";
-    src = self;
-  };
+  vimPlugins =
+    prev.vimPlugins
+    // {
+      rocks-nvim = final.neovimUtils.buildNeovimPlugin {
+        pname = name;
+        version = "dev";
+        src = self;
+      };
+    };
 
   neovim-with-rocks = let
     neovimConfig = final.neovimUtils.makeNeovimConfig {
