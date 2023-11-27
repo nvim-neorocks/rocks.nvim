@@ -21,10 +21,10 @@ local window = vim.api.nvim_get_current_win()
 -- STEP 1: Set up appropriate variables for newly created buffer.
 
 vim.api.nvim_buf_set_name(buffer, "rocks.nvim installer")
-vim.api.nvim_buf_set_option(buffer, "expandtab", true)
+vim.bo[buffer].expandtab = true
 
-vim.api.nvim_win_set_option(window, "conceallevel", 3)
-vim.api.nvim_win_set_option(window, "concealcursor", "nv")
+vim.wo[window].conceallevel = 3
+vim.wo[window].concealcursor = "nv"
 vim.api.nvim_win_set_buf(window, buffer)
 vim.cmd([[
     syntax match Rocks /rocks\.nvim/
@@ -42,9 +42,9 @@ vim.api.nvim_set_option_value("virtualedit", "all", {
 ---@param id number #The buffer ID of the buffer to unlock
 ---@param callback fun() #The callback to execute
 local function acquire_buffer_lock(id, callback)
-    vim.api.nvim_buf_set_option(id, "modifiable", true)
+    vim.bo[id].modifiable = true
     callback()
-    vim.api.nvim_buf_set_option(id, "modifiable", false)
+    vim.bo[id].modifiable = false
 end
 
 --- Resizes the user interface and readjusts all text and other UI elements.
@@ -124,7 +124,7 @@ It is highly recommended that you allow rocks.nvim to set up luarocks for you.
     )
 
     vim.api.nvim_buf_set_lines(buffer, 0, -1, true, vim.list_extend(title_lines, introduction))
-    vim.api.nvim_buf_set_option(buffer, "modifiable", false)
+    vim.bo[buffer].modifiable = false
 end
 
 ---@param dep string
@@ -153,6 +153,7 @@ local function set_up_luarocks(install_path)
         return false
     end
 
+    ---@diagnostic disable-next-line: param-type-mismatch
     local tempdir = vim.fs.joinpath(vim.fn.stdpath("run"), "luarocks")
 
     local sc = vim.system({
@@ -222,10 +223,10 @@ local function install()
 
     for i, line in ipairs(vim.api.nvim_buf_get_lines(buffer, 0, -1, true)) do
         -- Try to find an input declaration and parse it.
-        ---@type number, number, string, number, string
+        ---@type integer|nil, integer|nil, string, number, string
         local start, end_, name, width, default_value = line:find("%[([^:]+):([0-9]+):%{%{(.+)%}%}%]")
 
-        if start then
+        if start and end_ then
             -- Attempt to execute the code that will give us the default value
             default_value = assert(loadstring("return tostring(" .. default_value .. ")"))()
 
@@ -424,11 +425,13 @@ local function install()
                     'package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")',
                     "",
                     'vim.opt.runtimepath:append(vim.fs.joinpath(rocks_config.rocks_path, "lib", "luarocks", "rocks-5.1", "*", "*"))',
+                    ---@diagnostic disable-next-line: param-type-mismatch
                 }, "l")
 
-                vim.api.nvim_buf_set_option(buffer, "filetype", "help")
+                vim.bo[buffer].filetype = "help"
             end)
         elseif line == "<< OPEN INIT.LUA >>" then
+            ---@diagnostic disable-next-line: param-type-mismatch
             vim.cmd.edit(vim.fs.joinpath(vim.fn.stdpath("config"), "init.lua"))
             vim.cmd("write ++p")
             pcall(vim.api.nvim_buf_delete, buffer, { force = true })
