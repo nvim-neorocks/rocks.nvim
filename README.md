@@ -62,7 +62,7 @@ You just have to run the following command inside your editor
 and the installer will do the rest!
 
 ```vim
-:source https://raw.githubusercontent.com/nvim-neorocks/rocks.nvim/installer/installer.lua
+:source https://raw.githubusercontent.com/nvim-neorocks/rocks.nvim/master/installer.lua
 ```
 
 > [!IMPORTANT]
