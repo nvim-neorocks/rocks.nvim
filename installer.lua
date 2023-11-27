@@ -217,8 +217,11 @@ local function install()
     -- where applicable (see the `introduction` variable in the `create_body` function).
     ---@see create_body
 
+    ---@alias position { [1]: integer, [2]: integer }
+    ---@alias input_field {window: number, buffer: number, width: number, content: string, position: position}
+
     --- Stores all of the input fields (window IDs, buffer IDs, content)
-    ---@type table<{window: number, buffer: number, width: number, content: string}>
+    ---@type {[string]: input_field}
     local input_fields = {}
 
     for i, line in ipairs(vim.api.nvim_buf_get_lines(buffer, 0, -1, true)) do
@@ -267,7 +270,7 @@ local function install()
                 },
                 buffer = subbuffer,
                 width = width,
-                data = default_value,
+                content = default_value,
             }
 
             vim.keymap.set({ "n", "i" }, "<CR>", function()
@@ -284,7 +287,7 @@ local function install()
             vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
                 buffer = subbuffer,
                 callback = function()
-                    input_fields[name].data = vim.api.nvim_buf_get_lines(subbuffer, 0, -1, true)[1]
+                    input_fields[name].content = vim.api.nvim_buf_get_lines(subbuffer, 0, -1, true)[1]
                 end,
             })
         end
@@ -325,8 +328,8 @@ local function install()
         local line = vim.trim(vim.api.nvim_buf_get_lines(0, cursor - 1, cursor, true)[1])
 
         if line == "< OK >" then
-            local install_path = input_fields.install_path.data
-            local setup_luarocks = input_fields.setup_luarocks.data == "true"
+            local install_path = input_fields.install_path.content
+            local setup_luarocks = input_fields.setup_luarocks.content == "true"
 
             local luarocks_binary = "luarocks"
 
