@@ -222,6 +222,10 @@ local function install()
 
             input_fields[name] = {
                 window = win_id,
+                position = {
+                    i - 1,
+                    start - 1,
+                },
                 buffer = subbuffer,
                 width = width,
                 data = default_value,
@@ -264,12 +268,12 @@ local function install()
                     return true
                 end
 
-                local win_pos = vim.api.nvim_win_get_position(data.window)
+                local win_pos = data.position
                 local width = data.width
 
                 if
                     current_cursor_pos[1] - 1 == win_pos[1]
-                    and (current_cursor_pos[2] >= win_pos[2] and current_cursor_pos[2] <= win_pos[2] + width)
+                    and (current_cursor_pos[2] >= win_pos[2] and current_cursor_pos[2] < win_pos[2] + width)
                 then
                     vim.api.nvim_set_current_win(data.window)
                 end
