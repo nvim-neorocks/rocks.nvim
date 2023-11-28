@@ -18,6 +18,7 @@
 ---@class (exact) RocksConfig
 ---@field rocks_path string Local path in your filesystem to install rocks
 ---@field config_path string Rocks declaration file path
+---@field luarocks_binary string Luarocks binary path
 
 --- rocks.nvim default configuration
 ---@type RocksConfig
@@ -26,7 +27,6 @@ local default_config = {
     rocks_path = vim.fs.joinpath(vim.fn.stdpath("data"), "rocks"),
     ---@diagnostic disable-next-line: param-type-mismatch
     config_path = vim.fs.joinpath(vim.fn.stdpath("config"), "rocks.toml"),
-    ---@diagnostic disable-next-line: param-type-mismatch
     luarocks_binary = "luarocks",
 }
 
