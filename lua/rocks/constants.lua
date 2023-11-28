@@ -24,11 +24,11 @@ constants.LUA_VERSION = "5.1"
 
 --- Rocks.nvim version
 ---@type string
-constants.ROCKS_VERSION = "0.1.0"
+constants.ROCKS_VERSION = "2.0.0"
 
 --- Default configuration file contents
 ---@type string
-constants.DEFAULT_CONFIG = [[
+constants.DEFAULT_CONFIG = string.format([[
 # This is your rocks.nvim plugins declaration file.
 # Here is a small yet pretty detailed example on how to use it:
 #
@@ -49,8 +49,8 @@ constants.DEFAULT_CONFIG = [[
 # List of Neovim plugins to install alongside their versions.
 # If the plugin name contains a dot then you must add quotes to the key name!
 [plugins]
-"rocks.nvim" = "0.1.0-1" # rocks.nvim can also manage itself :D
-]]
+"rocks.nvim" = "%s-1" # rocks.nvim can also manage itself :D
+]], constants.ROCKS_VERSION)
 
 return constants
 
