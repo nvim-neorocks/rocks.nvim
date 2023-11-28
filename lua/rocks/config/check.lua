@@ -32,8 +32,9 @@ end
 ---@return string|nil error_message
 function check.validate(cfg)
     local ok, err = validate({
-        config_path = { cfg.config_path, "string" },
         rocks_path = { cfg.rocks_path, "string" },
+        config_path = { cfg.config_path, "string" },
+        luarocks_binary = { cfg.luarocks_binary, "string" },
     })
     if not ok then
         return false, err
