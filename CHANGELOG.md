@@ -1,5 +1,48 @@
 # Changelog
 
+## [2.0.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v1.0.1...v2.0.0) (2023-11-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove bootstrapping code from within the plugin
+
+### Features
+
+* add extra description and store data from subbuffers ([6b7e847](https://github.com/nvim-neorocks/rocks.nvim/commit/6b7e847f6bb967d800e7872a56a0ac57f02ffd37))
+* add installer skeleton code ([d636e6d](https://github.com/nvim-neorocks/rocks.nvim/commit/d636e6dc66d4753cbf45257a895c844075dbfaf8))
+* add more UI elements ([1a4d365](https://github.com/nvim-neorocks/rocks.nvim/commit/1a4d3656a8baf3b0d95c8836d604f7939d7e9fbb))
+* add option to auto set up luarocks on the user's machine ([1895d67](https://github.com/nvim-neorocks/rocks.nvim/commit/1895d67f874ad011cf67b6b775a2075d699658cf))
+* add support for default values ([590de34](https://github.com/nvim-neorocks/rocks.nvim/commit/590de34d047c4426cf538440da8971b610d62f65))
+* add welcome screen to installer ([3bbf317](https://github.com/nvim-neorocks/rocks.nvim/commit/3bbf3178c11c56f340f43426068d022f0a405b31))
+* finalize installation process ([5dda747](https://github.com/nvim-neorocks/rocks.nvim/commit/5dda747f93475d59fcc9774295a6386c483ed1a8))
+* **installer:** add `&lt;OK&gt;` button ([5984015](https://github.com/nvim-neorocks/rocks.nvim/commit/598401571e384f5213d9fa71cf9584fcf09493d2))
+* **installer:** add `luarocks_binary` flag for rocks.nvim configuration ([6f180fe](https://github.com/nvim-neorocks/rocks.nvim/commit/6f180fedbe2733b8e6e92cb1865a8c04ffcab6b7))
+* **installer:** add bootstrapping code ([f656883](https://github.com/nvim-neorocks/rocks.nvim/commit/f656883bd81340daa72ba48ab64d5ea5536c0b94))
+* **installer:** add luarocks installation code ([d1e234b](https://github.com/nvim-neorocks/rocks.nvim/commit/d1e234be3e8f80350415d86263b6e9c64a96ae96))
+* **installer:** error handling ([9abf1e3](https://github.com/nvim-neorocks/rocks.nvim/commit/9abf1e3471f0b3f0170de9517510dd8b582f03ae))
+* **installer:** improve "installation complete" screen ([243b55d](https://github.com/nvim-neorocks/rocks.nvim/commit/243b55d2eef7411e01949236e23a40ec884f38ed))
+* **installer:** use the neorocks binary server for faster installation ([5bcce43](https://github.com/nvim-neorocks/rocks.nvim/commit/5bcce432c7fea783c3b959388d43e06ccad80568))
+
+
+### Bug Fixes
+
+* **editorconfig:** failing checks ([8564817](https://github.com/nvim-neorocks/rocks.nvim/commit/8564817b8f499a88a0d4d3564639aaaf8383003c))
+* incorrect alignment of centered text with input fields ([c6c5c81](https://github.com/nvim-neorocks/rocks.nvim/commit/c6c5c816560c72e2cde57018f662d90047a30c84))
+* **installer:** add extra message when cloning the repository ([6702616](https://github.com/nvim-neorocks/rocks.nvim/commit/6702616db5e9e0f8132a9bb04420aa6e5282e77f))
+* **installer:** don't use deprecated API + disable some diagnostics ([bfbebd0](https://github.com/nvim-neorocks/rocks.nvim/commit/bfbebd076ee2b6329c4d8711a75d7a52c172b6ff))
+* **installer:** fix column calculations for Neovim instances with line numbers and other obstructions ([105b334](https://github.com/nvim-neorocks/rocks.nvim/commit/105b334b7013fdbae5120fec7f82829329a3fdf6))
+* **installer:** install rocks.nvim instead of neorg (was used for testing) ([c9c5c38](https://github.com/nvim-neorocks/rocks.nvim/commit/c9c5c38c81d9ffa6bd934f06f3544b4f3aabab44))
+* **installer:** remove missing `,` when copying code to clipboard ([8f7dd57](https://github.com/nvim-neorocks/rocks.nvim/commit/8f7dd5772cf341e3adea6442bad1c12d08fedeec))
+* **installer:** type annotations + field names ([13d4592](https://github.com/nvim-neorocks/rocks.nvim/commit/13d45921c0b545d8a901bab48e782ad3e9487678))
+* **installer:** use self-contained luarocks binary when possible ([b8a895b](https://github.com/nvim-neorocks/rocks.nvim/commit/b8a895b057ba67daa68cd7b758ea5436a46fadd8))
+* try to make installer work ([de31944](https://github.com/nvim-neorocks/rocks.nvim/commit/de31944ae175c82e87453f36a16cd39099ada26d))
+
+
+### Code Refactoring
+
+* remove bootstrapping code from within the plugin ([ddd2521](https://github.com/nvim-neorocks/rocks.nvim/commit/ddd25217b277ce73db3c9f5f16917b915823452b))
+
 ## [1.0.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v1.0.0...v1.0.1) (2023-11-22)
 
 
