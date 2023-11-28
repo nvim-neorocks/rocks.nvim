@@ -153,7 +153,7 @@ operations.sync = function(user_rocks)
                     -- If the plugin version is a development release then we pass `dev` as the version to the install function
                     -- as it gets converted to the `--dev` flag on there, allowing luarocks to pull the `scm-1` rockspec manifest
                     local ret
-                    if user_rocks[key].version == "scm-1" then
+                    if vim.startswitn(user_rocks[key].version, "scm-") then
                         ret = operations.install(user_rocks[key].name, "dev").wait()
                     else
                         ret = operations.install(user_rocks[key].name, user_rocks[key].version).wait()
