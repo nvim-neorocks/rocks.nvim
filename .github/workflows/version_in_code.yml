@@ -1,0 +1,40 @@
+name: Update Version String in `rocks.nvim` Code
+
+on:
+  workflow_run:
+    workflows: ["Release Please"]
+    branches: [master]
+    types: 
+      - completed
+
+jobs:
+  release:
+    name: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Update Version String
+        run: |
+          latest_tag=$(git describe --abbrev=0 --tags)
+
+          echo "Updating `rocks.nvim` Version to $latest_tag"
+          sed -ri "s/constants\.ROCKS_VERSION\s+=\s+\"[0-9\.\-]+\"$/constants.ROCKS_VERSION = \"${latest_tag:1}\"/" lua/rocks/constants.lua
+
+      - name: Commit Changes
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          if [[ ! -z $(git status -s) ]]; then
+            git add .
+            git commit -m "chore(config.lua): update version variable"
+          fi
+
+      - name: Push to Github
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          repository: "nvim-neorocks/rocks.nvim"
+          branch: master
