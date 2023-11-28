@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.0.0...v2.0.1) (2023-11-28)
+
+
+### Bug Fixes
+
+* update ROCKS_VERSION, use ROCKS_VERSION in default config ([e7012a0](https://github.com/nvim-neorocks/rocks.nvim/commit/e7012a09c6d32eb4762baf6335834366eaacd153))
+
 ## [2.0.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v1.0.1...v2.0.0) (2023-11-28)
 
 
