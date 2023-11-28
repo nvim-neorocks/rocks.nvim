@@ -40,7 +40,12 @@ operations.install = function(name, version)
         name,
     }
     if version then
-        table.insert(install_cmd, version)
+        -- If specified version is dev then install the `scm-1` version of the rock
+        if version == "dev" then
+            table.insert(install_cmd, 2, "--dev")
+        else
+            table.insert(install_cmd, version)
+        end
     end
     local systemObj = luarocks.cli(install_cmd, function(obj)
         if obj.code ~= 0 then
@@ -145,7 +150,14 @@ operations.sync = function(user_rocks)
                 text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
 
                 table.insert(actions, function()
-                    local ret = operations.install(user_rocks[key].name, user_rocks[key].version).wait()
+                    -- If the plugin version is a development release then we pass `dev` as the version to the install function
+                    -- as it gets converted to the `--dev` flag on there, allowing luarocks to pull the `scm-1` rockspec manifest
+                    local ret
+                    if user_rocks[key].version == "scm-1" then
+                        ret = operations.install(user_rocks[key].name, "dev").wait()
+                    else
+                        ret = operations.install(user_rocks[key].name, user_rocks[key].version).wait()
+                    end
 
                     nio.scheduler()
                     text:set("Installed '" .. key .. "'")
@@ -309,6 +321,10 @@ operations.add = function(rock_name, version)
                 user_rocks.plugins = {}
             end
 
+            -- Set installed version as `scm-1` if development version has been installed
+            if version == "dev" then
+                installed_rock.version = "scm-1"
+            end
             user_rocks.plugins[installed_rock.name] = installed_rock.version
             fs.write_file(config.config_path, "w", tostring(user_rocks))
             vim.notify("Installation successful: " .. installed_rock.name .. " -> " .. installed_rock.version)
