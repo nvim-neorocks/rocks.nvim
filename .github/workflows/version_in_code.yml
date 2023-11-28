@@ -29,7 +29,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           if [[ ! -z $(git status -s) ]]; then
             git add .
-            git commit -m "chore(config.lua): update version variable"
+            git commit -m "chore(constants.lua): update version variable"
           fi
 
       - name: Push to Github
