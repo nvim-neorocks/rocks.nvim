@@ -26,6 +26,8 @@ local default_config = {
     rocks_path = vim.fs.joinpath(vim.fn.stdpath("data"), "rocks"),
     ---@diagnostic disable-next-line: param-type-mismatch
     config_path = vim.fs.joinpath(vim.fn.stdpath("config"), "rocks.toml"),
+    ---@diagnostic disable-next-line: param-type-mismatch
+    luarocks_binary = "luarocks",
 }
 
 ---@type RocksOpts

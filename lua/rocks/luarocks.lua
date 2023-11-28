@@ -28,7 +28,7 @@ local config = require("rocks.config.internal")
 ---@see vim.system
 luarocks.cli = function(args, on_exit, opts)
     local luarocks_cmd = vim.list_extend({
-        "luarocks",
+        config.luarocks_binary,
         "--lua-version=" .. constants.LUA_VERSION,
         "--tree=" .. config.rocks_path,
         "--server='https://nvim-neorocks.github.io/rocks-binaries/'",
