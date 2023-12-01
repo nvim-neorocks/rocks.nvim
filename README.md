@@ -72,8 +72,41 @@ and the installer will do the rest!
 
 ## :books: Usage
 
-TODO...
+### Installing rocks
+
+You can install rocks with the `:Rocks install [rock] [version?]` command.
+
+Arguments:
+
+- `rock`: The luarocks package.
+- `version`: Optional. Used to pin a rock to a specific version.
+
+> [!NOTE]
+>
+> - The command provides completions for rocks and versions on luarocks.org.
+> - Installs the latest version if `version` is omitted.
+> - This plugin keeps track of installed plugins in a `rocks.toml` file,
+>   which you can commit to version control.
+
+### Updating rocks
+
+Running the `:Rocks update` command will attempt to update every available rock
+if it is not pinned.
+
+### Syncing rocks
+
+The `:Rocks sync` command synchronizes the installed rocks with the `rocks.toml`.
+
+> [!NOTE]
+>
+> - Installs missing rocks.
+> - Ensures that the correct versions are installed.
+> - Uninstalls unneeded rocks.
+
+### Uninstalling rocks
+
+To uninstall a rock, edit the `rocks.toml` and run `:Rocks sync`.
 
 ## :book: License
 
-rocks.nvim is licensed under GPLv3.
+`rocks.nvim` is licensed under [GPLv3](./LICENSE).
