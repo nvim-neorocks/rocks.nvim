@@ -8,8 +8,11 @@
 ---------------------------------------------------------------------------------
 ---
 --- install [rock] [version?]  	     install {rock} with optional {version}.
+--- prune [rock]                     uninstall {rock} and its stale dependencies,
+---                                  and remove it from rocks.toml.
 --- sync                             synchronize installed rocks with rocks.toml.
 --- update                           search for updated rocks and install them.
+--- edit                             edit the rocks.toml file.
 ---
 ---@brief ]]
 ---
@@ -48,6 +51,9 @@ local rocks_command_tbl = {
         end
         local package = args[1]
         require("rocks.operations").prune(package)
+    end,
+    edit = function(_)
+        vim.cmd.e(require("rocks.config.internal").config_path)
     end,
 }
 
