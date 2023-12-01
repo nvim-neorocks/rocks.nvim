@@ -41,6 +41,14 @@ local rocks_command_tbl = {
         local package, version = args[1], args[2]
         require("rocks.operations").add(package, version)
     end,
+    prune = function(args)
+        if #args == 0 then
+            vim.notify("Rocks prune: Called without required package argument.", vim.log.levels.ERROR)
+            return
+        end
+        local package = args[1]
+        require("rocks.operations").prune(package)
+    end,
 }
 
 local function rocks(opts)
@@ -75,6 +83,12 @@ function commands.create_commands()
             end
             local name_query = cmdline:match("^Rocks install%s(.*)$")
             local rocks_list = search.complete_names(name_query)
+            if #rocks_list > 0 then
+                return rocks_list
+            end
+            local state = require("rocks.state")
+            name_query = cmdline:match("^Rocks prune%s(.*)$")
+            rocks_list = state.complete_removable_rocks(name_query)
             if #rocks_list > 0 then
                 return rocks_list
             end

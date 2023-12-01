@@ -105,7 +105,13 @@ The `:Rocks sync` command synchronizes the installed rocks with the `rocks.toml`
 
 ### Uninstalling rocks
 
-To uninstall a rock, edit the `rocks.toml` and run `:Rocks sync`.
+To uninstall a rock and any of its dependencies,
+that are no longer needed, run the `:Rocks prune [rock]` command.
+
+> [!NOTE]
+>
+> - The command provides completions for rocks that can safely
+>   be pruned without breaking dependencies.
 
 ## :book: License
 

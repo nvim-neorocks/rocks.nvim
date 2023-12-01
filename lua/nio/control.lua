@@ -12,8 +12,7 @@ nio.control = {}
 --- The event can be set from a non-async context.
 ---@class nio.control.Event
 ---@field set fun(max_woken?: integer): nil Set the event and signal to all (or limited number of) listeners that the event has occurred. If max_woken is provided and there are more listeners then the event is cleared immediately
----@field wait async fun(): nil Wait for the event to occur, returning immediately if
---- already set
+---@field wait async fun(): nil Wait for the event to occur, returning immediately if already set
 ---@field clear fun(): nil Clear the event
 ---@field is_set fun(): boolean Returns true if the event is set
 
