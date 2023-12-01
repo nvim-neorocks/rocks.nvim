@@ -103,6 +103,8 @@ The `:Rocks sync` command synchronizes the installed rocks with the `rocks.toml`
 > - Ensures that the correct versions are installed.
 > - Uninstalls unneeded rocks.
 
+bla
+
 ### Uninstalling rocks
 
 To uninstall a rock, edit the `rocks.toml` and run `:Rocks sync`.
