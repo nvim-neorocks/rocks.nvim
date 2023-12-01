@@ -110,3 +110,8 @@ To uninstall a rock, edit the `rocks.toml` and run `:Rocks sync`.
 ## :book: License
 
 `rocks.nvim` is licensed under [GPLv3](./LICENSE).
+
+## :green_heart: Contributing
+
+Contributions are more than welcome!
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for a guide.
