@@ -35,7 +35,7 @@ jobs:
 
             Proper [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/) scoping:
 
-            - For example, `fix(installer):` if you are fixing an installer bug.
+            - For example, fix(installer): some installer bugfix
 
             - [ ] Pull request title has the appropriate conventional commit prefix.
 
