@@ -83,7 +83,7 @@ end
 
 --- Synchronizes the user rocks with the physical state on the current machine.
 --- - Installs missing rocks
---- - Ensues that the correct versions are installed
+--- - Ensures that the correct versions are installed
 --- - Uninstalls unneeded rocks
 ---@param user_rocks? { [string]: Rock|string } loaded from rocks.toml if `nil`
 operations.sync = function(user_rocks)
@@ -235,7 +235,7 @@ operations.sync = function(user_rocks)
     end)
 end
 
---- Attempts to update every available plugin if it is not pinned.
+--- Attempts to update every available rock if it is not pinned.
 --- This function invokes a UI.
 operations.update = function()
     nio.run(function()
