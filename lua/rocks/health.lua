@@ -153,10 +153,8 @@ end
 
 local function check_config()
     start("Checking config")
-    if vim.g.rocks_nvim then
-        ok("vim.g.rocks_nvim is set")
-    else
-        ok("vim.g.rocks_nvim is not set")
+    if vim.g.rocks_nvim and not config.debug_info.was_g_rocks_nvim_sourced then
+        warn("unrecognized configs in vim.g.rocks_nvim: " .. vim.inspect(config.debug_info.unrecognized_configs))
     end
     local valid, err = require("rocks.config.check").validate(config)
     if valid then
