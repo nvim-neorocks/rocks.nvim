@@ -113,6 +113,11 @@ that are no longer needed, run the `:Rocks prune [rock]` command.
 > - The command provides completions for rocks that can safely
 >   be pruned without breaking dependencies.
 
+### Editing `rocks.toml`
+
+The `:Rocks edit` command opens the `rocks.toml` file for manual editing.
+Make sure to run `:Rocks sync` when you are done.
+
 ## :book: License
 
 `rocks.nvim` is licensed under [GPLv3](./LICENSE).
