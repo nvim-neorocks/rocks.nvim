@@ -1,0 +1,15 @@
+# Any change to files in the root directory, any later match takes precedence.
+* @NTBBloodbath @vhyrro @mrcjkb
+
+# Documentation
+*.md @NTBBloodbath @vhyrro @mrcjkb
+doc/ @NTBBloodbath @vhyrro @mrcjkb
+
+# Plugin files
+lua/ @NTBBloodbath @vhyrro @mrcjkb
+spec/ @NTBBloodbath @vhyrro @mrcjkb
+plugin/ @NTBBloodbath @vhyrro @mrcjkb
+
+# Nix
+nix/ @mrcjkb @teto
+flake.* @mrcjkb @teto
