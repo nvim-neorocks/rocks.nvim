@@ -33,6 +33,7 @@ local operations = {}
 ---@param version? string
 ---@return Future
 operations.install = function(name, version)
+    state.invalidate_cache()
     -- TODO(vhyrro): Input checking on name and version
     local future = nio.control.future()
     local install_cmd = {
@@ -67,9 +68,11 @@ operations.install = function(name, version)
     }
 end
 
+---Removes a rock
 ---@param name string
 ---@return Future
 operations.remove = function(name)
+    state.invalidate_cache()
     local future = nio.control.future()
     local systemObj = luarocks.cli({
         "remove",
@@ -85,6 +88,21 @@ operations.remove = function(name)
         end,
     }
 end
+
+---Removes a rock, and recursively removes its dependencies
+---if they are no longer needed.
+---@type fun(name: string)
+operations.remove_recursive = nio.create(function(name)
+    ---@cast name string
+    local dependencies = state.rock_dependencies(name)
+    operations.remove(name).wait()
+    local removable_rocks = state.query_removable_rocks()
+    for _, dep in pairs(dependencies) do
+        if vim.list_contains(removable_rocks, dep.name) then
+            operations.remove_recursive(dep.name)
+        end
+    end
+end)
 
 --- Synchronizes the user rocks with the physical state on the current machine.
 --- - Installs missing rocks
@@ -328,6 +346,26 @@ operations.add = function(rock_name, version)
             user_rocks.plugins[installed_rock.name] = installed_rock.version
             fs.write_file(config.config_path, "w", tostring(user_rocks))
             vim.notify("Installation successful: " .. installed_rock.name .. " -> " .. installed_rock.version)
+        end)
+    end)
+end
+
+---Uninstall a rock, pruning it from rocks.toml.
+---@param rock_name string
+operations.prune = function(rock_name)
+    vim.notify("Uninstalling '" .. rock_name .. "'...")
+    nio.run(function()
+        -- TODO: Error handling
+        operations.remove_recursive(rock_name)
+        vim.schedule(function()
+            local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
+            local user_rocks = require("toml_edit").parse(config_file)
+            if not user_rocks.plugins then
+                return
+            end
+            user_rocks.plugins[rock_name] = nil
+            fs.write_file(config.config_path, "w", tostring(user_rocks))
+            vim.notify("Uninstalled: " .. rock_name)
         end)
     end)
 end

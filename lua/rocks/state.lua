@@ -17,11 +17,15 @@
 
 local state = {}
 
+---Used for completions only
+---@type string[] | nil
+local _removable_rock_cache = nil
+
 local luarocks = require("rocks.luarocks")
 local nio = require("nio")
 
----@type fun(): {[string]: Rock}
 ---@async
+---@type fun(): {[string]: Rock}
 state.installed_rocks = nio.create(function()
     ---@type {[string]: Rock}
     local rocks = {}
@@ -48,8 +52,8 @@ state.installed_rocks = nio.create(function()
     return rocks
 end)
 
----@type fun(): {[string]: Rock}
 ---@async
+---@type fun(): {[string]: OutdatedRock}
 state.outdated_rocks = nio.create(function()
     ---@type {[string]: Rock}
     local rocks = {}
@@ -78,19 +82,24 @@ state.outdated_rocks = nio.create(function()
 end)
 
 ---List the dependencies of an installed Rock
----@type fun(rock:Rock): {[string]: RockDependency}
 ---@async
+---@type fun(rock:Rock|string): {[string]: RockDependency}
 state.rock_dependencies = nio.create(function(rock)
+    ---@cast rock Rock|string
+
     ---@type {[string]: RockDependency}
     local dependencies = {}
 
     local future = nio.control.future()
 
+    ---@type string
+    local rock_name = rock.name or rock
+
     luarocks.cli({
         "show",
         "--deps",
         "--porcelain",
-        rock.name,
+        rock_name,
     }, function(obj)
         if obj.code ~= 0 then
             future.set_error(obj.stderr)
@@ -113,5 +122,58 @@ state.rock_dependencies = nio.create(function(rock)
 
     return dependencies
 end)
+
+---List installed rocks that are not dependencies of any other rocks
+---and can be removed.
+---@async
+---@type fun(): string[]
+state.query_removable_rocks = nio.create(function()
+    local installed_rocks = state.installed_rocks()
+    --- Unfortunately, luarocks can't list dependencies via its CLI.
+    ---@type string[]
+    local dependent_rocks = {}
+    for _, rock in pairs(installed_rocks) do
+        for _, dep in pairs(state.rock_dependencies(rock)) do
+            dependent_rocks[#dependent_rocks + 1] = dep.name
+        end
+    end
+    ---@diagnostic disable-next-line: invisible
+    return vim.iter(nio.fn.keys(installed_rocks))
+        :filter(function(rock_name)
+            return rock_name ~= "rocks.nvim" and not vim.list_contains(dependent_rocks, rock_name)
+        end)
+        :totable()
+end)
+
+---@async
+local populate_removable_rock_cache = nio.create(function()
+    if _removable_rock_cache then
+        return
+    end
+    _removable_rock_cache = state.query_removable_rocks()
+end)
+
+---Completion for installed rocks that are not dependencies of other rocks
+---and can be removed.
+---@param query string | nil
+---@return string[]
+state.complete_removable_rocks = function(query)
+    if not _removable_rock_cache then
+        nio.run(populate_removable_rock_cache)
+        return {}
+    end
+    if not query then
+        return {}
+    end
+    return vim.iter(_removable_rock_cache)
+        :filter(function(rock_name)
+            return vim.startswith(rock_name, query)
+        end)
+        :totable()
+end
+
+state.invalidate_cache = function()
+    _removable_rock_cache = nil
+end
 
 return state

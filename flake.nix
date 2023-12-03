@@ -134,6 +134,7 @@
               editorconfig-checker
             ]
             ++ (with pkgs; [
+              lua5_1
               luarocks
             ]);
         };

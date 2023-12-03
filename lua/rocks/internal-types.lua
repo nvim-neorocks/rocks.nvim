@@ -19,6 +19,9 @@
 ---@field public name string
 ---@field public version string
 
+---@class OutdatedRock: Rock
+---@field public target_version string
+
 ---@class (exact) RockDependency
 ---@field public name string
 ---@field public version? string
