@@ -141,8 +141,8 @@ operations.sync = function(user_rocks)
         ---@diagnostic disable-next-line: invisible
         local key_list = nio.fn.keys(vim.tbl_deep_extend("force", installed_rocks, user_rocks))
 
-        ---@type (fun():any)[]
-        local actions = {}
+        local actions = vim.empty_dict()
+        ---@cast actions (fun():any)[]
 
         local split = Split({
             relative = "editor",
@@ -152,11 +152,11 @@ operations.sync = function(user_rocks)
 
         local line_nr = 1
 
-        ---@type {[string]: RockDependency}
-        local dependencies = {}
+        local dependencies = vim.empty_dict()
+        ---@cast dependencies {[string]: RockDependency}
 
-        ---@type string[]
-        local to_remove_keys = {}
+        local to_remove_keys = vim.empty_dict()
+        ---@cast to_remove_keys string[]
 
         for _, key in ipairs(key_list) do
             local linenr_copy = line_nr
@@ -273,7 +273,8 @@ operations.update = function()
         local NuiText = require("nui.text")
 
         local outdated_rocks = state.outdated_rocks()
-        local actions = {}
+        local actions = vim.empty_dict()
+        ---@cast actions table
 
         nio.scheduler()
 
@@ -336,7 +337,7 @@ operations.add = function(rock_name, version)
             -- and populate the table upfront then none of the values will be registered by `toml-edit`.
             -- This should be fixed ASAP.
             if not user_rocks.plugins then
-                user_rocks.plugins = {}
+                user_rocks.plugins = vim.empty_dict()
             end
 
             -- Set installed version as `scm-1` if development version has been installed
