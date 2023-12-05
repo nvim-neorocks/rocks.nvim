@@ -51,11 +51,14 @@ in {
       lua5_1
       luarocks
     ];
+    customRC = builtins.readFile ./init.lua;
   in
     final.wrapNeovimUnstable final.neovim-nightly (neovimConfig
       // {
         wrapperArgs =
           lib.escapeShellArgs neovimConfig.wrapperArgs
+          + " "
+          + ''--add-flags -u --add-flags "${final.writeText "init.lua" customRC}"''
           + " "
           + ''--set NVIM_APPNAME "nvimrocks"''
           + " "
@@ -68,6 +71,5 @@ in {
             }"''
           + " "
           + ''--prefix PATH : "${lib.makeBinPath runtimeDeps}"'';
-        wrapRc = false;
       });
 }
