@@ -27,8 +27,8 @@ local nio = require("nio")
 ---@async
 ---@type fun(): {[string]: Rock}
 state.installed_rocks = nio.create(function()
-    ---@type {[string]: Rock}
-    local rocks = {}
+    local rocks = vim.empty_dict()
+    ---@cast rocks {[string]: Rock}
 
     local future = nio.control.future()
 
@@ -55,8 +55,8 @@ end)
 ---@async
 ---@type fun(): {[string]: OutdatedRock}
 state.outdated_rocks = nio.create(function()
-    ---@type {[string]: Rock}
-    local rocks = {}
+    local rocks = vim.empty_dict()
+    ---@cast rocks {[string]: Rock}
 
     local future = nio.control.future()
 
@@ -87,8 +87,8 @@ end)
 state.rock_dependencies = nio.create(function(rock)
     ---@cast rock Rock|string
 
-    ---@type {[string]: RockDependency}
-    local dependencies = {}
+    local dependencies = vim.empty_dict()
+    ---@cast dependencies {[string]: RockDependency}
 
     local future = nio.control.future()
 
@@ -130,8 +130,8 @@ end)
 state.query_removable_rocks = nio.create(function()
     local installed_rocks = state.installed_rocks()
     --- Unfortunately, luarocks can't list dependencies via its CLI.
-    ---@type string[]
-    local dependent_rocks = {}
+    local dependent_rocks = vim.empty_dict()
+    ---@cast dependent_rocks string[]
     for _, rock in pairs(installed_rocks) do
         for _, dep in pairs(state.rock_dependencies(rock)) do
             dependent_rocks[#dependent_rocks + 1] = dep.name

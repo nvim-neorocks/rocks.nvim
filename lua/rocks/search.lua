@@ -29,7 +29,8 @@ local populate_cache = nio.create(function()
     if _cache then
         return
     end
-    _cache = {}
+    _cache = vim.empty_dict()
+    ---@cast _cache Rock[]
     local future = nio.control.future()
     luarocks.cli({ "search", "--porcelain", "--all" }, function(obj)
         ---@cast obj vim.SystemCompleted
