@@ -11,6 +11,7 @@
       toml,
       toml-edit,
       nui-nvim,
+      fzy,
     }:
       buildLuarocksPackage {
         pname = name;
@@ -18,7 +19,12 @@
         knownRockspec = "${self}/rocks.nvim-scm-1.rockspec";
         src = self;
         disabled = luaOlder "5.1";
-        propagatedBuildInputs = [toml toml-edit nui-nvim];
+        propagatedBuildInputs = [
+          toml
+          toml-edit
+          nui-nvim
+          fzy
+        ];
       }) {};
   };
   lua5_1 = prev.lua5_1.override {
@@ -59,11 +65,23 @@ in {
           + " "
           + ''--set NVIM_APPNAME "nvimrocks"''
           + " "
+          # XXX: Luarocks packages need to be added manaully,
+          # using LUA_PATH and LUA_CPATH.
+          # It looks like buildNeovimPlugin is broken?
           + ''--suffix LUA_CPATH ";" "${
               lib.concatMapStringsSep ";" lua51Packages.getLuaCPath
               (with lua51Packages; [
                 toml
                 toml-edit
+                nui-nvim
+                fzy
+              ])
+            }"''
+          + " "
+          + ''--suffix LUA_PATH ";" "${
+              lib.concatMapStringsSep ";" lua51Packages.getLuaPath
+              (with lua51Packages; [
+                fzy
               ])
             }"''
           + " "

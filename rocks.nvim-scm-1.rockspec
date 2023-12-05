@@ -11,6 +11,7 @@ dependencies = {
     "toml-edit",
     "toml",
     "nui.nvim",
+    "fzy",
 }
 
 test_dependencies = {
@@ -18,6 +19,7 @@ test_dependencies = {
     "toml-edit",
     "toml",
     "nui.nvim",
+    "fzy",
 }
 
 source = {
@@ -27,7 +29,7 @@ source = {
 build = {
     type = "builtin",
     copy_directories = {
-        -- 'doc',
+        'doc',
         "plugin",
     },
 }
