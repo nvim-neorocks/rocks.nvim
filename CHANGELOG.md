@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.1.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.0.1...v2.1.0) (2023-12-06)
+
+
+### Features
+
+* `:Rocks prune` command to uninstall rocks and dependencies ([#41](https://github.com/nvim-neorocks/rocks.nvim/issues/41)) ([d0ea65d](https://github.com/nvim-neorocks/rocks.nvim/commit/d0ea65dfcbadcc747b343185a4e85cdb6f7d0ab9))
+* add `:Rocks edit` command for opening `rocks.toml` ([#44](https://github.com/nvim-neorocks/rocks.nvim/issues/44)) ([7f92e60](https://github.com/nvim-neorocks/rocks.nvim/commit/7f92e6059685be00bbcf8d29258faa6ea52b6f5c))
+* allow users to install development rocks (`scm-1`) ([#36](https://github.com/nvim-neorocks/rocks.nvim/issues/36)) ([3a1fe16](https://github.com/nvim-neorocks/rocks.nvim/commit/3a1fe1614efe97be5cb57d615da7b7ae32c9b5e3))
+* **commands:** fuzzy completions ([#49](https://github.com/nvim-neorocks/rocks.nvim/issues/49)) ([ffb7f20](https://github.com/nvim-neorocks/rocks.nvim/commit/ffb7f20edf7f78f83909212643a34ac13c2f0dfb))
+* **health:** warn on unrecognized configs / unsourced `vim.g.rocks_nvim` ([#45](https://github.com/nvim-neorocks/rocks.nvim/issues/45)) ([8d51d13](https://github.com/nvim-neorocks/rocks.nvim/commit/8d51d13b1c057c38999d7f82b1be196fe6b5f73a))
+
+
+### Bug Fixes
+
+* **internal:** use `vim.empty_dict` for better vimscript interop ([#50](https://github.com/nvim-neorocks/rocks.nvim/issues/50)) ([86a8d80](https://github.com/nvim-neorocks/rocks.nvim/commit/86a8d80b32c99e2e46c432af796f6aee2ed6edc8))
+
 ## [2.0.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.0.0...v2.0.1) (2023-11-28)
 
 
