@@ -7,7 +7,7 @@
   };
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs";
 
     neorocks.url = "github:nvim-neorocks/neorocks";
 
@@ -79,6 +79,7 @@
                           "${toml-edit}/lib/lua/5.1/"
                           "${toml}/lib/lua/5.1/"
                           "${nui-nvim}/share/lua/5.1"
+                          "${fzy}/share/lua/5.1"
                         ])
                         ++ [
                           "\${3rd}/busted/library"

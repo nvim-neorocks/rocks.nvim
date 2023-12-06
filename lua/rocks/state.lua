@@ -22,6 +22,7 @@ local state = {}
 local _removable_rock_cache = nil
 
 local luarocks = require("rocks.luarocks")
+local fzy = require("rocks.fzy")
 local nio = require("nio")
 
 ---@async
@@ -165,11 +166,7 @@ state.complete_removable_rocks = function(query)
     if not query then
         return {}
     end
-    return vim.iter(_removable_rock_cache)
-        :filter(function(rock_name)
-            return vim.startswith(rock_name, query)
-        end)
-        :totable()
+    return fzy.fuzzy_filter_sort(query, _removable_rock_cache)
 end
 
 state.invalidate_cache = function()

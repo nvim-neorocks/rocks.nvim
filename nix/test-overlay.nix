@@ -12,6 +12,7 @@
             toml
             plenary-nvim
             nui-nvim
+            fzy
           ];
 
         extraPackages = [

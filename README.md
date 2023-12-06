@@ -83,7 +83,7 @@ Arguments:
 
 > [!NOTE]
 >
-> - The command provides completions for rocks and versions on luarocks.org.
+> - The command provides fuzzy completions for rocks and versions on luarocks.org.
 > - Installs the latest version if `version` is omitted.
 > - This plugin keeps track of installed plugins in a `rocks.toml` file,
 >   which you can commit to version control.
@@ -110,7 +110,7 @@ that are no longer needed, run the `:Rocks prune [rock]` command.
 
 > [!NOTE]
 >
-> - The command provides completions for rocks that can safely
+> - The command provides fuzzy completions for rocks that can safely
 >   be pruned without breaking dependencies.
 
 ### Editing `rocks.toml`

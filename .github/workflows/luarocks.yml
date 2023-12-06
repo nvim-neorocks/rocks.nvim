@@ -34,6 +34,7 @@ jobs:
             toml-edit
             toml
             nui.nvim
+            fzy
           labels: |
             neovim
           summary: "Neovim plugin management inspired by `Cargo`."

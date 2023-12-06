@@ -19,6 +19,7 @@
 local search = {}
 
 local luarocks = require("rocks.luarocks")
+local fzy = require("rocks.fzy")
 local nio = require("nio")
 
 ---@type Rock[] | nil
@@ -44,7 +45,7 @@ local populate_cache = nio.create(function()
         _cache = nil
         return
     end
-    for name, version in result:gmatch("([^%s]+)%s+(%S+)%s+") do
+    for name, version in result:gmatch("(%S+)%s+(%S+)%s+[^\n]+") do
         table.insert(_cache, { name = name, version = version })
     end
     if #_cache == 0 then
@@ -89,16 +90,13 @@ search.complete_names = function(query)
     if not query then
         return {}
     end
-    local matching_rocks = vim.tbl_filter(function(rock)
-        ---@cast rock Rock
-        return vim.startswith(rock.name, query)
-    end, _cache)
-    ---@type {[string]: Rock}
+    ---@type { [string]: Rock }
     local unique_rocks = {}
-    for _, rock in pairs(matching_rocks) do
+    for _, rock in pairs(_cache) do
         unique_rocks[rock.name] = rock
     end
-    return vim.tbl_keys(unique_rocks)
+    local rock_names = vim.tbl_keys(unique_rocks)
+    return fzy.fuzzy_filter_sort(query, rock_names)
 end
 
 return search
