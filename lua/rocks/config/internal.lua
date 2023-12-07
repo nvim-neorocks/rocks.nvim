@@ -44,15 +44,19 @@ local default_config = {
 ---@type RocksOpts
 local opts = type(vim.g.rocks_nvim) == "function" and vim.g.rocks_nvim() or vim.g.rocks_nvim or {}
 
-local config = vim.tbl_deep_extend("force", {}, default_config, opts)
-
 local check = require("rocks.config.check")
+
+---@type RocksConfig
+local config = vim.tbl_deep_extend("force", {
+    debug_info = {
+        urecognized_configs = check.get_unrecognized_keys(opts, default_config),
+    },
+}, default_config, opts)
+
 local ok, err = check.validate(config)
 if not ok then
     vim.notify("Rocks: " .. err, vim.log.levels.ERROR)
 end
-
-config.debug_info.urecognized_configs = check.get_unrecognized_keys(opts, default_config)
 
 if #config.debug_info.unrecognized_configs > 0 then
     vim.notify(

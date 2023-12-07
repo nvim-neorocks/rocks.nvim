@@ -34,7 +34,7 @@
     ];
     text = ''
       mkdir -p doc
-      lemmy-help lua/rocks/{init,commands,config/init}.lua > doc/rocks.txt
+      lemmy-help lua/rocks/{init,commands,config/init,api}.lua > doc/rocks.txt
     '';
   };
 in {
