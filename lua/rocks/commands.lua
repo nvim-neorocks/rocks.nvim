@@ -28,6 +28,49 @@
 
 local commands = {}
 
+local fzy = require("rocks.fzy")
+local cache = require("rocks.cache")
+
+---@param name string
+---@param query string | nil
+---@return string[]
+local function complete_versions(name, query)
+    local rocks = cache.try_get_rocks()
+    local matching_rocks = vim.tbl_filter(function(rock)
+        ---@cast rock Rock
+        if not query then
+            return rock.name == name
+        end
+        return rock.name == name and vim.startswith(rock.version, query)
+    end, rocks)
+    local unique_versions = {}
+    for _, rock in pairs(matching_rocks) do
+        unique_versions[rock.version] = rock
+    end
+
+    local unique_keys = vim.tbl_keys(unique_versions)
+    table.sort(unique_keys, function(a, b)
+        return a > b
+    end)
+    return unique_keys
+end
+
+---@param query string | nil
+---@return string[]
+local function complete_names(query)
+    local rocks = cache.try_get_rocks()
+    if not query then
+        return {}
+    end
+    ---@type { [string]: Rock }
+    local unique_rocks = {}
+    for _, rock in pairs(rocks) do
+        unique_rocks[rock.name] = rock
+    end
+    local rock_names = vim.tbl_keys(unique_rocks)
+    return fzy.fuzzy_filter_sort(query, rock_names)
+end
+
 ---@type { [string]: fun(args:string[]) }
 local rocks_command_tbl = {
     update = function(_)
@@ -75,22 +118,19 @@ function commands.create_commands()
         nargs = "+",
         desc = "Interacts with currently installed rocks",
         complete = function(arg_lead, cmdline, _)
-            local fzy = require("rocks.fzy")
-            local search = require("rocks.search")
-
             local rocks_commands = vim.tbl_keys(rocks_command_tbl)
 
             local name, version_query = cmdline:match("^Rocks install%s([^%s]+)%s(.+)$")
             -- name followed by space, but no version?
             name = name or cmdline:match("^Rocks install%s([^%s]+)%s$")
             if version_query or name then
-                local version_list = search.complete_versions(name, version_query)
+                local version_list = complete_versions(name, version_query)
                 if #version_list > 0 then
                     return version_list
                 end
             end
             local name_query = cmdline:match("^Rocks install%s(.*)$")
-            local rocks_list = search.complete_names(name_query)
+            local rocks_list = complete_names(name_query)
             if #rocks_list > 0 then
                 return rocks_list
             end
