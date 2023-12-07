@@ -35,11 +35,11 @@ local cache = require("rocks.cache")
 ---@param query string | nil
 ---@return string[]
 local function complete_versions(name, query)
-    local rocks = cache.try_get_rocks()
+    local rocks = cache.try_get_rocks()[name] or vim.empty_dict()
     local matching_rocks = vim.tbl_filter(function(rock)
         ---@cast rock Rock
         if not query then
-            return rock.name == name
+            return true
         end
         return rock.name == name and vim.startswith(rock.version, query)
     end, rocks)
@@ -62,12 +62,7 @@ local function complete_names(query)
     if not query then
         return {}
     end
-    ---@type { [string]: Rock }
-    local unique_rocks = {}
-    for _, rock in pairs(rocks) do
-        unique_rocks[rock.name] = rock
-    end
-    local rock_names = vim.tbl_keys(unique_rocks)
+    local rock_names = vim.tbl_keys(rocks)
     return fzy.fuzzy_filter_sort(query, rock_names)
 end
 
