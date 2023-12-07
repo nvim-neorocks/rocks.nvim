@@ -23,8 +23,9 @@ local nio = require("nio")
 ---@type Rock[] | nil
 local _cached_rocks = nil
 
+---Query luarocks packages and populate the cache.
 ---@async
-local populate_cache = nio.create(function()
+cache.populate_cached_rocks = nio.create(function()
     if _cached_rocks then
         return
     end
@@ -44,7 +45,9 @@ local populate_cache = nio.create(function()
         return
     end
     for name, version in result:gmatch("(%S+)%s+(%S+)%s+[^\n]+") do
-        table.insert(_cached_rocks, { name = name, version = version })
+        if name ~= "lua" then
+            table.insert(_cached_rocks, { name = name, version = version })
+        end
     end
     if #_cached_rocks == 0 then
         _cached_rocks = nil
@@ -57,7 +60,7 @@ end)
 ---@return Rock[]
 function cache.try_get_rocks()
     if not _cached_rocks then
-        nio.run(populate_cache)
+        nio.run(cache.populate_cached_rocks)
         local rocks = vim.empty_dict()
         ---@cast rocks Rock[]
         return rocks
