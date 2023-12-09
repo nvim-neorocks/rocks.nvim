@@ -1,0 +1,18 @@
+{
+  "neodev": {
+    "library": {
+      "enabled": true,
+      "plugins": [
+        "fidget.nvim",
+        "nui.nvim",
+      ]
+    }
+  },
+  "neoconf": {
+    "plugins": {
+      "lua_ls": {
+        "enabled": true
+      }
+    }
+  },
+}

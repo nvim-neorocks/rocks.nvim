@@ -78,7 +78,7 @@
                         ++ (with pkgs.lua51Packages; [
                           "${toml-edit}/lib/lua/5.1/"
                           "${toml}/lib/lua/5.1/"
-                          "${nui-nvim}/share/lua/5.1"
+                          "${fidget-nvim}/share/lua/5.1"
                           "${fzy}/share/lua/5.1"
                         ])
                         ++ [

@@ -33,7 +33,7 @@ jobs:
           dependencies: |
             toml-edit
             toml
-            nui.nvim
+            fidget.nvim >= 1.1.0
             fzy
           labels: |
             neovim

@@ -5,7 +5,7 @@
 -- Version:    0.1.0
 -- License:    GPLv3
 -- Created:    05 Jul 2023
--- Updated:    27 Aug 2023
+-- Updated:    09 Dec 2023
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainer: NTBBloodbath <bloodbathalchemist@protonmail.com>
 --
@@ -22,6 +22,7 @@ local config = require("rocks.config.internal")
 local state = require("rocks.state")
 local luarocks = require("rocks.luarocks")
 local nio = require("nio")
+local progress = require("fidget.progress")
 
 local operations = {}
 
@@ -31,9 +32,15 @@ local operations = {}
 
 ---@param name string
 ---@param version? string
+---@param progress_handle? ProgressHandle
 ---@return Future
-operations.install = function(name, version)
+operations.install = function(name, version, progress_handle)
     state.invalidate_cache()
+    if progress_handle then
+        progress_handle:report({
+            message = version and ("Installing: %s -> %s"):format(name, version) or ("Installing: %s"):format(name),
+        })
+    end
     -- TODO(vhyrro): Input checking on name and version
     local future = nio.control.future()
     local install_cmd = {
@@ -48,16 +55,29 @@ operations.install = function(name, version)
             table.insert(install_cmd, version)
         end
     end
-    local systemObj = luarocks.cli(install_cmd, function(obj)
-        if obj.code ~= 0 then
-            future.set_error(obj.stderr)
+    local systemObj = luarocks.cli(install_cmd, function(sc)
+        ---@cast sc vim.SystemCompleted
+        if sc.code ~= 0 then
+            future.set_error(sc.stderr)
+            if progress_handle then
+                progress_handle:report({
+                    message = ("Failed to install %s: %s"):format(name, sc.stderr),
+                })
+            end
         else
-            future.set({
+            ---@type Rock
+            local installed_rock = {
                 name = name,
                 -- The `gsub` makes sure to escape all punctuation characters
-                -- so they do not get misinterpeted by the lua pattern engine.
-                version = obj.stdout:match(name:gsub("%p", "%%%1") .. "%s+(%S+)"),
-            })
+                -- so they do not get misinterpreted by the lua pattern engine.
+                version = sc.stdout:match(name:gsub("%p", "%%%1") .. "%s+(%S+)"),
+            }
+            if progress_handle then
+                progress_handle:report({
+                    message = ("Installed: %s -> %s"):format(installed_rock.name, installed_rock.version),
+                })
+            end
+            future.set(installed_rock)
         end
     end)
     return {
@@ -70,16 +90,32 @@ end
 
 ---Removes a rock
 ---@param name string
+---@param progress_handle? ProgressHandle
 ---@return Future
-operations.remove = function(name)
+operations.remove = function(name, progress_handle)
     state.invalidate_cache()
+    if progress_handle then
+        progress_handle:report({
+            message = ("Uninstalling: %s"):format(name),
+        })
+    end
     local future = nio.control.future()
     local systemObj = luarocks.cli({
         "remove",
         name,
-    }, function(...)
-        -- TODO: Raise an error with set_error on the future if something goes wrong
-        future.set(...)
+    }, function(sc)
+        ---@cast sc vim.SystemCompleted
+        if sc.code ~= 0 then
+            future.set_error(sc.stderr)
+            if progress_handle then
+                progress_handle:report({
+                    message = ("Failed to remove %s: %s"):format(name, sc.stderr),
+                })
+            end
+        else
+            -- TODO: Raise an error with set_error on the future if something goes wrong
+            future.set(sc)
+        end
     end)
     return {
         wait = future.wait,
@@ -91,17 +127,22 @@ end
 
 ---Removes a rock, and recursively removes its dependencies
 ---if they are no longer needed.
----@type async fun(name: string)
-operations.remove_recursive = nio.create(function(name)
+---@type async fun(name: string, progress_handle?: ProgressHandle): boolean
+operations.remove_recursive = nio.create(function(name, progress_handle)
     ---@cast name string
     local dependencies = state.rock_dependencies(name)
-    operations.remove(name).wait()
+    local future = operations.remove(name, progress_handle)
+    local success, _ = pcall(future.wait)
+    if not success then
+        return false
+    end
     local removable_rocks = state.query_removable_rocks()
     for _, dep in pairs(dependencies) do
         if vim.list_contains(removable_rocks, dep.name) then
-            operations.remove_recursive(dep.name)
+            success = success and operations.remove_recursive(dep.name, progress_handle)
         end
     end
+    return success
 end)
 
 --- Synchronizes the user rocks with the physical state on the current machine.
@@ -111,13 +152,20 @@ end)
 ---@param user_rocks? { [string]: Rock|string } loaded from rocks.toml if `nil`
 operations.sync = function(user_rocks)
     nio.run(function()
+        local has_errors = false
+        local progress_handle = progress.handle.create({
+            title = "Syncing",
+            lsp_client = { name = constants.ROCKS_NVIM },
+            percentage = 0,
+        })
+
         if user_rocks == nil then
             -- Read or create a new config file and decode it
             local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
             local user_config = require("toml").decode(config_file)
 
             -- Merge `rocks` and `plugins` fields as they are just an eye-candy separator for clarity purposes
-            user_rocks = vim.tbl_deep_extend("force", user_config.rocks, user_config.plugins)
+            user_rocks = vim.tbl_deep_extend("force", user_config.rocks or {}, user_config.plugins or {})
         end
 
         for name, data in pairs(user_rocks) do
@@ -130,9 +178,6 @@ operations.sync = function(user_rocks)
             end
         end
 
-        local Split = require("nui.split")
-        local NuiText = require("nui.text")
-
         local installed_rocks = state.installed_rocks()
 
         -- The following code uses `nio.fn.keys` instead of `vim.tbl_keys`
@@ -144,13 +189,7 @@ operations.sync = function(user_rocks)
         local actions = vim.empty_dict()
         ---@cast actions (fun():any)[]
 
-        local split = Split({
-            relative = "editor",
-            position = "right",
-            size = "40%",
-        })
-
-        local line_nr = 1
+        local ct = 1
 
         local dependencies = vim.empty_dict()
         ---@cast dependencies {[string]: RockDependency}
@@ -159,28 +198,37 @@ operations.sync = function(user_rocks)
         ---@cast to_remove_keys string[]
 
         for _, key in ipairs(key_list) do
-            local linenr_copy = line_nr
-            local expand_ui = true
-
             if user_rocks[key] and not installed_rocks[key] then
-                local text = NuiText("Installing '" .. key .. "'")
-                local msg_length = text:content():len()
-                text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
-
+                nio.scheduler()
+                progress_handle:report({
+                    message = ("Installing: %s"):format(key),
+                })
                 table.insert(actions, function()
                     -- If the plugin version is a development release then we pass `dev` as the version to the install function
                     -- as it gets converted to the `--dev` flag on there, allowing luarocks to pull the `scm-1` rockspec manifest
-                    local ret
+                    local future
                     if vim.startswith(user_rocks[key].version, "scm-") then
-                        ret = operations.install(user_rocks[key].name, "dev").wait()
+                        future = operations.install(user_rocks[key].name, "dev")
                     else
-                        ret = operations.install(user_rocks[key].name, user_rocks[key].version).wait()
+                        future = operations.install(user_rocks[key].name, user_rocks[key].version)
                     end
+                    local success, ret = pcall(future.wait)
 
+                    ct = ct + 1
                     nio.scheduler()
-                    text:set("Installed '" .. key .. "'")
-                    text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
-
+                    if not success then
+                        has_errors = true
+                        -- TODO: Keep track of failures: #55
+                        progress_handle:report({
+                            message = ("Failed to install %s: %s"):format(key, vim.inspect(ret)),
+                            percentage = math.floor(ct / #actions * 100),
+                        })
+                        return
+                    end
+                    progress_handle:report({
+                        message = ("Installed: %s"):format(key),
+                        percentage = math.floor(ct / #actions * 100),
+                    })
                     return ret
                 end)
             elseif
@@ -191,24 +239,34 @@ operations.sync = function(user_rocks)
                 local is_downgrading = vim.version.parse(user_rocks[key].version)
                     < vim.version.parse(installed_rocks[key].version)
 
-                local text = NuiText((is_downgrading and "Downgrading" or "Updating") .. " '" .. key .. "'")
-                local msg_length = text:content():len()
-                text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
+                nio.scheduler()
+                progress_handle:report({
+                    message = is_downgrading and ("Downgrading: %s"):format(key) or ("Updating: %s"):format(key),
+                })
 
                 table.insert(actions, function()
-                    local ret = operations.install(user_rocks[key].name, user_rocks[key].version).wait()
+                    local future = operations.install(user_rocks[key].name, user_rocks[key].version)
+                    local success, ret = pcall(future.wait)
 
+                    ct = ct + 1
                     nio.scheduler()
-                    text:set((is_downgrading and "Downgraded" or "Updated") .. " '" .. key .. "'")
-                    text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
+                    if not success then
+                        has_errors = true
+                        progress_handle:report({
+                            message = ("Failed to downgrade %s: %s"):format(key, vim.inspect(ret)),
+                            percentage = math.floor(ct / #actions * 100),
+                        })
+                        return
+                    end
+                    progress_handle:report({
+                        message = is_downgrading and ("Downgraded: %s"):format(key) or ("Upgraded: %s"):format(key),
+                        percentage = math.floor(ct / #actions * 100),
+                    })
 
                     return ret
                 end)
             elseif not user_rocks[key] and installed_rocks[key] then
                 table.insert(to_remove_keys, key)
-                expand_ui = false
-            else
-                expand_ui = false
             end
 
             if installed_rocks[key] then
@@ -218,49 +276,55 @@ operations.sync = function(user_rocks)
                     dependencies[k] = v
                 end
             end
-
-            if expand_ui and line_nr >= 1 then
-                nio.scheduler()
-                vim.api.nvim_buf_set_lines(split.bufnr, line_nr, line_nr, true, { "" })
-                line_nr = line_nr + 1
-            end
         end
 
         for _, key in ipairs(to_remove_keys) do
-            local linenr_copy = line_nr
             local is_dependency = dependencies[key] ~= nil
-            local expand_ui = not is_dependency
-
             if not is_dependency then
                 nio.scheduler()
-                local text = NuiText("Removing '" .. key .. "'")
-                local msg_length = text:content():len()
-                text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
+                progress_handle:report({
+                    message = ("Removing: %s"):format(key),
+                })
 
                 table.insert(actions, function()
-                    local ret = operations.remove(installed_rocks[key].name).wait()
+                    local future = operations.remove(installed_rocks[key].name)
+                    local success, ret = pcall(future.wait)
 
+                    ct = ct + 1
                     nio.scheduler()
-                    text:set("Removed '" .. key .. "'")
-                    text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, msg_length)
-
+                    if not success then
+                        has_errors = true
+                        -- TODO: Keep track of failures: #55
+                        progress_handle:report({
+                            message = ("Failed to install %s: %s"):format(key, vim.inspect(ret)),
+                            percentage = math.floor(ct / #actions * 100),
+                        })
+                        return
+                    end
+                    progress_handle:report({
+                        message = ("Removed: %s"):format(key),
+                        percentage = math.floor(ct / #actions * 100),
+                    })
                     return ret
                 end)
-            end
-
-            if expand_ui and line_nr >= 1 then
-                vim.api.nvim_buf_set_lines(split.bufnr, line_nr, line_nr, true, { "" })
-                line_nr = line_nr + 1
             end
         end
 
         if not vim.tbl_isempty(actions) then
-            split:mount()
             -- TODO: Error handling
             nio.gather(actions)
         else
-            split:unmount()
-            vim.notify("Everything is in-sync!")
+            progress_handle:report({ message = "Everything is in-sync!", percentage = 100 })
+        end
+        if has_errors then
+            progress_handle:report({
+                title = "Error",
+                message = "Sync completed with errors!",
+                percentage = 100,
+            })
+            progress_handle:cancel()
+        else
+            progress_handle:finish()
         end
     end)
 end
@@ -269,54 +333,66 @@ end
 --- This function invokes a UI.
 operations.update = function()
     nio.run(function()
-        local Split = require("nui.split")
-        local NuiText = require("nui.text")
-
+        local has_errors = false
         local outdated_rocks = state.outdated_rocks()
         local actions = vim.empty_dict()
-        ---@cast actions table
+        ---@cast actions (fun():Rock|nil)[]
 
         nio.scheduler()
 
-        local split = Split({
-            relative = "editor",
-            position = "right",
-            size = "40%",
-        })
-
-        for i = 1, vim.tbl_count(outdated_rocks) - 1 do
-            vim.api.nvim_buf_set_lines(split.bufnr, i, i, true, { "" })
-        end
-
         local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
         local user_rocks = require("toml_edit").parse(config_file)
-        local linenr = 1
 
+        local progress_handle = progress.handle.create({
+            title = "Updating",
+            lsp_client = { name = constants.ROCKS_NVIM },
+            percentage = 0,
+        })
+
+        local ct = 0
         for name, rock in pairs(outdated_rocks) do
-            local display_text = "Updating '" .. name .. "'"
-            local text = NuiText(display_text)
-            local linenr_copy = linenr
-
-            text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, display_text:len())
-
+            nio.scheduler()
+            progress_handle:report({
+                message = name,
+            })
             table.insert(actions, function()
-                local ret = operations.install(name, rock.target_version).wait()
-                user_rocks.plugins[ret.name] = ret.version
+                local future = operations.install(name, rock.target_version)
+                local success, ret = pcall(future.wait)
+                ct = ct + 1
                 nio.scheduler()
-                text:set("Updated '" .. name .. "' to " .. rock.target_version)
-                text:render_char(split.bufnr, -1, linenr_copy, 0, linenr_copy, display_text:len())
+                if not success then
+                    has_errors = true
+                    progress_handle:report({
+                        message = ("Failed to update %s: %s"):format(rock.name, vim.inspect(ret)),
+                        percentage = math.floor(ct / #actions * 100),
+                    })
+                    return
+                end
+                user_rocks.plugins[ret.name] = ret.version
+                progress_handle:report({
+                    message = ("Updated %s: %s -> %s"):format(rock.name, rock.version, rock.target_version),
+                    percentage = math.floor(ct / #actions * 100),
+                })
             end)
-
-            linenr = linenr + 1
         end
 
         if not vim.tbl_isempty(actions) then
-            split:mount()
             nio.gather(actions)
             fs.write_file(config.config_path, "w", tostring(user_rocks))
         else
-            split:unmount()
-            vim.notify("Nothing to update!")
+            nio.scheduler()
+            progress_handle:report({ message = "Nothing to update!", percentage = 100 })
+        end
+        nio.scheduler()
+        if has_errors then
+            progress_handle:report({
+                title = "Error",
+                message = "Update completed with errors!",
+                percentage = 100,
+            })
+            progress_handle:cancel()
+        else
+            progress_handle:finish()
         end
     end)
 end
@@ -325,11 +401,30 @@ end
 ---@param rock_name string #The rock name
 ---@param version? string #The version of the rock to use
 operations.add = function(rock_name, version)
-    vim.notify("Installing '" .. rock_name .. "'...")
+    local progress_handle = progress.handle.create({
+        title = "Installing",
+        message = version and ("%s -> %s"):format(rock_name, version) or rock_name,
+        lsp_client = { name = constants.ROCKS_NVIM },
+    })
 
     nio.run(function()
-        local installed_rock = operations.install(rock_name, version).wait()
+        local future = operations.install(rock_name, version)
+        local success, result = pcall(future.wait)
         vim.schedule(function()
+            if not success then
+                progress_handle:report({
+                    title = "Installation failed",
+                    message = vim.inspect(result),
+                })
+                progress_handle:cancel()
+                return
+            end
+            local installed_rock = result
+            progress_handle:report({
+                title = "Installation successful",
+                message = ("%s -> %s"):format(installed_rock.name, installed_rock.version),
+                percentage = 100,
+            })
             local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
             local user_rocks = require("toml_edit").parse(config_file)
             -- FIXME(vhyrro): This currently works in a half-baked way.
@@ -346,7 +441,11 @@ operations.add = function(rock_name, version)
             end
             user_rocks.plugins[installed_rock.name] = installed_rock.version
             fs.write_file(config.config_path, "w", tostring(user_rocks))
-            vim.notify("Installation successful: " .. installed_rock.name .. " -> " .. installed_rock.version)
+            if success then
+                progress_handle:finish()
+            else
+                progress_handle:cancel()
+            end
         end)
     end)
 end
@@ -354,10 +453,12 @@ end
 ---Uninstall a rock, pruning it from rocks.toml.
 ---@param rock_name string
 operations.prune = function(rock_name)
-    vim.notify("Uninstalling '" .. rock_name .. "'...")
+    local progress_handle = progress.handle.create({
+        title = "Pruning",
+        lsp_client = { name = constants.ROCKS_NVIM },
+    })
     nio.run(function()
-        -- TODO: Error handling
-        operations.remove_recursive(rock_name)
+        local success = operations.remove_recursive(rock_name, progress_handle)
         vim.schedule(function()
             local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
             local user_rocks = require("toml_edit").parse(config_file)
@@ -366,7 +467,16 @@ operations.prune = function(rock_name)
             end
             user_rocks.plugins[rock_name] = nil
             fs.write_file(config.config_path, "w", tostring(user_rocks))
-            vim.notify("Uninstalled: " .. rock_name)
+            if success then
+                progress_handle:finish()
+            else
+                progress_handle:report({
+                    title = "Error",
+                    message = "Prune completed with errors!",
+                    percentage = 100,
+                })
+                progress_handle:cancel()
+            end
         end)
     end)
 end
