@@ -19,6 +19,7 @@
 ---@field rocks_path string Local path in your filesystem to install rocks
 ---@field config_path string Rocks declaration file path
 ---@field luarocks_binary string Luarocks binary path
+---@field lazy boolean Whether to query luarocks.org lazily.
 ---@field debug_info RocksConfigDebugInfo
 
 ---@class (exact) RocksConfigDebugInfo
@@ -33,6 +34,7 @@ local default_config = {
     ---@diagnostic disable-next-line: param-type-mismatch
     config_path = vim.fs.joinpath(vim.fn.stdpath("config"), "rocks.toml"),
     luarocks_binary = "luarocks",
+    lazy = false,
     debug_info = {
         was_g_rocks_nvim_sourced = vim.g.rocks_nvim ~= nil,
         unrecognized_configs = {},

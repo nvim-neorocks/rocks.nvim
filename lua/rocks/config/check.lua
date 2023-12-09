@@ -35,6 +35,7 @@ function check.validate(cfg)
         rocks_path = { cfg.rocks_path, "string" },
         config_path = { cfg.config_path, "string" },
         luarocks_binary = { cfg.luarocks_binary, "string" },
+        lazy = { cfg.lazy, "boolean" },
     })
     if not ok then
         return false, err
