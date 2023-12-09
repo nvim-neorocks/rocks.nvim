@@ -30,6 +30,15 @@ local operations = {}
 ---@field wait fun() Wait in an async context. Does not block in a sync context
 ---@field wait_sync fun() Wait in a sync context
 
+---@alias rock_table { [string]: Rock[] | string }
+
+---Decode the user rocks from rocks.toml, creating a default config file if it does not exist
+---@return { rocks?: rock_table, plugins?: rock_table }
+local function get_user_rocks()
+    local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
+    return require("toml_edit").parse(config_file)
+end
+
 ---@param name string
 ---@param version? string
 ---@param progress_handle? ProgressHandle
@@ -162,8 +171,7 @@ operations.sync = function(user_rocks)
 
         if user_rocks == nil then
             -- Read or create a new config file and decode it
-            local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
-            local user_config = require("toml").decode(config_file)
+            local user_config = get_user_rocks()
 
             -- Merge `rocks` and `plugins` fields as they are just an eye-candy separator for clarity purposes
             user_rocks = vim.tbl_deep_extend("force", user_config.rocks or {}, user_config.plugins or {})
@@ -341,8 +349,7 @@ operations.update = function()
 
         nio.scheduler()
 
-        local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
-        local user_rocks = require("toml_edit").parse(config_file)
+        local user_rocks = get_user_rocks()
 
         local progress_handle = progress.handle.create({
             title = "Updating",
@@ -426,14 +433,15 @@ operations.add = function(rock_name, version)
                 message = ("%s -> %s"):format(installed_rock.name, installed_rock.version),
                 percentage = 100,
             })
-            local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
-            local user_rocks = require("toml_edit").parse(config_file)
+            local user_rocks = get_user_rocks()
             -- FIXME(vhyrro): This currently works in a half-baked way.
             -- The `toml-edit` libary will create a new empty table here, but if you were to try
             -- and populate the table upfront then none of the values will be registered by `toml-edit`.
             -- This should be fixed ASAP.
             if not user_rocks.plugins then
-                user_rocks.plugins = vim.empty_dict()
+                local plugins = vim.empty_dict()
+                ---@cast plugins rock_table
+                user_rocks.plugins = plugins
             end
 
             -- Set installed version as `scm-1` if development version has been installed
@@ -459,14 +467,15 @@ operations.prune = function(rock_name)
         lsp_client = { name = constants.ROCKS_NVIM },
     })
     nio.run(function()
+        local user_rocks = get_user_rocks()
         local success = operations.remove_recursive(rock_name, progress_handle)
         vim.schedule(function()
-            local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
-            local user_rocks = require("toml_edit").parse(config_file)
             if not user_rocks.plugins then
                 return
             end
-            user_rocks.plugins[rock_name] = nil
+            if user_rocks.plugins then
+                user_rocks.plugins[rock_name] = nil
+            end
             fs.write_file(config.config_path, "w", tostring(user_rocks))
             if success then
                 progress_handle:finish()
