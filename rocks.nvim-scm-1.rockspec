@@ -10,7 +10,7 @@ dependencies = {
     "lua >= 5.1",
     "toml-edit",
     "toml",
-    "nui.nvim",
+    "fidget.nvim >= 1.1.0",
     "fzy",
 }
 
@@ -18,7 +18,7 @@ test_dependencies = {
     "lua >= 5.1",
     "toml-edit",
     "toml",
-    "nui.nvim",
+    "fidget.nvim >= 1.1.0",
     "fzy",
 }
 

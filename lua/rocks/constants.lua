@@ -5,7 +5,7 @@
 -- Version:    0.1.0
 -- License:    GPLv3
 -- Created:    05 Jul 2023
--- Updated:    27 Aug 2023
+-- Updated:    09 Dec 2023
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainer: NTBBloodbath <bloodbathalchemist@protonmail.com>
 --
@@ -28,7 +28,8 @@ constants.ROCKS_VERSION = "2.1.0"
 
 --- Default configuration file contents
 ---@type string
-constants.DEFAULT_CONFIG = string.format([[
+constants.DEFAULT_CONFIG = string.format(
+    [[
 # This is your rocks.nvim plugins declaration file.
 # Here is a small yet pretty detailed example on how to use it:
 #
@@ -50,7 +51,12 @@ constants.DEFAULT_CONFIG = string.format([[
 # If the plugin name contains a dot then you must add quotes to the key name!
 [plugins]
 "rocks.nvim" = "%s-1" # rocks.nvim can also manage itself :D
-]], constants.ROCKS_VERSION)
+]],
+    constants.ROCKS_VERSION
+)
+
+---@type string
+constants.ROCKS_NVIM = "rocks.nvim"
 
 return constants
 
