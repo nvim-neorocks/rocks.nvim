@@ -50,7 +50,7 @@ constants.DEFAULT_CONFIG = string.format(
 # List of Neovim plugins to install alongside their versions.
 # If the plugin name contains a dot then you must add quotes to the key name!
 [plugins]
-"rocks.nvim" = "%s-1" # rocks.nvim can also manage itself :D
+"rocks.nvim" = "%s" # rocks.nvim can also manage itself :D
 ]],
     constants.ROCKS_VERSION
 )
