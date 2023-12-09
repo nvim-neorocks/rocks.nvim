@@ -137,8 +137,8 @@ end
 
 ---Removes a rock, and recursively removes its dependencies
 ---if they are no longer needed.
----@type async fun(name: string, progress_handle?: ProgressHandle): boolean
-operations.remove_recursive = nio.create(function(name, progress_handle)
+---@type async fun(name: string, keep: string[], progress_handle?: ProgressHandle): boolean
+operations.remove_recursive = nio.create(function(name, keep, progress_handle)
     ---@cast name string
     local dependencies = state.rock_dependencies(name)
     local future = operations.remove(name, progress_handle)
@@ -147,9 +147,14 @@ operations.remove_recursive = nio.create(function(name, progress_handle)
         return false
     end
     local removable_rocks = state.query_removable_rocks()
-    for _, dep in pairs(dependencies) do
+    local removable_dependencies = vim.iter(dependencies)
+        :filter(function(rock_name)
+            return vim.list_contains(removable_rocks, rock_name) and not vim.list_contains(keep, rock_name)
+        end)
+        :totable()
+    for _, dep in pairs(removable_dependencies) do
         if vim.list_contains(removable_rocks, dep.name) then
-            success = success and operations.remove_recursive(dep.name, progress_handle)
+            success = success and operations.remove_recursive(dep.name, keep, progress_handle)
         end
     end
     return success
@@ -467,19 +472,19 @@ operations.prune = function(rock_name)
         lsp_client = { name = constants.ROCKS_NVIM },
     })
     nio.run(function()
-        local user_rocks = get_user_rocks()
-        local success = operations.remove_recursive(rock_name, progress_handle)
+        local user_config = get_user_rocks()
+        if user_config.plugins then
+            user_config.plugins[rock_name] = nil
+        end
+        if user_config.rocks then
+            user_config.rocks[rock_name] = nil
+        end
+        local user_rock_names =
+            ---@diagnostic disable-next-line: invisible
+            nio.fn.keys(vim.tbl_deep_extend("force", user_config.rocks or {}, user_config.plugins or {}))
+        local success = operations.remove_recursive(rock_name, user_rock_names, progress_handle)
         vim.schedule(function()
-            if not user_rocks.plugins and not user_rocks.rocks then
-                return
-            end
-            if user_rocks.plugins then
-                user_rocks.plugins[rock_name] = nil
-            end
-            if user_rocks.rocks then
-                user_rocks.rocks[rock_name] = nil
-            end
-            fs.write_file(config.config_path, "w", tostring(user_rocks))
+            fs.write_file(config.config_path, "w", tostring(user_config))
             if success then
                 progress_handle:finish()
             else
