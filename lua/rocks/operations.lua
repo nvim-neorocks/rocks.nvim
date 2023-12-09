@@ -30,10 +30,11 @@ local operations = {}
 ---@field wait fun() Wait in an async context. Does not block in a sync context
 ---@field wait_sync fun() Wait in a sync context
 
----@alias rock_table { [string]: Rock[] | string }
+---@alias rock_config_table { [string]: Rock|string }
+---@alias rock_table { [string]: Rock }
 
 ---Decode the user rocks from rocks.toml, creating a default config file if it does not exist
----@return { rocks?: rock_table, plugins?: rock_table }
+---@return { rocks?: rock_config_table, plugins?: rock_config_table }
 local function parse_user_rocks()
     local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
     return require("toml_edit").parse(config_file)
@@ -193,6 +194,7 @@ operations.sync = function(user_rocks)
                 }
             end
         end
+        ---@cast user_rocks rock_table
 
         local installed_rocks = state.installed_rocks()
 
@@ -202,16 +204,19 @@ operations.sync = function(user_rocks)
         ---@diagnostic disable-next-line: invisible
         local key_list = nio.fn.keys(vim.tbl_deep_extend("force", installed_rocks, user_rocks))
 
-        local actions = vim.empty_dict()
-        ---@cast actions (fun():any)[]
+        local install_actions = vim.empty_dict()
+        ---@cast install_actions (fun():any)[]
 
         local ct = 1
 
-        local dependencies = vim.empty_dict()
-        ---@cast dependencies {[string]: RockDependency}
+        local to_prune_keys = vim.empty_dict()
+        ---@cast to_prune_keys string[]
 
-        local to_remove_keys = vim.empty_dict()
-        ---@cast to_remove_keys string[]
+        local action_count
+
+        local function get_progress_percentage()
+            return math.floor(ct / action_count * 100)
+        end
 
         for _, key in ipairs(key_list) do
             if user_rocks[key] and not installed_rocks[key] then
@@ -219,7 +224,7 @@ operations.sync = function(user_rocks)
                 progress_handle:report({
                     message = ("Installing: %s"):format(key),
                 })
-                table.insert(actions, function()
+                table.insert(install_actions, function()
                     -- If the plugin version is a development release then we pass `dev` as the version to the install function
                     -- as it gets converted to the `--dev` flag on there, allowing luarocks to pull the `scm-1` rockspec manifest
                     local future
@@ -237,13 +242,13 @@ operations.sync = function(user_rocks)
                         -- TODO: Keep track of failures: #55
                         progress_handle:report({
                             message = ("Failed to install %s: %s"):format(key, vim.inspect(ret)),
-                            percentage = math.floor(ct / #actions * 100),
+                            percentage = get_progress_percentage(),
                         })
                         return
                     end
                     progress_handle:report({
                         message = ("Installed: %s"):format(key),
-                        percentage = math.floor(ct / #actions * 100),
+                        percentage = get_progress_percentage(),
                     })
                     return ret
                 end)
@@ -260,7 +265,7 @@ operations.sync = function(user_rocks)
                     message = is_downgrading and ("Downgrading: %s"):format(key) or ("Updating: %s"):format(key),
                 })
 
-                table.insert(actions, function()
+                table.insert(install_actions, function()
                     local future = operations.install(user_rocks[key].name, user_rocks[key].version)
                     local success, ret = pcall(future.wait)
 
@@ -269,23 +274,42 @@ operations.sync = function(user_rocks)
                     if not success then
                         has_errors = true
                         progress_handle:report({
-                            message = ("Failed to downgrade %s: %s"):format(key, vim.inspect(ret)),
-                            percentage = math.floor(ct / #actions * 100),
+                            message = is_downgrading and ("Failed to downgrade %s: %s"):format(key, vim.inspect(ret))
+                                or ("Failed to upgrade %s: %s"):format(key, vim.inspect(ret)),
+                            percentage = get_progress_percentage(),
                         })
                         return
                     end
                     progress_handle:report({
                         message = is_downgrading and ("Downgraded: %s"):format(key) or ("Upgraded: %s"):format(key),
-                        percentage = math.floor(ct / #actions * 100),
+                        percentage = get_progress_percentage(),
                     })
 
                     return ret
                 end)
             elseif not user_rocks[key] and installed_rocks[key] then
-                table.insert(to_remove_keys, key)
+                table.insert(to_prune_keys, key)
             end
+        end
 
-            if installed_rocks[key] then
+        -- For now, we estimate assuming all values to prune
+        -- can be pruned
+        action_count = #install_actions + #to_prune_keys
+
+        -- Run install actions before removals, to make sure they don't conflict
+        -- TODO: Error handling
+        if not vim.tbl_isempty(install_actions) then
+            nio.gather(install_actions)
+        end
+
+        -- Determine dependencies of installed user rocks, so they can be excluded from rocks to prune
+        -- NOTE(mrcjkb): This has to be done after installation,
+        -- so that we don't prune dependencies of newly installed rocks.
+        installed_rocks = state.installed_rocks()
+        local dependencies = vim.empty_dict()
+        ---@cast dependencies {[string]: RockDependency}
+        for _, key in ipairs(key_list) do
+            if user_rocks[key] and installed_rocks[key] then
                 -- NOTE(vhyrro): It is not possible to use the vim.tbl_extend or vim.tbl_deep_extend
                 -- functions here within the async context. It simply refuses to work.
                 for k, v in pairs(state.rock_dependencies(installed_rocks[key])) do
@@ -294,44 +318,50 @@ operations.sync = function(user_rocks)
             end
         end
 
-        for _, key in ipairs(to_remove_keys) do
-            local is_dependency = dependencies[key] ~= nil
-            if not is_dependency then
-                nio.scheduler()
+        ---@type string[]
+        local rocks_to_prune = vim.iter(to_prune_keys)
+            :filter(function(key)
+                return dependencies[key] == nil
+            end)
+            :totable()
+
+        if vim.tbl_isempty(install_actions) and vim.tbl_isempty(rocks_to_prune) then
+            nio.scheduler()
+            progress_handle:report({ message = "Everything is in-sync!", percentage = 100 })
+            progress_handle:finish()
+            return
+        end
+
+        action_count = #install_actions + #rocks_to_prune
+
+        ---@diagnostic disable-next-line: invisible
+        local user_rock_names = nio.fn.keys(user_rocks)
+        -- Prune rocks sequentially, to prevent conflicts
+        for _, key in ipairs(rocks_to_prune) do
+            nio.scheduler()
+            progress_handle:report({
+                message = ("Removing: %s"):format(key),
+            })
+
+            local success = operations.remove_recursive(installed_rocks[key].name, user_rock_names)
+
+            ct = ct + 1
+            nio.scheduler()
+            if not success then
+                has_errors = true
+                -- TODO: Keep track of failures: #55
                 progress_handle:report({
-                    message = ("Removing: %s"):format(key),
+                    message = ("Failed to prune %s"):format(key),
+                    percentage = get_progress_percentage(),
                 })
-
-                table.insert(actions, function()
-                    local future = operations.remove(installed_rocks[key].name)
-                    local success, ret = pcall(future.wait)
-
-                    ct = ct + 1
-                    nio.scheduler()
-                    if not success then
-                        has_errors = true
-                        -- TODO: Keep track of failures: #55
-                        progress_handle:report({
-                            message = ("Failed to install %s: %s"):format(key, vim.inspect(ret)),
-                            percentage = math.floor(ct / #actions * 100),
-                        })
-                        return
-                    end
-                    progress_handle:report({
-                        message = ("Removed: %s"):format(key),
-                        percentage = math.floor(ct / #actions * 100),
-                    })
-                    return ret
-                end)
+            else
+                progress_handle:report({
+                    message = ("Removed: %s"):format(key),
+                    percentage = get_progress_percentage(),
+                })
             end
         end
 
-        if not vim.tbl_isempty(actions) then
-            -- TODO: Error handling
-            nio.gather(actions)
-        else
-            progress_handle:report({ message = "Everything is in-sync!", percentage = 100 })
-        end
         if has_errors then
             progress_handle:report({
                 title = "Error",
@@ -393,7 +423,6 @@ operations.update = function()
 
         if not vim.tbl_isempty(actions) then
             nio.gather(actions)
-            fs.write_file(config.config_path, "w", tostring(user_rocks))
         else
             nio.scheduler()
             progress_handle:report({ message = "Nothing to update!", percentage = 100 })
