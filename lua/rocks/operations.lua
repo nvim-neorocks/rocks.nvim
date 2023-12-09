@@ -470,11 +470,14 @@ operations.prune = function(rock_name)
         local user_rocks = get_user_rocks()
         local success = operations.remove_recursive(rock_name, progress_handle)
         vim.schedule(function()
-            if not user_rocks.plugins then
+            if not user_rocks.plugins and not user_rocks.rocks then
                 return
             end
             if user_rocks.plugins then
                 user_rocks.plugins[rock_name] = nil
+            end
+            if user_rocks.rocks then
+                user_rocks.rocks[rock_name] = nil
             end
             fs.write_file(config.config_path, "w", tostring(user_rocks))
             if success then
