@@ -21,20 +21,39 @@ local constants = require("rocks.constants")
 local config = require("rocks.config.internal")
 local nio = require("nio")
 
+---@class LuarocksCliOpts: SystemOpts
+---@field synchronized? boolean Whether to wait for and acquire a lock (recommended for file system IO, default: `true`)
+
+local lock = nio.control.future()
+lock.set(true) -- initialise as unlocked
+
 ---@param args string[] luarocks CLI arguments
 ---@param on_exit (function|nil) Called asynchronously when the luarocks command exits.
 ---   asynchronously. Receives SystemCompleted object, see return of SystemObj:wait().
----@param opts? SystemOpts
+---@param opts? LuarocksCliOpts
 ---@return vim.SystemObj
 ---@see vim.system
 luarocks.cli = function(args, on_exit, opts)
+    opts = opts or {}
+    opts.synchronized = opts.synchronized ~= nil and opts.synchronized or false
+    local on_exit_wrapped = on_exit and vim.schedule_wrap(on_exit)
+    if opts.synchronized then
+        lock.wait()
+        lock = nio.control.future()
+        on_exit_wrapped = vim.schedule_wrap(function(...)
+            pcall(lock.set, true)
+            if on_exit then
+                on_exit(...)
+            end
+        end)
+    end
     local luarocks_cmd = vim.list_extend({
         config.luarocks_binary,
         "--lua-version=" .. constants.LUA_VERSION,
         "--tree=" .. config.rocks_path,
         "--server='https://nvim-neorocks.github.io/rocks-binaries/'",
     }, args)
-    return vim.system(luarocks_cmd, opts, on_exit and vim.schedule_wrap(on_exit))
+    return vim.system(luarocks_cmd, opts, on_exit_wrapped)
 end
 
 ---Search luarocks.org for all packages.
@@ -46,7 +65,7 @@ luarocks.search_all = nio.create(function(callback)
     luarocks.cli({ "search", "--porcelain", "--all" }, function(obj)
         ---@cast obj vim.SystemCompleted
         future.set(obj)
-    end, { text = true })
+    end, { text = true, synchronized = false })
     ---@type vim.SystemCompleted
     local obj = future.wait()
     local result = obj.stdout
