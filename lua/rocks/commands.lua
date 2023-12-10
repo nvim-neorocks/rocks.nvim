@@ -87,7 +87,7 @@ local rocks_command_tbl = {
             local package, version = args[1], args[2]
             require("rocks.operations").add(package, version)
         end,
-        completions = function(query)
+        complete = function(query)
             local name, version_query = query:match("([^%s]+)%s(.+)$")
             -- name followed by space, but no version?
             name = name or query:match("([^%s]+)%s$")
@@ -110,12 +110,10 @@ local rocks_command_tbl = {
             local package = args[1]
             require("rocks.operations").prune(package)
         end,
-        completions = function(query)
+        complete = function(query)
             local state = require("rocks.state")
             local rocks_list = state.complete_removable_rocks(query)
-            if #rocks_list > 0 then
-                return rocks_list
-            end
+            return rocks_list
         end,
     },
     edit = {
@@ -160,7 +158,7 @@ end
 ---@package
 function commands.register_subcommand(name, cmd)
     vim.validate({ name = { name, "string" } })
-    vim.validate({ impl = { cmd.impl, "function" }, completions = { cmd.complete, "function", true } })
+    vim.validate({ impl = { cmd.impl, "function" }, complete = { cmd.complete, "function", true } })
     rocks_command_tbl[name] = cmd
 end
 
