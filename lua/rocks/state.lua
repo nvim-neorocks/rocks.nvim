@@ -96,7 +96,6 @@ state.rock_dependencies = nio.create(function(rock)
 
     luarocks.cli({
         "show",
-        "--deps",
         "--porcelain",
         rock_name,
     }, function(obj)
@@ -114,7 +113,7 @@ state.rock_dependencies = nio.create(function(rock)
     end
 
     for line in string.gmatch(result, "%S*[^\n]+") do
-        local name, version = line:match("(%S+)%s%S+%s(%S+)")
+        local name, version = line:match("dependency%s+(%S+).*using%s+([^-%s]+)")
         if not name then
             name = line:match("(%S+)")
         end
@@ -136,7 +135,7 @@ state.query_removable_rocks = nio.create(function()
     ---@cast dependent_rocks string[]
     for _, rock in pairs(installed_rocks) do
         for _, dep in pairs(state.rock_dependencies(rock)) do
-            dependent_rocks[#dependent_rocks + 1] = dep.name
+            table.insert(dependent_rocks, dep.name)
         end
     end
     ---@diagnostic disable-next-line: invisible

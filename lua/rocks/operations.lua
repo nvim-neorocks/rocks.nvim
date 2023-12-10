@@ -294,16 +294,14 @@ operations.sync = function(user_rocks)
         -- Determine dependencies of installed user rocks, so they can be excluded from rocks to prune
         -- NOTE(mrcjkb): This has to be done after installation,
         -- so that we don't prune dependencies of newly installed rocks.
+        -- TODO: This doesn't guarantee that all rocks that can be pruned will be pruned.
+        -- Typically, another sync will fix this. Maybe we should do some sort of repeat... until?
         installed_rocks = state.installed_rocks()
         local dependencies = vim.empty_dict()
         ---@cast dependencies {[string]: RockDependency}
-        for _, key in ipairs(key_list) do
-            if user_rocks[key] and installed_rocks[key] then
-                -- NOTE(vhyrro): It is not possible to use the vim.tbl_extend or vim.tbl_deep_extend
-                -- functions here within the async context. It simply refuses to work.
-                for k, v in pairs(state.rock_dependencies(installed_rocks[key])) do
-                    dependencies[k] = v
-                end
+        for _, installed_rock in pairs(installed_rocks) do
+            for k, v in pairs(state.rock_dependencies(installed_rock)) do
+                dependencies[k] = v
             end
         end
 
