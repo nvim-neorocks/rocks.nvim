@@ -101,15 +101,19 @@ state.rock_dependencies = nio.create(function(rock)
         rock_name,
     }, function(obj)
         if obj.code ~= 0 then
-            future.set_error(obj.stderr)
+            future.set_error(("Could not get dependencies for rock %s: %s"):format(rock_name, obj.stderr))
         else
             future.set(obj.stdout)
         end
     end, { text = true })
 
-    local dependency_list = future.wait()
+    local success, result = pcall(future.wait)
+    if not success then
+        -- TODO: Log error
+        return {}
+    end
 
-    for line in string.gmatch(dependency_list, "%S*[^\n]+") do
+    for line in string.gmatch(result, "%S*[^\n]+") do
         local name, version = line:match("(%S+)%s%S+%s(%S+)")
         if not name then
             name = line:match("(%S+)")
