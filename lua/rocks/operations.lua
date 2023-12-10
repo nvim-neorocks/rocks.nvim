@@ -34,7 +34,7 @@ local operations = {}
 
 ---Decode the user rocks from rocks.toml, creating a default config file if it does not exist
 ---@return { rocks?: rock_table, plugins?: rock_table }
-local function get_user_rocks()
+local function parse_user_rocks()
     local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
     return require("toml_edit").parse(config_file)
 end
@@ -176,7 +176,9 @@ operations.sync = function(user_rocks)
 
         if user_rocks == nil then
             -- Read or create a new config file and decode it
-            local user_config = get_user_rocks()
+            -- NOTE: This does not use parse_user_rocks because we decode with toml, not toml-edit
+            local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
+            local user_config = require("toml").decode(config_file)
 
             -- Merge `rocks` and `plugins` fields as they are just an eye-candy separator for clarity purposes
             user_rocks = vim.tbl_deep_extend("force", user_config.rocks or {}, user_config.plugins or {})
@@ -354,7 +356,7 @@ operations.update = function()
 
         nio.scheduler()
 
-        local user_rocks = get_user_rocks()
+        local user_rocks = parse_user_rocks()
 
         local progress_handle = progress.handle.create({
             title = "Updating",
@@ -438,7 +440,7 @@ operations.add = function(rock_name, version)
                 message = ("%s -> %s"):format(installed_rock.name, installed_rock.version),
                 percentage = 100,
             })
-            local user_rocks = get_user_rocks()
+            local user_rocks = parse_user_rocks()
             -- FIXME(vhyrro): This currently works in a half-baked way.
             -- The `toml-edit` libary will create a new empty table here, but if you were to try
             -- and populate the table upfront then none of the values will be registered by `toml-edit`.
@@ -472,7 +474,7 @@ operations.prune = function(rock_name)
         lsp_client = { name = constants.ROCKS_NVIM },
     })
     nio.run(function()
-        local user_config = get_user_rocks()
+        local user_config = parse_user_rocks()
         if user_config.plugins then
             user_config.plugins[rock_name] = nil
         end
