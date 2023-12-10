@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.2.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.1.0...v2.2.0) (2023-12-10)
+
+
+### Features
+
+* `rocks.api` module for use by external rocks.nvim extensions ([#54](https://github.com/nvim-neorocks/rocks.nvim/issues/54)) ([20dc8ce](https://github.com/nvim-neorocks/rocks.nvim/commit/20dc8cedff23828ffa384a21f127ae2c016675fd))
+* **ui:** use fidget.nvim for progress reports ([726d6b5](https://github.com/nvim-neorocks/rocks.nvim/commit/726d6b5ed0d4cfdd1a40f59ab8a28f6417efcd49))
+
+
+### Bug Fixes
+
+* **completions:** typos that broke `install` and `prund` completions ([edf9120](https://github.com/nvim-neorocks/rocks.nvim/commit/edf9120134e56da934a1607eb581c58bf015f66f))
+
+
+### Performance Improvements
+
+* populate luarocks.org state cache at startup ([#53](https://github.com/nvim-neorocks/rocks.nvim/issues/53)) ([3b1b5c2](https://github.com/nvim-neorocks/rocks.nvim/commit/3b1b5c28d014f686ba60f00580998ad079214145))
+
 ## [2.1.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.0.1...v2.1.0) (2023-12-06)
 
 
