@@ -168,12 +168,25 @@ end)
 ---@param user_rocks? { [string]: Rock|string } loaded from rocks.toml if `nil`
 operations.sync = function(user_rocks)
     nio.run(function()
-        local has_errors = false
         local progress_handle = progress.handle.create({
             title = "Syncing",
             lsp_client = { name = constants.ROCKS_NVIM },
             percentage = 0,
         })
+
+        ---@type ProgressHandle[]
+        local error_handles = {}
+        ---@param message string
+        local function report_error(message)
+            table.insert(
+                error_handles,
+                progress.handle.create({
+                    title = "Error",
+                    lsp_client = { name = constants.ROCKS_NVIM },
+                    message = message,
+                })
+            )
+        end
 
         if user_rocks == nil then
             -- Read or create a new config file and decode it
@@ -232,12 +245,11 @@ operations.sync = function(user_rocks)
                 ct = ct + 1
                 nio.scheduler()
                 if not success then
-                    has_errors = true
                     -- TODO: Keep track of failures: #55
                     progress_handle:report({
-                        message = ("Failed to install %s: %s"):format(key, vim.inspect(ret)),
                         percentage = get_progress_percentage(),
                     })
+                    report_error(("Failed to install %s: %s"):format(key, vim.inspect(ret)))
                 end
                 progress_handle:report({
                     message = ("Installed: %s"):format(key),
@@ -262,12 +274,13 @@ operations.sync = function(user_rocks)
                 ct = ct + 1
                 nio.scheduler()
                 if not success then
-                    has_errors = true
                     progress_handle:report({
-                        message = is_downgrading and ("Failed to downgrade %s: %s"):format(key, vim.inspect(ret))
-                            or ("Failed to upgrade %s: %s"):format(key, vim.inspect(ret)),
                         percentage = get_progress_percentage(),
                     })
+                    report_error(
+                        is_downgrading and ("Failed to downgrade %s: %s"):format(key, vim.inspect(ret))
+                            or ("Failed to upgrade %s: %s"):format(key, vim.inspect(ret))
+                    )
                 end
                 progress_handle:report({
                     message = is_downgrading and ("Downgraded: %s"):format(key) or ("Upgraded: %s"):format(key),
@@ -322,12 +335,11 @@ operations.sync = function(user_rocks)
             ct = ct + 1
             nio.scheduler()
             if not success then
-                has_errors = true
                 -- TODO: Keep track of failures: #55
                 progress_handle:report({
-                    message = ("Failed to remove %s"):format(key),
                     percentage = get_progress_percentage(),
                 })
+                report_error(("Failed to remove %s"):format(key))
             else
                 progress_handle:report({
                     message = ("Removed: %s"):format(key),
@@ -336,13 +348,16 @@ operations.sync = function(user_rocks)
             end
         end
 
-        if has_errors then
+        if not vim.tbl_isempty(error_handles) then
             progress_handle:report({
                 title = "Error",
                 message = "Sync completed with errors!",
                 percentage = 100,
             })
             progress_handle:cancel()
+            for _, error_handle in pairs(error_handles) do
+                error_handle:cancel()
+            end
         else
             progress_handle:finish()
         end
