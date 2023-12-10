@@ -91,7 +91,7 @@ end
 
 ---Removes a rock, and recursively removes its dependencies
 ---if they are no longer needed.
----@type fun(name: string)
+---@type async fun(name: string)
 operations.remove_recursive = nio.create(function(name)
     ---@cast name string
     local dependencies = state.rock_dependencies(name)

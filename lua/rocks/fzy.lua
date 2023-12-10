@@ -29,16 +29,20 @@ local fzy = require("fzy")
 ---Fuzzy-filter a list of items.
 ---@param query string The query to fuzzy-match.
 ---@param items string[] The items to search.
----@return string[] Matching items, sorted by score (higher score first).
-function fzy_adapter.fuzzy_filter_sort(query, items)
+---@param opts? FuzzyFilterOpts Filtering options.
+---@return string[] matching_items
+function fzy_adapter.fuzzy_filter(query, items, opts)
+    opts = opts or { sort = true }
     local fzy_results = fzy.filter(query, items) or {}
-    table.sort(fzy_results, function(a, b)
-        ---@cast a FzyResult
-        ---@cast b FzyResult
-        local score_a = a[3]
-        local score_b = b[3]
-        return score_a > score_b
-    end)
+    if opts.sort then
+        table.sort(fzy_results, function(a, b)
+            ---@cast a FzyResult
+            ---@cast b FzyResult
+            local score_a = a[3]
+            local score_b = b[3]
+            return score_a > score_b
+        end)
+    end
     return vim.iter(fzy_results)
         :map(function(fzy_result)
             ---@cast fzy_result FzyResult

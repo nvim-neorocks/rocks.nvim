@@ -63,36 +63,66 @@ local function complete_names(query)
         return {}
     end
     local rock_names = vim.tbl_keys(rocks)
-    return fzy.fuzzy_filter_sort(query, rock_names)
+    return fzy.fuzzy_filter(query, rock_names)
 end
 
----@type { [string]: fun(args:string[]) }
+---@type { [string]: RocksCmd }
 local rocks_command_tbl = {
-    update = function(_)
-        require("rocks.operations").update()
-    end,
-    sync = function(_)
-        require("rocks.operations").sync()
-    end,
-    install = function(args)
-        if #args == 0 then
-            vim.notify("Rocks install: Called without required package argument.", vim.log.levels.ERROR)
-            return
-        end
-        local package, version = args[1], args[2]
-        require("rocks.operations").add(package, version)
-    end,
-    prune = function(args)
-        if #args == 0 then
-            vim.notify("Rocks prune: Called without required package argument.", vim.log.levels.ERROR)
-            return
-        end
-        local package = args[1]
-        require("rocks.operations").prune(package)
-    end,
-    edit = function(_)
-        vim.cmd.e(require("rocks.config.internal").config_path)
-    end,
+    update = {
+        impl = function(_)
+            require("rocks.operations").update()
+        end,
+    },
+    sync = {
+        impl = function(_)
+            require("rocks.operations").sync()
+        end,
+    },
+    install = {
+        impl = function(args)
+            if #args == 0 then
+                vim.notify("Rocks install: Called without required package argument.", vim.log.levels.ERROR)
+                return
+            end
+            local package, version = args[1], args[2]
+            require("rocks.operations").add(package, version)
+        end,
+        completions = function(query)
+            local name, version_query = query:match("([^%s]+)%s(.+)$")
+            -- name followed by space, but no version?
+            name = name or query:match("([^%s]+)%s$")
+            if version_query or name then
+                local version_list = complete_versions(name, version_query)
+                if #version_list > 0 then
+                    return version_list
+                end
+            end
+            local name_query = query:match("(.*)$")
+            return complete_names(name_query)
+        end,
+    },
+    prune = {
+        impl = function(args)
+            if #args == 0 then
+                vim.notify("Rocks prune: Called without required package argument.", vim.log.levels.ERROR)
+                return
+            end
+            local package = args[1]
+            require("rocks.operations").prune(package)
+        end,
+        completions = function(query)
+            local state = require("rocks.state")
+            local rocks_list = state.complete_removable_rocks(query)
+            if #rocks_list > 0 then
+                return rocks_list
+            end
+        end,
+    },
+    edit = {
+        impl = function(_)
+            vim.cmd.e(require("rocks.config.internal").config_path)
+        end,
+    },
 }
 
 local function rocks(opts)
@@ -104,7 +134,7 @@ local function rocks(opts)
         vim.notify("Rocks: Unknown command: " .. cmd, vim.log.levels.ERROR)
         return
     end
-    command(args)
+    command.impl(args)
 end
 
 ---@package
@@ -114,32 +144,24 @@ function commands.create_commands()
         desc = "Interacts with currently installed rocks",
         complete = function(arg_lead, cmdline, _)
             local rocks_commands = vim.tbl_keys(rocks_command_tbl)
-
-            local name, version_query = cmdline:match("^Rocks install%s([^%s]+)%s(.+)$")
-            -- name followed by space, but no version?
-            name = name or cmdline:match("^Rocks install%s([^%s]+)%s$")
-            if version_query or name then
-                local version_list = complete_versions(name, version_query)
-                if #version_list > 0 then
-                    return version_list
-                end
-            end
-            local name_query = cmdline:match("^Rocks install%s(.*)$")
-            local rocks_list = complete_names(name_query)
-            if #rocks_list > 0 then
-                return rocks_list
-            end
-            local state = require("rocks.state")
-            name_query = cmdline:match("^Rocks prune%s(.*)$")
-            rocks_list = state.complete_removable_rocks(name_query)
-            if #rocks_list > 0 then
-                return rocks_list
+            local subcmd, subcmd_arg_lead = cmdline:match("^Rocks%s(%S+)%s(.*)$")
+            if subcmd and subcmd_arg_lead and rocks_command_tbl[subcmd] and rocks_command_tbl[subcmd].complete then
+                return rocks_command_tbl[subcmd].complete(subcmd_arg_lead)
             end
             if cmdline:match("^Rocks%s+%w*$") then
-                return fzy.fuzzy_filter_sort(arg_lead, rocks_commands)
+                return fzy.fuzzy_filter(arg_lead, rocks_commands)
             end
         end,
     })
+end
+
+---@param name string The name of the subcommand
+---@param cmd RocksCmd The implementation and optional completions
+---@package
+function commands.register_subcommand(name, cmd)
+    vim.validate({ name = { name, "string" } })
+    vim.validate({ impl = { cmd.impl, "function" }, completions = { cmd.complete, "function", true } })
+    rocks_command_tbl[name] = cmd
 end
 
 return commands

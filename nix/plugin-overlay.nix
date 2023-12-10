@@ -31,8 +31,17 @@
     packageOverrides = rocks-nvim-luaPackage-override;
   };
   lua51Packages = final.lua5_1.pkgs;
+  luajit = prev.luajit.override {
+    packageOverrides = rocks-nvim-luaPackage-override;
+  };
+  luajitPackages = final.luajit.pkgs;
 in {
-  inherit lua5_1 lua51Packages;
+  inherit
+    lua5_1
+    lua51Packages
+    luajit
+    luajitPackages
+    ;
 
   vimPlugins =
     prev.vimPlugins

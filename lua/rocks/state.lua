@@ -25,8 +25,7 @@ local luarocks = require("rocks.luarocks")
 local fzy = require("rocks.fzy")
 local nio = require("nio")
 
----@async
----@type fun(): {[string]: Rock}
+---@type async fun(): {[string]: Rock}
 state.installed_rocks = nio.create(function()
     local rocks = vim.empty_dict()
     ---@cast rocks {[string]: Rock}
@@ -53,8 +52,7 @@ state.installed_rocks = nio.create(function()
     return rocks
 end)
 
----@async
----@type fun(): {[string]: OutdatedRock}
+---@type async fun(): {[string]: OutdatedRock}
 state.outdated_rocks = nio.create(function()
     local rocks = vim.empty_dict()
     ---@cast rocks {[string]: Rock}
@@ -83,8 +81,7 @@ state.outdated_rocks = nio.create(function()
 end)
 
 ---List the dependencies of an installed Rock
----@async
----@type fun(rock:Rock|string): {[string]: RockDependency}
+---@type async fun(rock:Rock|string): {[string]: RockDependency}
 state.rock_dependencies = nio.create(function(rock)
     ---@cast rock Rock|string
 
@@ -126,8 +123,7 @@ end)
 
 ---List installed rocks that are not dependencies of any other rocks
 ---and can be removed.
----@async
----@type fun(): string[]
+---@type async fun(): string[]
 state.query_removable_rocks = nio.create(function()
     local installed_rocks = state.installed_rocks()
     --- Unfortunately, luarocks can't list dependencies via its CLI.
@@ -146,7 +142,7 @@ state.query_removable_rocks = nio.create(function()
         :totable()
 end)
 
----@async
+---@type async fun()
 local populate_removable_rock_cache = nio.create(function()
     if _removable_rock_cache then
         return
@@ -166,7 +162,7 @@ state.complete_removable_rocks = function(query)
     if not query then
         return {}
     end
-    return fzy.fuzzy_filter_sort(query, _removable_rock_cache)
+    return fzy.fuzzy_filter(query, _removable_rock_cache)
 end
 
 state.invalidate_cache = function()

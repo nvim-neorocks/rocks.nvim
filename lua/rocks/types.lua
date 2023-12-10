@@ -11,12 +11,15 @@
 --
 ---@brief [[
 --
--- rocks.nvim type definitions.
+-- rocks.nvim internal type definitions.
 --
 ---@brief ]]
 
----@class (exact) RocksOptions
----@field rocks_path? string Local path in your filesystem to install rocks
----@field config_path? string Rocks declaration file path
+---@class OutdatedRock: Rock
+---@field public target_version string
 
---- types.lua ends here
+---@class (exact) RockDependency
+---@field public name string
+---@field public version? string
+
+--- internal-types.lua ends here

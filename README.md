@@ -118,6 +118,11 @@ that are no longer needed, run the `:Rocks prune [rock]` command.
 The `:Rocks edit` command opens the `rocks.toml` file for manual editing.
 Make sure to run `:Rocks sync` when you are done.
 
+## :waning_crescent_moon: Lua API
+
+This plugin provides a Lua API for extensibility.
+See [`:h rocks.api`](./doc/rocks.txt) for details.
+
 ## :book: License
 
 `rocks.nvim` is licensed under [GPLv3](./LICENSE).
