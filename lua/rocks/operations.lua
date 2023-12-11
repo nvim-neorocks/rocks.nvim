@@ -386,6 +386,13 @@ end
 --- Attempts to update every available rock if it is not pinned.
 --- This function invokes a UI.
 operations.update = function()
+    local progress_handle = progress.handle.create({
+        title = "Updating",
+        message = "Checking for updates...",
+        lsp_client = { name = constants.ROCKS_NVIM },
+        percentage = 0,
+    })
+
     nio.run(function()
         ---@type ProgressHandle[]
         local error_handles = {}
@@ -400,17 +407,12 @@ operations.update = function()
                 })
             )
         end
-        local outdated_rocks = state.outdated_rocks()
-
-        nio.scheduler()
 
         local user_rocks = parse_user_rocks()
 
-        local progress_handle = progress.handle.create({
-            title = "Updating",
-            lsp_client = { name = constants.ROCKS_NVIM },
-            percentage = 0,
-        })
+        local outdated_rocks = state.outdated_rocks()
+
+        nio.scheduler()
 
         local ct = 0
         for name, rock in pairs(outdated_rocks) do
