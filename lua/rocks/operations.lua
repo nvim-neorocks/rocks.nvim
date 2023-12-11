@@ -217,78 +217,89 @@ operations.sync = function(user_rocks)
         ---@diagnostic disable-next-line: invisible
         local key_list = nio.fn.keys(vim.tbl_deep_extend("force", installed_rocks, user_rocks))
 
-        local ct = 1
-
-        local to_prune_keys = vim.empty_dict()
-        ---@cast to_prune_keys string[]
-
-        local function get_progress_percentage()
-            return math.floor(ct / #key_list * 100)
-        end
-
+        local to_install = vim.empty_dict()
+        ---@cast to_install string[]
+        local to_updowngrade = vim.empty_dict()
+        ---@cast to_updowngrade string[]
+        local to_prune = vim.empty_dict()
+        ---@cast to_prune string[]
         for _, key in ipairs(key_list) do
             if user_rocks[key] and not installed_rocks[key] then
-                nio.scheduler()
-                progress_handle:report({
-                    message = ("Installing: %s"):format(key),
-                })
-                -- If the plugin version is a development release then we pass `dev` as the version to the install function
-                -- as it gets converted to the `--dev` flag on there, allowing luarocks to pull the `scm-1` rockspec manifest
-                local future
-                if vim.startswith(user_rocks[key].version, "scm-") then
-                    future = operations.install(user_rocks[key].name, "dev")
-                else
-                    future = operations.install(user_rocks[key].name, user_rocks[key].version)
-                end
-                local success, ret = pcall(future.wait)
-
-                ct = ct + 1
-                nio.scheduler()
-                if not success then
-                    -- TODO: Keep track of failures: #55
-                    progress_handle:report({
-                        percentage = get_progress_percentage(),
-                    })
-                    report_error(("Failed to install %s: %s"):format(key, vim.inspect(ret)))
-                end
-                progress_handle:report({
-                    message = ("Installed: %s"):format(key),
-                    percentage = get_progress_percentage(),
-                })
+                table.insert(to_install, key)
             elseif
                 user_rocks[key]
                 and installed_rocks[key]
                 and user_rocks[key].version ~= installed_rocks[key].version
             then
-                local is_downgrading = vim.version.parse(user_rocks[key].version)
-                    < vim.version.parse(installed_rocks[key].version)
+                table.insert(to_updowngrade, key)
+            elseif not user_rocks[key] and installed_rocks[key] then
+                table.insert(to_prune, key)
+            end
+        end
 
-                nio.scheduler()
+        local ct = 1
+        local action_count = #to_install + #to_updowngrade + #to_prune
+
+        local function get_progress_percentage()
+            return math.floor(ct / action_count * 100)
+        end
+
+        for _, key in ipairs(to_install) do
+            nio.scheduler()
+            progress_handle:report({
+                message = ("Installing: %s"):format(key),
+            })
+            -- If the plugin version is a development release then we pass `dev` as the version to the install function
+            -- as it gets converted to the `--dev` flag on there, allowing luarocks to pull the `scm-1` rockspec manifest
+            local future
+            if vim.startswith(user_rocks[key].version, "scm-") then
+                future = operations.install(user_rocks[key].name, "dev")
+            else
+                future = operations.install(user_rocks[key].name, user_rocks[key].version)
+            end
+            local success, ret = pcall(future.wait)
+
+            ct = ct + 1
+            nio.scheduler()
+            if not success then
+                -- TODO: Keep track of failures: #55
                 progress_handle:report({
-                    message = is_downgrading and ("Downgrading: %s"):format(key) or ("Updating: %s"):format(key),
-                })
-
-                local future = operations.install(user_rocks[key].name, user_rocks[key].version)
-                local success, ret = pcall(future.wait)
-
-                ct = ct + 1
-                nio.scheduler()
-                if not success then
-                    progress_handle:report({
-                        percentage = get_progress_percentage(),
-                    })
-                    report_error(
-                        is_downgrading and ("Failed to downgrade %s: %s"):format(key, vim.inspect(ret))
-                            or ("Failed to upgrade %s: %s"):format(key, vim.inspect(ret))
-                    )
-                end
-                progress_handle:report({
-                    message = is_downgrading and ("Downgraded: %s"):format(key) or ("Upgraded: %s"):format(key),
                     percentage = get_progress_percentage(),
                 })
-            elseif not user_rocks[key] and installed_rocks[key] then
-                table.insert(to_prune_keys, key)
+                report_error(("Failed to install %s: %s"):format(key, vim.inspect(ret)))
             end
+            progress_handle:report({
+                message = ("Installed: %s"):format(key),
+                percentage = get_progress_percentage(),
+            })
+        end
+        for _, key in ipairs(to_updowngrade) do
+            local is_downgrading = vim.version.parse(user_rocks[key].version)
+                < vim.version.parse(installed_rocks[key].version)
+
+            nio.scheduler()
+            progress_handle:report({
+                message = is_downgrading and ("Downgrading: %s"):format(key) or ("Updating: %s"):format(key),
+            })
+
+            local future = operations.install(user_rocks[key].name, user_rocks[key].version)
+            local success, ret = pcall(future.wait)
+
+            ct = ct + 1
+            nio.scheduler()
+            if not success then
+                progress_handle:report({
+                    percentage = get_progress_percentage(),
+                })
+                report_error(
+                    is_downgrading and ("Failed to downgrade %s: %s"):format(key, vim.inspect(ret))
+                        or ("Failed to upgrade %s: %s"):format(key, vim.inspect(ret))
+                )
+            end
+            progress_handle:report({
+                message = is_downgrading and ("Downgraded: %s"):format(key) or ("Upgraded: %s"):format(key),
+                percentage = get_progress_percentage(),
+            })
         end
 
         -- Determine dependencies of installed user rocks, so they can be excluded from rocks to prune
@@ -306,13 +317,15 @@ operations.sync = function(user_rocks)
         end
 
         ---@type string[]
-        local rocks_to_prune = vim.iter(to_prune_keys)
+        local prunable_rocks = vim.iter(to_prune)
             :filter(function(key)
                 return dependencies[key] == nil
             end)
             :totable()
 
-        if ct == 0 and vim.tbl_isempty(rocks_to_prune) then
+        action_count = #to_install + #to_updowngrade + #prunable_rocks
+
+        if ct == 0 and vim.tbl_isempty(prunable_rocks) then
             nio.scheduler()
             progress_handle:report({ message = "Everything is in-sync!", percentage = 100 })
             progress_handle:finish()
@@ -322,7 +335,7 @@ operations.sync = function(user_rocks)
         ---@diagnostic disable-next-line: invisible
         local user_rock_names = nio.fn.keys(user_rocks)
         -- Prune rocks sequentially, to prevent conflicts
-        for _, key in ipairs(rocks_to_prune) do
+        for _, key in ipairs(prunable_rocks) do
             nio.scheduler()
             progress_handle:report({
                 message = ("Removing: %s"):format(key),
