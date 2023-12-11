@@ -54,6 +54,7 @@ end
 ---@return Future
 operations.install = function(name, version, progress_handle)
     cache.invalidate_removable_rocks()
+    name = name:lower()
     local message = version and ("Installing: %s -> %s"):format(name, version) or ("Installing: %s"):format(name)
     log.info(message)
     if progress_handle then
