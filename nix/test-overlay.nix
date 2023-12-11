@@ -10,7 +10,6 @@
           with ps; [
             toml-edit
             toml
-            plenary-nvim
             fidget-nvim
             fzy
           ];
