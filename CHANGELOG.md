@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.3.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.3.0...v2.3.1) (2023-12-11)
+
+
+### Bug Fixes
+
+* **config:** remove unimplemented example from default config ([3897048](https://github.com/nvim-neorocks/rocks.nvim/commit/38970480247a5ca9e95a13b29716236a8d58ff6c))
+* **ui:** limit progress percentages to [0,100] ([a18fb7d](https://github.com/nvim-neorocks/rocks.nvim/commit/a18fb7d9a4a054d200533eae64c3491fcc79942e))
+* **update:** update versions in `rocks.toml` ([675bda0](https://github.com/nvim-neorocks/rocks.nvim/commit/675bda05d8326ab5fe43194fd1db907197c541c1))
+
 ## [2.3.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.2.0...v2.3.0) (2023-12-11)
 
 
