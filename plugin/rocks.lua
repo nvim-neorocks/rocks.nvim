@@ -8,5 +8,12 @@ require("rocks.commands").create_commands()
 local config = require("rocks.config.internal")
 
 if not config.lazy then
-    require("nio").run(require("rocks.cache").populate_cached_rocks)
+    local nio = require("nio")
+    nio.run(function()
+        local cache = require("rocks.cache")
+        nio.gather({
+            cache.populate_cached_rocks,
+            cache.populate_removable_rock_cache,
+        })
+    end)
 end

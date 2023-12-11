@@ -372,6 +372,7 @@ operations.sync = function(user_rocks)
         else
             progress_handle:finish()
         end
+        cache.populate_removable_rock_cache()
     end)
 end
 
@@ -447,6 +448,7 @@ operations.update = function()
         else
             progress_handle:finish()
         end
+        cache.populate_removable_rock_cache()
     end)
 end
 
@@ -500,6 +502,7 @@ operations.add = function(rock_name, version)
                 progress_handle:cancel()
             end
         end)
+        cache.populate_removable_rock_cache()
     end)
 end
 
@@ -536,6 +539,7 @@ operations.prune = function(rock_name)
                 progress_handle:cancel()
             end
         end)
+        cache.populate_removable_rock_cache()
     end)
 end
 
