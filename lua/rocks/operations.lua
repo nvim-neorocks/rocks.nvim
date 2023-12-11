@@ -432,6 +432,7 @@ operations.update = function()
             nio.scheduler()
             progress_handle:report({ message = "Nothing to update!", percentage = 100 })
         end
+        fs.write_file(config.config_path, "w", tostring(user_rocks))
         nio.scheduler()
         if not vim.tbl_isempty(error_handles) then
             local message = "Update completed with errors!"
