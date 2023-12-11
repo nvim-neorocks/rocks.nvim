@@ -36,6 +36,8 @@
 - Extensible, with a Lua API.
 - Command completions for plugins on luarocks.org.
 
+![demo](https://github.com/nvim-neorocks/rocks.nvim/assets/12857160/955c3ae7-c916-4a70-8fbd-4e28b7f0d77e)
+
 ## :pencil: Requirements
 
 - An up-to-date `Neovim` nightly (>= 0.10) installation.
