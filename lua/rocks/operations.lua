@@ -17,6 +17,7 @@
 ---@brief ]]
 
 local constants = require("rocks.constants")
+local log = require("rocks.log")
 local fs = require("rocks.fs")
 local config = require("rocks.config.internal")
 local state = require("rocks.state")
@@ -46,10 +47,10 @@ end
 ---@return Future
 operations.install = function(name, version, progress_handle)
     state.invalidate_cache()
+    local message = version and ("Installing: %s -> %s"):format(name, version) or ("Installing: %s"):format(name)
+    log.info(message)
     if progress_handle then
-        progress_handle:report({
-            message = version and ("Installing: %s -> %s"):format(name, version) or ("Installing: %s"):format(name),
-        })
+        progress_handle:report({ message = message })
     end
     -- TODO(vhyrro): Input checking on name and version
     local future = nio.control.future()
@@ -68,12 +69,12 @@ operations.install = function(name, version, progress_handle)
     local systemObj = luarocks.cli(install_cmd, function(sc)
         ---@cast sc vim.SystemCompleted
         if sc.code ~= 0 then
-            future.set_error(sc.stderr)
+            message = ("Failed to install %s"):format(name)
+            log.error(message)
             if progress_handle then
-                progress_handle:report({
-                    message = ("Failed to install %s: %s"):format(name, sc.stderr),
-                })
+                progress_handle:report({ message = message })
             end
+            future.set_error(sc.stderr)
         else
             ---@type Rock
             local installed_rock = {
@@ -83,10 +84,10 @@ operations.install = function(name, version, progress_handle)
                 -- We also exclude `-<specrev>` from the version match.
                 version = sc.stdout:match(name:gsub("%p", "%%%1") .. "%s+([^-%s]+)"),
             }
+            message = ("Installed: %s -> %s"):format(installed_rock.name, installed_rock.version)
+            log.info(message)
             if progress_handle then
-                progress_handle:report({
-                    message = ("Installed: %s -> %s"):format(installed_rock.name, installed_rock.version),
-                })
+                progress_handle:report({ message = message })
             end
             future.set(installed_rock)
         end
@@ -105,10 +106,10 @@ end
 ---@return Future
 operations.remove = function(name, progress_handle)
     state.invalidate_cache()
+    local message = ("Uninstalling: %s"):format(name)
+    log.info(message)
     if progress_handle then
-        progress_handle:report({
-            message = ("Uninstalling: %s"):format(name),
-        })
+        progress_handle:report({ message = message })
     end
     local future = nio.control.future()
     local systemObj = luarocks.cli({
@@ -117,14 +118,13 @@ operations.remove = function(name, progress_handle)
     }, function(sc)
         ---@cast sc vim.SystemCompleted
         if sc.code ~= 0 then
-            future.set_error(sc.stderr)
+            message = ("Failed to remove %s."):format(name)
             if progress_handle then
-                progress_handle:report({
-                    message = ("Failed to remove %s: %s"):format(name, sc.stderr),
-                })
+                progress_handle:report({ message = message })
             end
+            future.set_error(sc.stderr)
         else
-            -- TODO: Raise an error with set_error on the future if something goes wrong
+            log.info(("Uninstalled: %s"):format(name))
             future.set(sc)
         end
     end)
@@ -167,6 +167,7 @@ end)
 --- - Uninstalls unneeded rocks
 ---@param user_rocks? { [string]: Rock|string } loaded from rocks.toml if `nil`
 operations.sync = function(user_rocks)
+    log.info("syncing...")
     nio.run(function()
         local progress_handle = progress.handle.create({
             title = "Syncing",
@@ -257,16 +258,13 @@ operations.sync = function(user_rocks)
             else
                 future = operations.install(user_rocks[key].name, user_rocks[key].version)
             end
-            local success, ret = pcall(future.wait)
+            local success = pcall(future.wait)
 
             ct = ct + 1
             nio.scheduler()
             if not success then
-                -- TODO: Keep track of failures: #55
-                progress_handle:report({
-                    percentage = get_progress_percentage(),
-                })
-                report_error(("Failed to install %s: %s"):format(key, vim.inspect(ret)))
+                progress_handle:report({ percentage = get_progress_percentage() })
+                report_error(("Failed to install %s."):format(key))
             end
             progress_handle:report({
                 message = ("Installed: %s"):format(key),
@@ -283,7 +281,7 @@ operations.sync = function(user_rocks)
             })
 
             local future = operations.install(user_rocks[key].name, user_rocks[key].version)
-            local success, ret = pcall(future.wait)
+            local success = pcall(future.wait)
 
             ct = ct + 1
             nio.scheduler()
@@ -292,13 +290,12 @@ operations.sync = function(user_rocks)
                     percentage = get_progress_percentage(),
                 })
                 report_error(
-                    is_downgrading and ("Failed to downgrade %s: %s"):format(key, vim.inspect(ret))
-                        or ("Failed to upgrade %s: %s"):format(key, vim.inspect(ret))
+                    is_downgrading and ("Failed to downgrade %s"):format(key) or ("Failed to upgrade %s"):format(key)
                 )
             end
             progress_handle:report({
-                message = is_downgrading and ("Downgraded: %s"):format(key) or ("Upgraded: %s"):format(key),
                 percentage = get_progress_percentage(),
+                message = is_downgrading and ("Downgraded: %s"):format(key) or ("Upgraded: %s"):format(key),
             })
         end
 
@@ -326,8 +323,10 @@ operations.sync = function(user_rocks)
         action_count = #to_install + #to_updowngrade + #prunable_rocks
 
         if ct == 0 and vim.tbl_isempty(prunable_rocks) then
+            local message = "Everything is in-sync!"
+            log.info(message)
             nio.scheduler()
-            progress_handle:report({ message = "Everything is in-sync!", percentage = 100 })
+            progress_handle:report({ message = message, percentage = 100 })
             progress_handle:finish()
             return
         end
@@ -337,9 +336,7 @@ operations.sync = function(user_rocks)
         -- Prune rocks sequentially, to prevent conflicts
         for _, key in ipairs(prunable_rocks) do
             nio.scheduler()
-            progress_handle:report({
-                message = ("Removing: %s"):format(key),
-            })
+            progress_handle:report({ message = ("Removing: %s"):format(key) })
 
             local success = operations.remove_recursive(installed_rocks[key].name, user_rock_names)
 
@@ -350,7 +347,7 @@ operations.sync = function(user_rocks)
                 progress_handle:report({
                     percentage = get_progress_percentage(),
                 })
-                report_error(("Failed to remove %s"):format(key))
+                report_error(("Failed to remove %s."):format(key))
             else
                 progress_handle:report({
                     message = ("Removed: %s"):format(key),
@@ -360,9 +357,11 @@ operations.sync = function(user_rocks)
         end
 
         if not vim.tbl_isempty(error_handles) then
+            local message = "Sync completed with errors!"
+            log.error(message)
             progress_handle:report({
                 title = "Error",
-                message = "Sync completed with errors!",
+                message = message,
                 percentage = 100,
             })
             progress_handle:cancel()
@@ -408,7 +407,7 @@ operations.update = function()
                 if not success then
                     has_errors = true
                     progress_handle:report({
-                        message = ("Failed to update %s: %s"):format(rock.name, vim.inspect(ret)),
+                        message = ("Failed to update %s."):format(rock.name),
                         percentage = math.floor(ct / #actions * 100),
                     })
                     return
@@ -429,9 +428,11 @@ operations.update = function()
         end
         nio.scheduler()
         if has_errors then
+            local message = "Update completed with errors!"
+            log.error(message)
             progress_handle:report({
                 title = "Error",
-                message = "Update completed with errors!",
+                message = message,
                 percentage = 100,
             })
             progress_handle:cancel()
@@ -453,17 +454,16 @@ operations.add = function(rock_name, version)
 
     nio.run(function()
         local future = operations.install(rock_name, version)
-        local success, result = pcall(future.wait)
+        local success, installed_rock = pcall(future.wait)
         vim.schedule(function()
             if not success then
                 progress_handle:report({
-                    title = "Installation failed",
-                    message = vim.inspect(result),
+                    title = "Error",
+                    message = ("Installation of %s failed"):format(rock_name),
                 })
                 progress_handle:cancel()
                 return
             end
-            local installed_rock = result
             progress_handle:report({
                 title = "Installation successful",
                 message = ("%s -> %s"):format(installed_rock.name, installed_rock.version),
@@ -519,10 +519,11 @@ operations.prune = function(rock_name)
             if success then
                 progress_handle:finish()
             else
+                local message = "Prune completed with errors!"
+                log.error(message)
                 progress_handle:report({
                     title = "Error",
-                    message = "Prune completed with errors!",
-                    percentage = 100,
+                    message = message,
                 })
                 progress_handle:cancel()
             end

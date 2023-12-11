@@ -19,6 +19,7 @@ local luarocks = {}
 
 local constants = require("rocks.constants")
 local config = require("rocks.config.internal")
+local log = require("rocks.log")
 local nio = require("nio")
 
 ---@class LuarocksCliOpts: SystemOpts
@@ -36,16 +37,22 @@ lock.set(true) -- initialise as unlocked
 luarocks.cli = function(args, on_exit, opts)
     opts = opts or {}
     opts.synchronized = opts.synchronized ~= nil and opts.synchronized or false
-    local on_exit_wrapped = on_exit and vim.schedule_wrap(on_exit)
+    local on_exit_wrapped = vim.schedule_wrap(function(sc)
+        if opts.synchronized then
+            pcall(lock.set, true)
+        end
+        ---@cast sc vim.SystemCompleted
+        if sc.code ~= 0 then
+            log.error("luarocks CLI FAILED")
+            log.error(sc.stderr)
+        end
+        if on_exit then
+            on_exit(sc)
+        end
+    end)
     if opts.synchronized then
         lock.wait()
         lock = nio.control.future()
-        on_exit_wrapped = vim.schedule_wrap(function(...)
-            pcall(lock.set, true)
-            if on_exit then
-                on_exit(...)
-            end
-        end)
     end
     local luarocks_cmd = vim.list_extend({
         config.luarocks_binary,
@@ -53,6 +60,7 @@ luarocks.cli = function(args, on_exit, opts)
         "--tree=" .. config.rocks_path,
         "--server='https://nvim-neorocks.github.io/rocks-binaries/'",
     }, args)
+    log.info(luarocks_cmd)
     return vim.system(luarocks_cmd, opts, on_exit_wrapped)
 end
 

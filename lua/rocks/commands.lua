@@ -14,6 +14,7 @@
 ---                                  It may take more than one sync to prune all rocks that can be pruned.
 --- update                           Search for updated rocks and install them.
 --- edit                             Edit the rocks.toml file.
+--- log                              Open the log file.
 ---
 ---@brief ]]
 ---
@@ -120,6 +121,11 @@ local rocks_command_tbl = {
     edit = {
         impl = function(_)
             vim.cmd.e(require("rocks.config.internal").config_path)
+        end,
+    },
+    log = {
+        impl = function(_)
+            require("rocks.log").open_logfile()
         end,
     },
 }

@@ -23,6 +23,7 @@ local _removable_rock_cache = nil
 
 local luarocks = require("rocks.luarocks")
 local fzy = require("rocks.fzy")
+local log = require("rocks.log")
 local nio = require("nio")
 
 ---@type async fun(): {[string]: Rock}
@@ -100,7 +101,9 @@ state.rock_dependencies = nio.create(function(rock)
         rock_name,
     }, function(obj)
         if obj.code ~= 0 then
-            future.set_error(("Could not get dependencies for rock %s: %s"):format(rock_name, obj.stderr))
+            local message = ("Could not get dependencies for rock %s: %s"):format(rock_name, obj.stderr)
+            log.error(message)
+            future.set_error(message)
         else
             future.set(obj.stdout)
         end
@@ -108,7 +111,7 @@ state.rock_dependencies = nio.create(function(rock)
 
     local success, result = pcall(future.wait)
     if not success then
-        -- TODO: Log error
+        log.error(result)
         return {}
     end
 
