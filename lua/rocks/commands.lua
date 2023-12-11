@@ -7,12 +7,13 @@
 --- command	  	                     action
 ---------------------------------------------------------------------------------
 ---
---- install [rock] [version?]  	     install {rock} with optional {version}.
---- prune [rock]                     uninstall {rock} and its stale dependencies,
+--- install [rock] [version?]  	     Install {rock} with optional {version}.
+--- prune [rock]                     Uninstall {rock} and its stale dependencies,
 ---                                  and remove it from rocks.toml.
---- sync                             synchronize installed rocks with rocks.toml.
---- update                           search for updated rocks and install them.
---- edit                             edit the rocks.toml file.
+--- sync                             Synchronize installed rocks with rocks.toml.
+---                                  It may take more than one sync to prune all rocks that can be pruned.
+--- update                           Search for updated rocks and install them.
+--- edit                             Edit the rocks.toml file.
 ---
 ---@brief ]]
 ---
