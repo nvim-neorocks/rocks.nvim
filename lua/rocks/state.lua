@@ -42,7 +42,7 @@ state.installed_rocks = nio.create(function()
     local installed_rock_list = future.wait()
 
     for name, version in installed_rock_list:gmatch("(%S+)%s+(%S+)%s+installed%s+%S+") do
-        -- Exclude -<specrev>
+        -- Exclude -<specrev> from version
         rocks[name] = { name = name, version = version:match("([^-]+)") }
     end
 
@@ -71,7 +71,12 @@ state.outdated_rocks = nio.create(function()
     local installed_rock_list = future.wait()
 
     for name, version, target_version in installed_rock_list:gmatch("(%S+)%s+(%S+)%s+(%S+)%s+%S+") do
-        rocks[name] = { name = name, version = version, target_version = target_version }
+        -- Exclude -<specrev> from versions
+        rocks[name] = {
+            name = name,
+            version = version:match("([^-]+)"),
+            target_version = target_version:match("([^-]+)"),
+        }
     end
 
     return rocks
