@@ -242,7 +242,7 @@ operations.sync = function(user_rocks)
         local action_count = #to_install + #to_updowngrade + #to_prune
 
         local function get_progress_percentage()
-            return math.floor(ct / action_count * 100)
+            return math.floor((ct / action_count) * 100)
         end
 
         for _, key in ipairs(to_install) do
@@ -378,10 +378,20 @@ end
 --- This function invokes a UI.
 operations.update = function()
     nio.run(function()
-        local has_errors = false
+        ---@type ProgressHandle[]
+        local error_handles = {}
+        ---@param message string
+        local function report_error(message)
+            table.insert(
+                error_handles,
+                progress.handle.create({
+                    title = "Error",
+                    lsp_client = { name = constants.ROCKS_NVIM },
+                    message = message,
+                })
+            )
+        end
         local outdated_rocks = state.outdated_rocks()
-        local actions = vim.empty_dict()
-        ---@cast actions (fun():Rock|nil)[]
 
         nio.scheduler()
 
@@ -399,35 +409,29 @@ operations.update = function()
             progress_handle:report({
                 message = name,
             })
-            table.insert(actions, function()
-                local future = operations.install(name, rock.target_version)
-                local success, ret = pcall(future.wait)
-                ct = ct + 1
-                nio.scheduler()
-                if not success then
-                    has_errors = true
-                    progress_handle:report({
-                        message = ("Failed to update %s."):format(rock.name),
-                        percentage = math.floor(ct / #actions * 100),
-                    })
-                    return
-                end
-                user_rocks.plugins[ret.name] = ret.version
+            local future = operations.install(name, rock.target_version)
+            local success, ret = pcall(future.wait)
+            ct = ct + 1
+            nio.scheduler()
+            if not success then
+                report_error(("Failed to update %s."):format(rock.name))
                 progress_handle:report({
-                    message = ("Updated %s: %s -> %s"):format(rock.name, rock.version, rock.target_version),
-                    percentage = math.floor(ct / #actions * 100),
+                    percentage = math.floor((ct / #outdated_rocks) * 100),
                 })
-            end)
+            end
+            user_rocks.plugins[ret.name] = ret.version
+            progress_handle:report({
+                message = ("Updated %s: %s -> %s"):format(rock.name, rock.version, rock.target_version),
+                percentage = math.floor((ct / #outdated_rocks) * 100),
+            })
         end
 
-        if not vim.tbl_isempty(actions) then
-            nio.gather(actions)
-        else
+        if vim.tbl_isempty(outdated_rocks) then
             nio.scheduler()
             progress_handle:report({ message = "Nothing to update!", percentage = 100 })
         end
         nio.scheduler()
-        if has_errors then
+        if not vim.tbl_isempty(error_handles) then
             local message = "Update completed with errors!"
             log.error(message)
             progress_handle:report({
@@ -436,6 +440,9 @@ operations.update = function()
                 percentage = 100,
             })
             progress_handle:cancel()
+            for _, error_handle in pairs(error_handles) do
+                error_handle:cancel()
+            end
         else
             progress_handle:finish()
         end
