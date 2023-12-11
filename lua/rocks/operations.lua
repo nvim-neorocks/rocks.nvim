@@ -70,7 +70,8 @@ operations.install = function(name, version, progress_handle)
                 name = name,
                 -- The `gsub` makes sure to escape all punctuation characters
                 -- so they do not get misinterpreted by the lua pattern engine.
-                version = sc.stdout:match(name:gsub("%p", "%%%1") .. "%s+(%S+)"),
+                -- We also exclude `-<specrev>` from the version match.
+                version = sc.stdout:match(name:gsub("%p", "%%%1") .. "%s+([^-%s]+)"),
             }
             if progress_handle then
                 progress_handle:report({
