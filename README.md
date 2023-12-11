@@ -37,7 +37,9 @@
   (` "nvim-neorg/neorg" ` becomes `:Rocks install neorg` instead).
 - Automatic dependency and build script management.
 - True semver versioning!
-- (WIP) Automatic running of test suites.
+- Minimal, non-intrusive UI.
+- Extensible, with a Lua API.
+- Command completions for plugins on luarocks.org.
 
 ## :pencil: Requirements
 
