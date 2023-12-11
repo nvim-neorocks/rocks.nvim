@@ -24,12 +24,6 @@
 </div>
 <!-- markdownlint-restore -->
 
-> [!NOTE]
-> The following plugin is perfectly usable,
-> but its user interfaces are a **work in progress**.
->
-> They will be fledged out soon! :)
-
 ## :star2: Features
 
 - `Cargo`-like `rocks.toml` file for declaring all your plugins.
