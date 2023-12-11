@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.3.1...v2.3.2) (2023-12-11)
+
+
+### Bug Fixes
+
+* **install:** ensure lower case rock names ([1f1d0a4](https://github.com/nvim-neorocks/rocks.nvim/commit/1f1d0a4672e3644b4f0da82fedfddbc0dd77433a))
+
 ## [2.3.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.3.0...v2.3.1) (2023-12-11)
 
 
