@@ -118,6 +118,11 @@ that are no longer needed, run the `:Rocks prune [rock]` command.
 The `:Rocks edit` command opens the `rocks.toml` file for manual editing.
 Make sure to run `:Rocks sync` when you are done.
 
+### Troubleshooting
+
+The `:Rocks log` command opens a log file for the current session,
+which contains the `luarocks` stderr output, among other logs.
+
 ## :waning_crescent_moon: Lua API
 
 This plugin provides a Lua API for extensibility.
