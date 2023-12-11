@@ -32,6 +32,7 @@
 - Automatic dependency and build script management.
 - True semver versioning!
 - Minimal, non-intrusive UI.
+- Async execution.
 - Extensible, with a Lua API.
 - Command completions for plugins on luarocks.org.
 
