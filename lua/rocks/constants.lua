@@ -35,13 +35,6 @@ constants.DEFAULT_CONFIG = string.format(
 #
 # [plugins]
 # nvim-treesitter = "semver_version-rev"  # e.g. "1.0.0-0"
-#
-# Here is another example if you want to tweak your plugins even more:
-
-# [plugins.nvim-treesitter]
-# version = "semver_version-rev"
-# config  = "plugins/nvim-treesitter.lua"  # <- ~/.config/nvim/lua
-# rock_flags = "--additional-luarocks-install-flags=here"
 
 # List of non-Neovim rocks.
 # This includes things like `toml` or other lua packages.
