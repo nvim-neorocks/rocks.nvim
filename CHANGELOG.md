@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.3.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.2.0...v2.3.0) (2023-12-11)
+
+
+### Features
+
+* logging + `:Rocks log` command ([#65](https://github.com/nvim-neorocks/rocks.nvim/issues/65)) ([4a0678d](https://github.com/nvim-neorocks/rocks.nvim/commit/4a0678d31fb3aa5793cb2aa30eaa5c0f8a6f0511))
+* **sync:** separate progress handles for errors ([a08ee0d](https://github.com/nvim-neorocks/rocks.nvim/commit/a08ee0d0f9491ca1ae29d9fdff05a696bfd55640))
+
+
+### Bug Fixes
+
+* **install:** bug causing `:` to be appended to version in rocks.toml ([#62](https://github.com/nvim-neorocks/rocks.nvim/issues/62)) ([8e8ceec](https://github.com/nvim-neorocks/rocks.nvim/commit/8e8ceecba81d528b39e696d85e44ca3364af8341))
+* **operations:** don't use parse_user_rocks in sync ([e82f66f](https://github.com/nvim-neorocks/rocks.nvim/commit/e82f66f696b41cfafe0e3a27ed2dea3e94e9b5db))
+* **prune:** do not prune dependencies that are in `rocks.toml` ([8a48a1a](https://github.com/nvim-neorocks/rocks.nvim/commit/8a48a1aad30f5651287cc0ab7e7d34a9722ca247))
+* **prune:** remove pruned rocks from [rocks] section, too ([9857745](https://github.com/nvim-neorocks/rocks.nvim/commit/98577458f87f404265ecef6ab07b55533c395bee))
+* **sync:** don't try to remove indirect dependencies ([a1c0d2f](https://github.com/nvim-neorocks/rocks.nvim/commit/a1c0d2fbd0e531160876348d4ecbc9a3583a0ffe))
+* **sync:** prevent luarocks race conditions ([057ec56](https://github.com/nvim-neorocks/rocks.nvim/commit/057ec5653d4ab9c3bb31316d40a3e7f2a03e4aff))
+* **sync:** prune rocks sequentially to prevent partial uninstalls ([d09de43](https://github.com/nvim-neorocks/rocks.nvim/commit/d09de43611e58a06d0a01f64600cde9fc90d03da))
+* **ui:** sync progress percentage computation ([52f1ae6](https://github.com/nvim-neorocks/rocks.nvim/commit/52f1ae6be11ba9a92c967b67e4c1c49f94a9a473))
+
+
+### Performance Improvements
+
+* auto-populate removable rocks cache ([#70](https://github.com/nvim-neorocks/rocks.nvim/issues/70)) ([7b6d361](https://github.com/nvim-neorocks/rocks.nvim/commit/7b6d361556f4646624b16f4e8677657b0a5939dc))
+
 ## [2.2.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.1.0...v2.2.0) (2023-12-10)
 
 
