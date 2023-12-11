@@ -42,6 +42,12 @@ local function parse_user_rocks()
     return require("toml_edit").parse(config_file)
 end
 
+---@param counter number
+---@param total number
+local function get_percentage(counter, total)
+    return counter > 0 and math.min(100, math.floor((counter / total) * 100)) or 0
+end
+
 ---@param name string
 ---@param version? string
 ---@param progress_handle? ProgressHandle
@@ -243,7 +249,7 @@ operations.sync = function(user_rocks)
         local action_count = #to_install + #to_updowngrade + #to_prune
 
         local function get_progress_percentage()
-            return math.floor((ct / action_count) * 100)
+            return get_percentage(ct, action_count)
         end
 
         for _, key in ipairs(to_install) do
@@ -418,13 +424,13 @@ operations.update = function()
             if not success then
                 report_error(("Failed to update %s."):format(rock.name))
                 progress_handle:report({
-                    percentage = math.floor((ct / #outdated_rocks) * 100),
+                    percentage = get_percentage(ct, #outdated_rocks),
                 })
             end
             user_rocks.plugins[ret.name] = ret.version
             progress_handle:report({
                 message = ("Updated %s: %s -> %s"):format(rock.name, rock.version, rock.target_version),
-                percentage = math.floor((ct / #outdated_rocks) * 100),
+                percentage = get_percentage(ct, #outdated_rocks),
             })
         end
 
