@@ -17,12 +17,7 @@
 
 local state = {}
 
----Used for completions only
----@type string[] | nil
-local _removable_rock_cache = nil
-
 local luarocks = require("rocks.luarocks")
-local fzy = require("rocks.fzy")
 local log = require("rocks.log")
 local nio = require("nio")
 
@@ -148,32 +143,5 @@ state.query_removable_rocks = nio.create(function()
         end)
         :totable()
 end)
-
----@type async fun()
-local populate_removable_rock_cache = nio.create(function()
-    if _removable_rock_cache then
-        return
-    end
-    _removable_rock_cache = state.query_removable_rocks()
-end)
-
----Completion for installed rocks that are not dependencies of other rocks
----and can be removed.
----@param query string | nil
----@return string[]
-state.complete_removable_rocks = function(query)
-    if not _removable_rock_cache then
-        nio.run(populate_removable_rock_cache)
-        return {}
-    end
-    if not query then
-        return {}
-    end
-    return fzy.fuzzy_filter(query, _removable_rock_cache)
-end
-
-state.invalidate_cache = function()
-    _removable_rock_cache = nil
-end
 
 return state

@@ -68,6 +68,18 @@ local function complete_names(query)
     return fzy.fuzzy_filter(query, rock_names)
 end
 
+---Completion for installed rocks that are not dependencies of other rocks
+---and can be removed.
+---@param query string | nil
+---@return string[]
+local function complete_removable_rocks(query)
+    local removable_rocks = cache.try_get_removable_rocks()
+    if not query then
+        return {}
+    end
+    return fzy.fuzzy_filter(query, removable_rocks)
+end
+
 ---@type { [string]: RocksCmd }
 local rocks_command_tbl = {
     update = {
@@ -113,8 +125,7 @@ local rocks_command_tbl = {
             require("rocks.operations").prune(package)
         end,
         complete = function(query)
-            local state = require("rocks.state")
-            local rocks_list = state.complete_removable_rocks(query)
+            local rocks_list = complete_removable_rocks(query)
             return rocks_list
         end,
     },

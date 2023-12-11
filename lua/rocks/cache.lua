@@ -18,10 +18,15 @@
 local cache = {}
 
 local luarocks = require("rocks.luarocks")
+local state = require("rocks.state")
 local nio = require("nio")
 
 ---@type { [string]: Rock[] } | nil
 local _cached_rocks = nil
+
+---Used for completions only
+---@type string[] | nil
+local _removable_rock_cache = nil
 
 ---Query luarocks packages and populate the cache.
 ---@type async fun()
@@ -48,6 +53,35 @@ function cache.try_get_rocks()
         return rocks
     end
     return _cached_rocks
+end
+
+---Query the state for rocks that can be removed
+---and populate the cache.
+---@type async fun()
+cache.populate_removable_rock_cache = nio.create(function()
+    if _removable_rock_cache then
+        return
+    end
+    _removable_rock_cache = state.query_removable_rocks()
+end)
+
+---Tries to get the cached removable rocks.
+---Returns an empty list if the cache is not ready,
+---and triggers an async task to populate the cache.
+---@return { [string]: Rock[] } rocks indexed by name
+function cache.try_get_removable_rocks()
+    if not _removable_rock_cache then
+        nio.run(cache.populate_removable_rock_cache)
+        local rocks = vim.empty_dict()
+        ---@cast rocks { [string]: Rock[] }
+        return rocks
+    end
+    return _removable_rock_cache
+end
+
+---Invalidate the removable rocks cache
+cache.invalidate_removable_rocks = function()
+    _removable_rock_cache = nil
 end
 
 return cache

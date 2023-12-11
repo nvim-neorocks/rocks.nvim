@@ -21,6 +21,7 @@ local log = require("rocks.log")
 local fs = require("rocks.fs")
 local config = require("rocks.config.internal")
 local state = require("rocks.state")
+local cache = require("rocks.cache")
 local luarocks = require("rocks.luarocks")
 local nio = require("nio")
 local progress = require("fidget.progress")
@@ -46,7 +47,7 @@ end
 ---@param progress_handle? ProgressHandle
 ---@return Future
 operations.install = function(name, version, progress_handle)
-    state.invalidate_cache()
+    cache.invalidate_removable_rocks()
     local message = version and ("Installing: %s -> %s"):format(name, version) or ("Installing: %s"):format(name)
     log.info(message)
     if progress_handle then
@@ -105,7 +106,7 @@ end
 ---@param progress_handle? ProgressHandle
 ---@return Future
 operations.remove = function(name, progress_handle)
-    state.invalidate_cache()
+    cache.invalidate_removable_rocks()
     local message = ("Uninstalling: %s"):format(name)
     log.info(message)
     if progress_handle then
