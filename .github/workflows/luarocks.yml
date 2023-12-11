@@ -37,10 +37,20 @@ jobs:
             fzy
           labels: |
             neovim
-          summary: "Neovim plugin management inspired by `Cargo`."
           detailed_description: |
-            Rocks.nvim is an all in one solution for installing and managing
+            rocks.nvim is an all in one solution for installing and managing
             Neovim plugins through the luarocks package manager.
 
-            Rocks.nvim supports dependency management, build scripts, test suites,
+            It supports dependency management, build scripts,
             all defined from a single rocks.toml file.
+
+            Features:
+
+              - Cargo-like rocks.toml file for declaring all your plugins.
+              - Name-based installation ("nvim-neorg/neorg" becomes :Rocks install neorg instead).
+              - Automatic dependency and build script management.
+              - True semver versioning!
+              - Minimal, non-intrusive UI.
+              - Async execution.
+              - Extensible, with a Lua API.
+              - Command completions for plugins on luarocks.org.
