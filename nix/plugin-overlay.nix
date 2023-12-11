@@ -7,29 +7,35 @@
     fidget-nvim =
       # TODO: Replace with nixpkgs package when available
       luaself.callPackage ({
-          buildLuarocksPackage,
-          fetchurl,
-          fetchzip,
-          lua,
-          luaOlder,
-        }:
-          buildLuarocksPackage {
-            pname = "fidget.nvim";
-            version = "1.1.0-1";
-            knownRockspec =
-              (fetchurl {
-                url = "mirror://luarocks/fidget.nvim-1.1.0-1.rockspec";
-                sha256 = "0pgjbsqp6bs9kwi0qphihwhl47j1lzdgg3xfa6msikrcf8d7j0hf";
-              })
-              .outPath;
-            src =
-              fetchzip {
-                url = "https://github.com/j-hui/fidget.nvim/archive/300018af4
-abd00610a345e382ca1f4b7ba420f77.zip";
-                sha256 = "0bwjcqkb735wqnzc8rngvpq1b2rxgc7m0arjypvnvzsxw6wd1f61";
-              };
-            propagatedBuildInputs = [lua];
-          }) {};
+        buildLuarocksPackage,
+        fetchurl,
+        fetchzip,
+        lua,
+        luaOlder,
+      }:
+        buildLuarocksPackage {
+          pname = "fidget.nvim";
+          version = "1.1.0-1";
+          knownRockspec =
+            (fetchurl {
+              url = "mirror://luarocks/fidget.nvim-1.1.0-1.rockspec";
+              sha256 = "0pgjbsqp6bs9kwi0qphihwhl47j1lzdgg3xfa6msikrcf8d7j0hf";
+            })
+            .outPath;
+          src = fetchzip {
+            url = "https://github.com/j-hui/fidget.nvim/archive/300018af4abd00610a345e382ca1f4b7ba420f77.zip";
+            sha256 = "0bwjcqkb735wqnzc8rngvpq1b2rxgc7m0arjypvnvzsxw6wd1f61";
+          };
+
+          disabled = luaOlder "5.1";
+          propagatedBuildInputs = [lua];
+
+          meta = {
+            homepage = "https://github.com/j-hui/fidget.nvim";
+            description = "Extensible UI for Neovim notifications and LSP progress messages.";
+            license.fullName = "MIT";
+          };
+        }) {};
 
     rocks-nvim = luaself.callPackage ({
       luaOlder,
