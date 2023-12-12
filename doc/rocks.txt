@@ -121,12 +121,20 @@ api.query_installed_rocks({callback})                *api.query_installed_rocks*
         {callback}  (fun(rocks:table<rock_name,Rock>))  @async
 
 
-api.get_rocks_toml()                                        *api.get_rocks_toml*
+api.get_rocks_toml_path()                              *api.get_rocks_toml_path*
     Gets the rocks.toml file path.
     Note that the file may not have been created yet.
 
     Returns: ~
-        (string)  rocks_toml_file
+        (string)  rocks_toml_file_path
+
+
+api.get_rocks_toml()                                        *api.get_rocks_toml*
+    Returns a table with the parsed rocks.toml file.
+    If the file doesn't exist a file with the default configuration will be created.
+
+    Returns: ~
+        (table)  rocks_toml_file
 
 
 RocksCmd                                                              *RocksCmd*
