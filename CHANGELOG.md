@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.3.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.3.2...v2.3.3) (2023-12-12)
+
+
+### Bug Fixes
+
+* **operations/update:** display "Checking for updates..." message before performing update checks ([#73](https://github.com/nvim-neorocks/rocks.nvim/issues/73)) ([d01b1e6](https://github.com/nvim-neorocks/rocks.nvim/commit/d01b1e6f14de5c070e68a4842b54886fe4f5f3e5))
+* **update:** exclude `-&lt;specrev&gt;` from version ([b7e096b](https://github.com/nvim-neorocks/rocks.nvim/commit/b7e096bb2d043f5b274674f859754f74348895e6))
+
 ## [2.3.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.3.1...v2.3.2) (2023-12-11)
 
 
