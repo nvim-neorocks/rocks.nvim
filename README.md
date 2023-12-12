@@ -43,6 +43,7 @@
 - An up-to-date `Neovim` nightly (>= 0.10) installation.
 - The `git` command line utility.
 - `wget` or `curl` (if running on a UNIX system) - required for the remote `:source` command to work.
+- `netrw` enabled in your Neovim configuration - enabled by default but some configurations manually disable the plugin.
 
 > [!IMPORTANT]
 > If you are running on Windows or an esoteric architecture, `rocks.nvim` will
