@@ -24,13 +24,15 @@
 
 local api = {}
 
-local nio = require("nio")
 local cache = require("rocks.cache")
-local luarocks = require("rocks.luarocks")
-local fzy = require("rocks.fzy")
-local state = require("rocks.state")
 local commands = require("rocks.commands")
 local config = require("rocks.config.internal")
+local constants = require("rocks.constants")
+local fs = require("rocks.fs")
+local fzy = require("rocks.fzy")
+local luarocks = require("rocks.luarocks")
+local nio = require("nio")
+local state = require("rocks.state")
 
 ---Tries to get the cached rocks.
 ---Returns an empty list if the cache has not been populated
@@ -91,9 +93,17 @@ end
 
 ---Gets the rocks.toml file path.
 ---Note that the file may not have been created yet.
----@return string rocks_toml_file
-function api.get_rocks_toml()
+---@return string rocks_toml_file_path
+function api.get_rocks_toml_path()
     return config.config_path
+end
+
+---Returns a table with the parsed rocks.toml file.
+---If the file doesn't exist a file with the default configuration will be created.
+---@return table rocks_toml_file
+function api.get_rocks_toml()
+    local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
+    return require("toml").decode(config_file)
 end
 
 ---@class RocksCmd
