@@ -18,6 +18,7 @@ local config = {}
 ---@field config_path? string Rocks declaration file path. Defaults to `rocks.toml` in `vim.fn.stdpath("config")`.
 ---@field luarocks_binary? string Luarocks binary path. Defaults to `luarocks`.
 ---@field lazy? boolean Whether to query luarocks.org lazily. Defaults to `false`. Setting this to `true` may improve startup time, but features like auto-completion will lag initially.
+---@field dynamic_rtp? boolean Whether to automatically add freshly installed plugins to the 'runtimepath'. Defaults to `true` for the best default experience.
 
 ---@type RocksOpts | fun():RocksOpts
 vim.g.rocks_nvim = vim.g.rocks_nvim

@@ -36,6 +36,7 @@ function check.validate(cfg)
         config_path = { cfg.config_path, "string" },
         luarocks_binary = { cfg.luarocks_binary, "string" },
         lazy = { cfg.lazy, "boolean" },
+        dynamic_rtp = { cfg.dynamic_rtp, "boolean" },
     })
     if not ok then
         return false, err

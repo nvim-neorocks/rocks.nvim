@@ -98,7 +98,11 @@ operations.install = function(name, version, progress_handle)
                 progress_handle:report({ message = message })
             end
 
-            vim.opt.runtimepath:append(vim.fs.joinpath(config.rocks_path, "lib", "luarocks", "rocks-5.1", "*", installed_rock.name:lower()))
+            if config.dynamic_rtp then
+                vim.opt.runtimepath:append(
+                    vim.fs.joinpath(config.rocks_path, "lib", "luarocks", "rocks-5.1", "*", installed_rock.name:lower())
+                )
+            end
 
             future.set(installed_rock)
         end
