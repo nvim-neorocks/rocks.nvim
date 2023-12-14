@@ -308,8 +308,6 @@ operations.sync = function(user_rocks)
                 percentage = get_progress_percentage(),
                 message = is_downgrading and ("Downgraded: %s"):format(key) or ("Upgraded: %s"):format(key),
             })
-
-            vim.opt.runtimepath:append(vim.fs.joinpath(config.rocks_path, "lib", "luarocks", "rocks-5.1", "*", user_rocks[key].name:lower()))
         end
 
         -- Determine dependencies of installed user rocks, so they can be excluded from rocks to prune
