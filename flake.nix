@@ -123,7 +123,7 @@
           };
         };
 
-        devShell = pkgs.mkShell {
+        devShell = pkgs.integration-nightly.overrideAttrs (oa: {
           name = "rocks.nvim devShell";
           inherit (pre-commit-check) shellHook;
           buildInputs = with pre-commit-hooks.packages.${system};
@@ -134,11 +134,9 @@
               luacheck
               editorconfig-checker
             ]
-            ++ (with pkgs; [
-              lua5_1
-              luarocks
-            ]);
-        };
+            ++ oa.buildInputs;
+          doCheck = false;
+        });
       in {
         devShells = {
           default = devShell;
