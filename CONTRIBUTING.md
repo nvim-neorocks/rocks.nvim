@@ -67,12 +67,16 @@ Or
 
 - [`nlua`](https://github.com/mfussenegger/nlua).
 
+> [!NOTE]
+>
+> The Nix devShell sets up `luarocks test` to use Neovim as the interpreter.
+
 ### Running tests and checks with Nix
 
 If you just want to run all checks that are available, run:
 
 ```console
-nix flake check -L
+nix flake check -L --option sandbox false
 ```
 
 To run tests locally, using Nix:
