@@ -17,6 +17,3 @@ if not config.lazy then
         })
     end)
 end
-
--- TODO: Add support for `opt`
-vim.opt.runtimepath:append(vim.fs.joinpath(config.rocks_path, "lib", "luarocks", "rocks-5.1", "*", "*"))
