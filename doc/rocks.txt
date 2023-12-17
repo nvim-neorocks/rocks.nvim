@@ -5,6 +5,7 @@ rocks.nvim ··································�
 rocks.nvim commands ··········································· |rocks.commands|
 rocks.nvim configuration ········································ |rocks.config|
 rocks.nvim Lua API ················································· |rocks.api|
+rocks.nvim logging API ············································· |rocks.log|
 
 ==============================================================================
 rocks.nvim                                                               *rocks*
@@ -62,17 +63,17 @@ The Lua API for rocks.nvim.
 Intended for use by modules that extend this plugin.
 
 
-Rock                                                                      *Rock*
-
-    Fields: ~
-        {name}     (string)
-        {version}  (string)
-
-
 rock_name                                                            *rock_name*
 
     Type: ~
         string
+
+
+Rock                                                                      *Rock*
+
+    Fields: ~
+        {name}     (rock_name)
+        {version}  (string)
 
 
 api.try_get_cached_rocks()                            *api.try_get_cached_rocks*
@@ -152,6 +153,57 @@ api.register_rocks_subcommand({name}, {cmd})
     Parameters: ~
         {name}  (string)    The name of the subcommand to register
         {cmd}   (RocksCmd)
+
+
+RockSpec                                                              *RockSpec*
+
+
+        { name: rock_name, version?: string, [string]: V }
+
+Specification for a rock in rocks.toml.
+
+rock_handler_callback                                    *rock_handler_callback*
+
+    Type: ~
+        fun(report_progress:fun(message:string),report_error:fun(message:string))
+
+
+A function that operates on the rock, syncing it with the entry in rocks.toml
+
+RockHandler                                                        *RockHandler*
+
+    Fields: ~
+        {get_sync_callback}   (fun(spec:RockSpec):rock_handler_callback|nil)                    Return a function that installs or updates the rock, or `nil` if the handler cannot or does not need to sync the rock.
+        {get_prune_callback}  (fun(specs:table<rock_name,RockSpec>):rock_handler_callback|nil)  Return a function that prunes unused rocks, or `nil` if the handler cannot or does not need to prune any rocks.
+
+
+api.register_rock_handler({handler})                 *api.register_rock_handler*
+
+    Parameters: ~
+        {handler}  (RockHandler)
+
+
+==============================================================================
+rocks.nvim logging API                                               *rocks.log*
+
+
+The logging interface for rocks.nvim.
+Intended to be used by external modules.
+
+
+log.trace()                                                          *log.trace*
+
+
+log.debug()                                                          *log.debug*
+
+
+log.info()                                                            *log.info*
+
+
+log.warn()                                                            *log.warn*
+
+
+log.error()                                                          *log.error*
 
 
 vim:tw=78:ts=8:noet:ft=help:norl:

@@ -28,12 +28,34 @@ local progress = require("fidget.progress")
 
 local operations = {}
 
+---@type RockHandler[]
+local _handlers = {}
+
+---@param handler RockHandler
+function operations.register_handler(handler)
+    table.insert(_handlers, handler)
+end
+
+---@param spec RockSpec
+---@return fun() | nil
+local function get_sync_handler_callback(spec)
+    return vim.iter(_handlers)
+        :map(function(handler)
+            ---@cast handler RockHandler
+            local get_callback = handler.get_sync_callback
+            return get_callback and get_callback(spec)
+        end)
+        :find(function(callback)
+            return callback ~= nil
+        end)
+end
+
 ---@class (exact) Future
 ---@field wait fun() Wait in an async context. Does not block in a sync context
 ---@field wait_sync fun() Wait in a sync context
 
----@alias rock_config_table { [string]: Rock|string }
----@alias rock_table { [string]: Rock }
+---@alias rock_config_table { [rock_name]: Rock|string }
+---@alias rock_table { [rock_name]: Rock }
 
 ---Decode the user rocks from rocks.toml, creating a default config file if it does not exist
 ---@return { rocks?: rock_config_table, plugins?: rock_config_table }
@@ -180,7 +202,7 @@ end)
 --- - Installs missing rocks
 --- - Ensures that the correct versions are installed
 --- - Uninstalls unneeded rocks
----@param user_rocks? { [string]: Rock|string } loaded from rocks.toml if `nil`
+---@param user_rocks? table<rock_name, RockSpec|string> loaded from rocks.toml if `nil`
 operations.sync = function(user_rocks)
     log.info("syncing...")
     nio.run(function()
@@ -203,7 +225,11 @@ operations.sync = function(user_rocks)
                 })
             )
         end
-
+        local function report_progress(message)
+            progress_handle:report({
+                message = message,
+            })
+        end
         if user_rocks == nil then
             -- Read or create a new config file and decode it
             -- NOTE: This does not use parse_user_rocks because we decode with toml, not toml-edit
@@ -217,13 +243,16 @@ operations.sync = function(user_rocks)
         for name, data in pairs(user_rocks) do
             -- TODO(vhyrro): Good error checking
             if type(data) == "string" then
+                ---@type RockSpec
                 user_rocks[name] = {
                     name = name,
                     version = data,
                 }
+            else
+                user_rocks[name].name = name
             end
         end
-        ---@cast user_rocks rock_table
+        ---@cast user_rocks table<rock_name, RockSpec>
 
         local installed_rocks = state.installed_rocks()
 
@@ -233,6 +262,8 @@ operations.sync = function(user_rocks)
         ---@diagnostic disable-next-line: invisible
         local key_list = nio.fn.keys(vim.tbl_deep_extend("force", installed_rocks, user_rocks))
 
+        local external_actions = vim.empty_dict()
+        ---@cast external_actions rock_handler_callback[]
         local to_install = vim.empty_dict()
         ---@cast to_install string[]
         local to_updowngrade = vim.empty_dict()
@@ -240,24 +271,36 @@ operations.sync = function(user_rocks)
         local to_prune = vim.empty_dict()
         ---@cast to_prune string[]
         for _, key in ipairs(key_list) do
-            if user_rocks[key] and not installed_rocks[key] then
+            local user_rock = user_rocks[key]
+            local callback = user_rock and get_sync_handler_callback(user_rock)
+            if callback then
+                table.insert(external_actions, callback)
+            elseif user_rocks and not installed_rocks[key] then
                 table.insert(to_install, key)
             elseif
-                user_rocks[key]
+                user_rock
+                and user_rock.version
                 and installed_rocks[key]
-                and user_rocks[key].version ~= installed_rocks[key].version
+                and user_rock.version ~= installed_rocks[key].version
             then
                 table.insert(to_updowngrade, key)
-            elseif not user_rocks[key] and installed_rocks[key] then
+            elseif not user_rock and installed_rocks[key] then
                 table.insert(to_prune, key)
             end
         end
 
         local ct = 1
-        local action_count = #to_install + #to_updowngrade + #to_prune
+        ---@diagnostic disable-next-line: invisible
+        local action_count = #to_install + #to_updowngrade + #to_prune + #external_actions
 
         local function get_progress_percentage()
             return get_percentage(ct, action_count)
+        end
+
+        -- Sync actions handled by external modules that have registered handlers
+        for _, callback in ipairs(external_actions) do
+            ct = ct + 1
+            callback(report_progress, report_error)
         end
 
         for _, key in ipairs(to_install) do
@@ -325,6 +368,14 @@ operations.sync = function(user_rocks)
         for _, installed_rock in pairs(installed_rocks) do
             for k, v in pairs(state.rock_dependencies(installed_rock)) do
                 dependencies[k] = v
+            end
+        end
+
+        -- Tell external handlers to prune their rocks
+        for _, handler in pairs(_handlers) do
+            local callback = handler.get_prune_callback(user_rocks)
+            if callback then
+                callback(report_progress, report_error)
             end
         end
 
