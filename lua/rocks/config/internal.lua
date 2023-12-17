@@ -19,8 +19,8 @@
 ---@field rocks_path string Local path in your filesystem to install rocks
 ---@field config_path string Rocks declaration file path
 ---@field luarocks_binary string Luarocks binary path
----@field lazy boolean Whether to query luarocks.org lazily.
----@field dynamic_rtp boolean Whether to automatically add freshly installed plugins to the 'runtimepath'.
+---@field lazy boolean Whether to query luarocks.org lazily
+---@field dynamic_rtp boolean Whether to automatically add freshly installed plugins to the 'runtimepath'
 ---@field debug_info RocksConfigDebugInfo
 
 ---@class (exact) RocksConfigDebugInfo
