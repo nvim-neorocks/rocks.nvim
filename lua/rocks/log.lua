@@ -1,8 +1,9 @@
----@mod rocks.log rocks.nvim logging
+---@mod rocks.log rocks.nvim logging API
 ---
 ---@brief [[
 ---
----The internal logging interface for rocks.nvim
+---The logging interface for rocks.nvim.
+---Intended to be used by external modules.
 ---
 ---@brief ]]
 
@@ -15,15 +16,21 @@
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainer: NTBBloodbath <bloodbathalchemist@protonmail.com>
 
-local log = {
-    -- NOTE: These functions are initialised as empty for type checking purposes
-    -- and implemented later.
-    trace = function(_) end,
-    debug = function(_) end,
-    info = function(_) end,
-    warn = function(_) end,
-    error = function(_) end,
-}
+local log = {}
+
+-- NOTE: These functions are initialised as empty for type checking purposes
+-- and implemented later.
+
+---@type fun(any)
+function log.trace(_) end
+---@type fun(any)
+function log.debug(_) end
+---@type fun(any)
+function log.info(_) end
+---@type fun(any)
+function log.warn(_) end
+---@type fun(any)
+function log.error(_) end
 
 local LARGE = 1e9
 
@@ -37,20 +44,22 @@ end
 local logfilename = vim.fn.tempname() .. "-rocks-nvim.log"
 
 ---Get the rocks.nvim log file path.
+---@package
 ---@return string filepath
 function log.get_logfile()
     return logfilename
 end
 
 ---Open the rocks.nvim log file.
+---@package
 function log.open_logfile()
     vim.cmd.e(log.get_logfile())
 end
 
 local logfile, openerr
---- @private
---- Opens log file. Returns true if file is open, false on error
---- @return boolean
+---@private
+---Opens log file. Returns true if file is open, false on error
+---@return boolean
 local function open_logfile()
     -- Try to open file only once
     if logfile then
@@ -79,9 +88,10 @@ local function open_logfile()
     return true
 end
 
---- Set the log level
---- @param level (string|integer) The log level
---- @see vim.log.levels
+---Set the log level
+---@param level (string|integer) The log level
+---@see vim.log.levels
+---@package
 function log.set_level(level)
     local log_levels = vim.deepcopy(vim.log.levels)
     vim.tbl_add_reverse_lookup(log_levels)

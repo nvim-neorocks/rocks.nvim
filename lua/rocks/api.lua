@@ -16,11 +16,11 @@
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainer: NTBBloodbath <bloodbathalchemist@protonmail.com>
 
----@class Rock
----@field name string
----@field version string
-
 ---@alias rock_name string
+
+---@class Rock
+---@field name rock_name
+---@field version string
 
 local api = {}
 
@@ -33,6 +33,7 @@ local fzy = require("rocks.fzy")
 local luarocks = require("rocks.luarocks")
 local nio = require("nio")
 local state = require("rocks.state")
+local operations = require("rocks.operations")
 
 ---Tries to get the cached rocks.
 ---Returns an empty list if the cache has not been populated
@@ -115,6 +116,27 @@ end
 ---@param cmd RocksCmd
 function api.register_rocks_subcommand(name, cmd)
     commands.register_subcommand(name, cmd)
+end
+
+---@class RockSpec: { name: rock_name, version?: string, [string]: any }
+---@brief [[
+---        { name: rock_name, version?: string, [string]: V }
+---
+---Specification for a rock in rocks.toml.
+---@brief ]]
+
+---@alias rock_handler_callback fun(report_progress: fun(message: string), report_error: fun(message: string))
+---@brief [[
+---A function that operates on the rock, syncing it with the entry in rocks.toml
+---@brief ]]
+
+---@class RockHandler
+---@field get_sync_callback fun(spec: RockSpec):rock_handler_callback|nil Return a function that installs or updates the rock, or `nil` if the handler cannot or does not need to sync the rock.
+---@field get_prune_callback fun(specs: table<rock_name, RockSpec>):rock_handler_callback|nil Return a function that prunes unused rocks, or `nil` if the handler cannot or does not need to prune any rocks.
+
+---@param handler RockHandler
+function api.register_rock_handler(handler)
+    operations.register_handler(handler)
 end
 
 return api
