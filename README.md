@@ -118,15 +118,25 @@ that are no longer needed, run the `:Rocks prune [rock]` command.
 The `:Rocks edit` command opens the `rocks.toml` file for manual editing.
 Make sure to run `:Rocks sync` when you are done.
 
-### Troubleshooting
+## :stethoscope: Troubleshooting
 
 The `:Rocks log` command opens a log file for the current session,
 which contains the `luarocks` stderr output, among other logs.
 
-## :waning_crescent_moon: Lua API
+## :package: Extending `rocks.nvim`
 
 This plugin provides a Lua API for extensibility.
 See [`:h rocks.api`](./doc/rocks.txt) for details.
+
+Following are some examples:
+
+- [`rocks-git.nvim`](https://github.com/nvim-neorocks/rocks-git.nvim):
+  Adds the ability to install plugins from git.
+- [`rocks-config.nvim`](https://github.com/nvim-neorocks/rocks-config.nvim):
+  Adds an API for safely loading plugin configurations.
+
+To extend `rocks.nvim`, simply install a module with `:Rocks install`,
+and you're good to go!
 
 ## :book: License
 
