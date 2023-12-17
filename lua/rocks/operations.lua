@@ -305,6 +305,12 @@ operations.sync = function(user_rocks)
 
         for _, key in ipairs(to_install) do
             nio.scheduler()
+            if not user_rocks[key].version then
+                local message = ("Could not parse rock: %s"):format(vim.inspect(user_rocks[key]))
+                log.error(message)
+                report_error(message)
+                goto skip_install
+            end
             progress_handle:report({
                 message = ("Installing: %s"):format(key),
             })
@@ -328,6 +334,7 @@ operations.sync = function(user_rocks)
                 message = ("Installed: %s"):format(key),
                 percentage = get_progress_percentage(),
             })
+            ::skip_install::
         end
         for _, key in ipairs(to_updowngrade) do
             local is_downgrading = vim.version.parse(user_rocks[key].version)
