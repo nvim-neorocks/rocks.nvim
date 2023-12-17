@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.4.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.3.3...v2.4.0) (2023-12-17)
+
+
+### Features
+
+* add `dynamic_rtp` option ([609cc53](https://github.com/nvim-neorocks/rocks.nvim/commit/609cc530991ab6b3a402656c80da521c3ee3e298))
+* **api:** allow external modules to hook into `:Rocks sync` ([#85](https://github.com/nvim-neorocks/rocks.nvim/issues/85)) ([9b66e52](https://github.com/nvim-neorocks/rocks.nvim/commit/9b66e52533fb314c8b312e49c6152599bdc84408))
+* auto add newly installed plugins to the RTP ([5ea1004](https://github.com/nvim-neorocks/rocks.nvim/commit/5ea1004c6510ef05ec528ac2e3a190b15220bacc))
+
 ## [2.3.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.3.2...v2.3.3) (2023-12-12)
 
 
