@@ -154,7 +154,7 @@ local function set_up_luarocks(install_path)
     end
 
     ---@diagnostic disable-next-line: param-type-mismatch
-    local tempdir = vim.fs.joinpath(vim.fn.stdpath("run"), "luarocks")
+    local tempdir = vim.fs.joinpath(vim.fn.stdpath("run"), "luarocks-" .. vim.loop.random(7))
 
     vim.notify("Downloading luarocks...")
 
@@ -163,7 +163,6 @@ local function set_up_luarocks(install_path)
         "clone",
         "https://github.com/luarocks/luarocks.git",
         tempdir,
-        "--depth=1",
     }):wait()
 
     if sc.code ~= 0 then
@@ -172,6 +171,20 @@ local function set_up_luarocks(install_path)
     end
 
     vim.notify("Configuring luarocks...")
+
+    sc = vim.system({
+        "git",
+        "reset",
+        "--hard",
+        "d81020338c99ff4116431ee496a7db516eb91f00",
+    }, {
+        cwd = tempdir,
+    }):wait()
+
+    if sc.code ~= 0 then
+        vim.notify("Configuring luarocks failed: " .. sc.stderr, vim.log.levels.ERROR)
+        return false
+    end
 
     sc = vim.system({
         "sh",
