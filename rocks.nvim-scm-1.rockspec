@@ -12,6 +12,7 @@ dependencies = {
     "toml",
     "fidget.nvim >= 1.1.0",
     "fzy",
+    "nvim-nio",
 }
 
 test_dependencies = {
@@ -20,6 +21,7 @@ test_dependencies = {
     "toml",
     "fidget.nvim >= 1.1.0",
     "fzy",
+    "nvim-nio",
 }
 
 source = {

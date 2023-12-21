@@ -12,6 +12,7 @@
             toml
             fidget-nvim
             fzy
+            nvim-nio
           ];
 
         extraPackages = [

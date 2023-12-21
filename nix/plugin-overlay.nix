@@ -4,6 +4,39 @@
 }: final: prev: let
   lib = final.lib;
   rocks-nvim-luaPackage-override = luaself: luaprev: {
+    nvim-nio =
+      # TODO: Replace with nixpkgs package when available
+      luaself.callPackage ({
+        buildLuarocksPackage,
+        fetchurl,
+        fetchzip,
+        lua,
+        luaOlder,
+      }:
+        buildLuarocksPackage {
+          pname = "nvim-nio";
+          version = "1.2.0-1";
+          knownRockspec =
+            (fetchurl {
+              url = "mirror://luarocks/nvim-nio-1.2.0-1.rockspec";
+              sha256 = "0a62iv1lyx8ldrdbip6az0ixm8dmpcai3k8j5jsf49cr4zjpcjzk";
+            })
+            .outPath;
+          src = fetchzip {
+            url = "https://github.com/nvim-neotest/nvim-nio/archive/11864149f47e0c7a38c4dadbcea8fc17c968556e.zip";
+            sha256 = "141py3csgbijpqhscgmsbnkg4lbx7ma7nwpj0akfc7v37c143dq3";
+          };
+
+          disabled = luaOlder "5.1";
+          propagatedBuildInputs = [lua];
+
+          meta = {
+            homepage = "https://github.com/nvim-neotest/nvim-nio";
+            description = "A library for asynchronous IO in Neovim";
+            license.fullName = "MIT";
+          };
+        }) {};
+
     fidget-nvim =
       # TODO: Replace with nixpkgs package when available
       luaself.callPackage ({
@@ -44,6 +77,7 @@
       toml,
       toml-edit,
       fidget-nvim,
+      nvim-nio,
       fzy,
     }:
       buildLuarocksPackage {
@@ -56,6 +90,7 @@
           toml
           toml-edit
           fidget-nvim
+          nvim-nio
           fzy
         ];
       }) {};
@@ -113,6 +148,7 @@ in {
                 toml
                 toml-edit
                 fidget-nvim
+                nvim-nio
                 fzy
               ])
             }"''
@@ -121,6 +157,7 @@ in {
               lib.concatMapStringsSep ";" lua51Packages.getLuaPath
               (with lua51Packages; [
                 fidget-nvim
+                nvim-nio
                 fzy
               ])
             }"''
