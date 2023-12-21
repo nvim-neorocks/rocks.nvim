@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.5.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.4.1...v2.5.0) (2023-12-21)
+
+
+### Features
+
+* **deps:** replace internal `nio` module with `nvim-nio` ([b10889e](https://github.com/nvim-neorocks/rocks.nvim/commit/b10889e64a81092639628d1980273c33081eea44))
+
+
+### Bug Fixes
+
+* **installer:** stay on old luarocks commit, fix `/run/.../luarocks already exists` error ([57e80f7](https://github.com/nvim-neorocks/rocks.nvim/commit/57e80f7f5ecdc55e51554024e975102a8f86c86b))
+
 ## [2.4.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.4.0...v2.4.1) (2023-12-17)
 
 
