@@ -92,7 +92,6 @@
                         "result"
                         "nix"
                         "doc"
-                        "lua/nio"
                       ];
                     };
                     diagnostics = {
@@ -116,8 +115,7 @@
           src = self;
           hooks = {
             alejandra.enable = true;
-            # FIXME: Uncomment when stylua has a --respect-ignores flag
-            # stylua.enable = true;
+            stylua.enable = true;
             luacheck.enable = true;
             editorconfig-checker.enable = true;
           };
