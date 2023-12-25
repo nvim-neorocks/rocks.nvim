@@ -23,6 +23,7 @@ local config = require("rocks.config.internal")
 local state = require("rocks.state")
 local cache = require("rocks.cache")
 local luarocks = require("rocks.luarocks")
+local runtime = require("rocks.runtime")
 local nio = require("nio")
 local progress = require("fidget.progress")
 
@@ -70,13 +71,13 @@ local function get_percentage(counter, total)
     return counter > 0 and math.min(100, math.floor((counter / total) * 100)) or 0
 end
 
----@param name string
----@param version? string
+---@param rock_spec RockSpec
 ---@param progress_handle? ProgressHandle
 ---@return Future
-operations.install = function(name, version, progress_handle)
+operations.install = function(rock_spec, progress_handle)
     cache.invalidate_removable_rocks()
-    name = name:lower()
+    local name = rock_spec.name:lower()
+    local version = rock_spec.version
     local message = version and ("Installing: %s -> %s"):format(name, version) or ("Installing: %s"):format(name)
     log.info(message)
     if progress_handle then
@@ -120,10 +121,8 @@ operations.install = function(name, version, progress_handle)
                 progress_handle:report({ message = message })
             end
 
-            if config.dynamic_rtp then
-                vim.opt.runtimepath:append(
-                    vim.fs.joinpath(config.rocks_path, "lib", "luarocks", "rocks-5.1", "*", installed_rock.name:lower())
-                )
+            if config.dynamic_rtp and rock_spec.opt then
+                runtime.packadd(name)
             end
 
             future.set(installed_rock)
@@ -196,7 +195,7 @@ operations.remove_recursive = nio.create(function(name, keep, progress_handle)
         end
     end
     return success
-end)
+end, 3)
 
 --- Synchronizes the user rocks with the physical state on the current machine.
 --- - Installs missing rocks
@@ -233,11 +232,7 @@ operations.sync = function(user_rocks)
         if user_rocks == nil then
             -- Read or create a new config file and decode it
             -- NOTE: This does not use parse_user_rocks because we decode with toml, not toml-edit
-            local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
-            local user_config = require("toml").decode(config_file)
-
-            -- Merge `rocks` and `plugins` fields as they are just an eye-candy separator for clarity purposes
-            user_rocks = vim.tbl_deep_extend("force", user_config.rocks or {}, user_config.plugins or {})
+            user_rocks = config.get_user_rocks()
         end
 
         for name, data in pairs(user_rocks) do
@@ -316,12 +311,10 @@ operations.sync = function(user_rocks)
             })
             -- If the plugin version is a development release then we pass `dev` as the version to the install function
             -- as it gets converted to the `--dev` flag on there, allowing luarocks to pull the `scm-1` rockspec manifest
-            local future
             if vim.startswith(user_rocks[key].version, "scm-") then
-                future = operations.install(user_rocks[key].name, "dev")
-            else
-                future = operations.install(user_rocks[key].name, user_rocks[key].version)
+                user_rocks[key].version = "dev"
             end
+            local future = operations.install(user_rocks[key])
             local success = pcall(future.wait)
 
             ct = ct + 1
@@ -345,7 +338,7 @@ operations.sync = function(user_rocks)
                 message = is_downgrading and ("Downgrading: %s"):format(key) or ("Updating: %s"):format(key),
             })
 
-            local future = operations.install(user_rocks[key].name, user_rocks[key].version)
+            local future = operations.install(user_rocks[key])
             local success = pcall(future.wait)
 
             ct = ct + 1
@@ -485,7 +478,10 @@ operations.update = function()
             progress_handle:report({
                 message = name,
             })
-            local future = operations.install(name, rock.target_version)
+            local future = operations.install({
+                name = name,
+                version = rock.target_version,
+            })
             local success, ret = pcall(future.wait)
             ct = ct + 1
             nio.scheduler()
@@ -538,7 +534,10 @@ operations.add = function(rock_name, version)
     })
 
     nio.run(function()
-        local future = operations.install(rock_name, version)
+        local future = operations.install({
+            name = rock_name,
+            version = version,
+        })
         local success, installed_rock = pcall(future.wait)
         vim.schedule(function()
             if not success then

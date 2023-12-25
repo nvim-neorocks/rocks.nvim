@@ -20,8 +20,7 @@
 
 local fs = {}
 
----@diagnostic disable-next-line: deprecated
-local uv = vim.uv or vim.loop
+local uv = vim.uv
 
 --- Check if a file exists
 ---@param location string file path

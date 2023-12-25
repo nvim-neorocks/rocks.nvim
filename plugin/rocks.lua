@@ -1,10 +1,11 @@
--- Initialize rocks
-require("rocks").init()
+if vim.g.rocks_nvim_loaded then
+    return
+end
+vim.g.rocks_nvim_loaded = true
 
 -- Set up the Rocks user command
 require("rocks.commands").create_commands()
 
----@type RocksConfig
 local config = require("rocks.config.internal")
 
 if not config.lazy then
@@ -17,3 +18,6 @@ if not config.lazy then
         })
     end)
 end
+
+--- We don't want to run this async, to ensure plugins are sourced before `after/plugin`
+require("rocks.runtime").source_start_plugins()

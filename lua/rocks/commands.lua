@@ -2,18 +2,26 @@
 ---
 ---@brief [[
 ---
---- `:Rocks [command [args?]]`
+--- `:Rocks[!] {command {args?}}`
 ---
 --- command	  	                     action
 ---------------------------------------------------------------------------------
 ---
---- install [rock] [version?]  	     Install {rock} with optional {version}.
---- prune [rock]                     Uninstall {rock} and its stale dependencies,
+--- install {rock} {version?}  	     Install {rock} with optional {version}.
+--- prune {rock}                     Uninstall {rock} and its stale dependencies,
 ---                                  and remove it from rocks.toml.
 --- sync                             Synchronize installed rocks with rocks.toml.
 ---                                  It may take more than one sync to prune all rocks that can be pruned.
 --- update                           Search for updated rocks and install them.
 --- edit                             Edit the rocks.toml file.
+--- packadd {rock}                   Search for an optional rock and source any plugin files found.
+---                                  The rock must be installed by luarocks.
+---                                  It is added to the 'runtimepath' if it wasn't there yet.
+---                                  If `Rocks` is called with the optional `!`, the rock is added
+---                                  to the 'runtimepath' and no 'plugin' or 'ftdetect' scripts are
+---                                  sourced.
+---                                  This command aims to behave similarly to the builtin 'packadd'.
+---                                  To make a rock optional, set `opt = true` in `rocks.toml`.
 --- log                              Open the log file.
 ---
 ---@brief ]]
@@ -134,6 +142,19 @@ local rocks_command_tbl = {
             vim.cmd.e(require("rocks.config.internal").config_path)
         end,
     },
+    packadd = {
+        impl = function(args, opts)
+            if #args ~= 1 then
+                vim.notify("Rocks packadd: Called without required rock argument.", vim.log.levels.ERROR)
+                return
+            end
+            local rock_name = args[1]
+            require("rocks.runtime").packadd(rock_name, { bang = opts.bang })
+        end,
+        complete = function(query)
+            return require("rocks.runtime").complete_packadd(query)
+        end,
+    },
     log = {
         impl = function(_)
             require("rocks.log").open_logfile()
@@ -150,7 +171,7 @@ local function rocks(opts)
         vim.notify("Rocks: Unknown command: " .. cmd, vim.log.levels.ERROR)
         return
     end
-    command.impl(args)
+    command.impl(args, opts)
 end
 
 ---@package
@@ -160,14 +181,15 @@ function commands.create_commands()
         desc = "Interacts with currently installed rocks",
         complete = function(arg_lead, cmdline, _)
             local rocks_commands = vim.tbl_keys(rocks_command_tbl)
-            local subcmd, subcmd_arg_lead = cmdline:match("^Rocks%s(%S+)%s(.*)$")
+            local subcmd, subcmd_arg_lead = cmdline:match("^Rocks[!]*%s(%S+)%s(.*)$")
             if subcmd and subcmd_arg_lead and rocks_command_tbl[subcmd] and rocks_command_tbl[subcmd].complete then
                 return rocks_command_tbl[subcmd].complete(subcmd_arg_lead)
             end
-            if cmdline:match("^Rocks%s+%w*$") then
+            if cmdline:match("^Rocks[!]*%s+%w*$") then
                 return fzy.fuzzy_filter(arg_lead, rocks_commands)
             end
         end,
+        bang = true,
     })
 end
 

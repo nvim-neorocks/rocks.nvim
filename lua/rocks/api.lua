@@ -27,8 +27,6 @@ local api = {}
 local cache = require("rocks.cache")
 local commands = require("rocks.commands")
 local config = require("rocks.config.internal")
-local constants = require("rocks.constants")
-local fs = require("rocks.fs")
 local fzy = require("rocks.fzy")
 local luarocks = require("rocks.luarocks")
 local nio = require("nio")
@@ -99,16 +97,36 @@ function api.get_rocks_toml_path()
     return config.config_path
 end
 
+---@class RockSpec: { name: rock_name, version?: string, opt?: boolean, [string]: unknown }
+---@brief [[
+---        { name: rock_name, version?: string, opt?: boolean, [string]: V }
+---
+---Specification for a rock in rocks.toml.
+---@brief ]]
+
+---@class RocksToml: { rocks?: RockSpec[], plugins?: RockSpec[], [string]: unknown }
+---@brief [[
+---        { rocks?: RockSpec[], plugins?: RockSpec[], [string]: V }
+---
+---Content of rocks.toml
+---@brief ]]
+
 ---Returns a table with the parsed rocks.toml file.
 ---If the file doesn't exist a file with the default configuration will be created.
----@return table rocks_toml_file
+---@return RocksToml
 function api.get_rocks_toml()
-    local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
-    return require("toml").decode(config_file)
+    return config.get_rocks_toml()
+end
+
+---Returns a table with the rock specifications parsed from the rocks.toml file.
+---If the file doesn't exist a file with the default configuration will be created.
+---@return RockSpec[]
+function api.get_user_rocks()
+    return config.get_user_rocks()
 end
 
 ---@class RocksCmd
----@field impl fun(args:string[]) The command implementation
+---@field impl fun(args:string[], opts: vim.api.keyset.user_command) The command implementation
 ---@field complete? fun(subcmd_arg_lead: string): string[] Command completions callback, taking the lead of the subcommand's arguments
 
 ---Register a `:Rocks` subcommand.
@@ -117,13 +135,6 @@ end
 function api.register_rocks_subcommand(name, cmd)
     commands.register_subcommand(name, cmd)
 end
-
----@class RockSpec: { name: rock_name, version?: string, [string]: any }
----@brief [[
----        { name: rock_name, version?: string, [string]: V }
----
----Specification for a rock in rocks.toml.
----@brief ]]
 
 ---@alias rock_handler_callback fun(report_progress: fun(message: string), report_error: fun(message: string))
 ---@brief [[

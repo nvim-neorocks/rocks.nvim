@@ -74,7 +74,7 @@ and the installer will do the rest!
 
 ### Installing rocks
 
-You can install rocks with the `:Rocks install [rock] [version?]` command.
+You can install rocks with the `:Rocks install {rock} {version?}` command.
 
 Arguments:
 
@@ -106,7 +106,7 @@ The `:Rocks sync` command synchronizes the installed rocks with the `rocks.toml`
 ### Uninstalling rocks
 
 To uninstall a rock and any of its dependencies,
-that are no longer needed, run the `:Rocks prune [rock]` command.
+that are no longer needed, run the `:Rocks prune {rock}` command.
 
 > [!NOTE]
 >
@@ -117,6 +117,29 @@ that are no longer needed, run the `:Rocks prune [rock]` command.
 
 The `:Rocks edit` command opens the `rocks.toml` file for manual editing.
 Make sure to run `:Rocks sync` when you are done.
+
+### Lazy loading plugins
+
+By default, `rocks.nvim` will source all plugins at startup.
+To prevent it from sourcing a plugin, you can specify `opt = true`
+in the `rocks.toml` file.
+
+For example:
+
+```toml
+[plugins]
+neorg = { version = "1.0.0", opt = true }
+```
+
+or
+
+```toml
+[plugins.neorg]
+version = "1.0.0"
+opt = true
+```
+
+You can then load the plugin with the `:Rocks[!] packadd {rock}` command.
 
 ## :stethoscope: Troubleshooting
 

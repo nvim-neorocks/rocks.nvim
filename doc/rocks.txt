@@ -18,18 +18,26 @@ A luarocks plugin manager for Neovim.
 rocks.nvim commands                                             *rocks.commands*
 
 
- `:Rocks [command [args?]]`
+ `:Rocks[!] {command {args?}}`
 
  command	  	                     action
 ------------------------------------------------------------------------------
 
- install [rock] [version?]  	     Install {rock} with optional {version}.
- prune [rock]                     Uninstall {rock} and its stale dependencies,
+ install {rock} {version?}  	     Install {rock} with optional {version}.
+ prune {rock}                     Uninstall {rock} and its stale dependencies,
                                   and remove it from rocks.toml.
  sync                             Synchronize installed rocks with rocks.toml.
                                   It may take more than one sync to prune all rocks that can be pruned.
  update                           Search for updated rocks and install them.
  edit                             Edit the rocks.toml file.
+ packadd {rock}                   Search for an optional rock and source any plugin files found.
+                                  The rock must be installed by luarocks.
+                                  It is added to the 'runtimepath' if it wasn't there yet.
+                                  If `Rocks` is called with the optional `!`, the rock is added
+                                  to the 'runtimepath' and no 'plugin' or 'ftdetect' scripts are
+                                  sourced.
+                                  This command aims to behave similarly to the builtin 'packadd'.
+                                  To make a rock optional, set `opt = true` in `rocks.toml`.
  log                              Open the log file.
 
 
@@ -131,19 +139,41 @@ api.get_rocks_toml_path()                              *api.get_rocks_toml_path*
         (string)  rocks_toml_file_path
 
 
+RockSpec                                                              *RockSpec*
+
+
+        { name: rock_name, version?: string, opt?: boolean, [string]: V }
+
+Specification for a rock in rocks.toml.
+
+RocksToml                                                            *RocksToml*
+
+
+        { rocks?: RockSpec[], plugins?: RockSpec[], [string]: V }
+
+Content of rocks.toml
+
 api.get_rocks_toml()                                        *api.get_rocks_toml*
     Returns a table with the parsed rocks.toml file.
     If the file doesn't exist a file with the default configuration will be created.
 
     Returns: ~
-        (table)  rocks_toml_file
+        (RocksToml)
+
+
+api.get_user_rocks()                                        *api.get_user_rocks*
+    Returns a table with the rock specifications parsed from the rocks.toml file.
+    If the file doesn't exist a file with the default configuration will be created.
+
+    Returns: ~
+        (RockSpec[])
 
 
 RocksCmd                                                              *RocksCmd*
 
     Fields: ~
-        {impl}       (fun(args:string[]))                    The command implementation
-        {complete?}  (fun(subcmd_arg_lead:string):string[])  Command completions callback, taking the lead of the subcommand's arguments
+        {impl}       (fun(args:string[],opts:vim.api.keyset.user_command))  The command implementation
+        {complete?}  (fun(subcmd_arg_lead:string):string[])                 Command completions callback, taking the lead of the subcommand's arguments
 
 
                                                  *api.register_rocks_subcommand*
@@ -154,13 +184,6 @@ api.register_rocks_subcommand({name}, {cmd})
         {name}  (string)    The name of the subcommand to register
         {cmd}   (RocksCmd)
 
-
-RockSpec                                                              *RockSpec*
-
-
-        { name: rock_name, version?: string, [string]: V }
-
-Specification for a rock in rocks.toml.
 
 rock_handler_callback                                    *rock_handler_callback*
 
