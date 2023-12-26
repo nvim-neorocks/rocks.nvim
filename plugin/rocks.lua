@@ -1,7 +1,6 @@
 if vim.g.rocks_nvim_loaded then
     return
 end
-vim.g.rocks_nvim_loaded = true
 
 -- Set up the Rocks user command
 require("rocks.commands").create_commands()
@@ -21,3 +20,5 @@ end
 
 --- We don't want to run this async, to ensure plugins are sourced before `after/plugin`
 require("rocks.runtime").source_start_plugins()
+
+vim.g.rocks_nvim_loaded = true
