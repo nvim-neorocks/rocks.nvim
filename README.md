@@ -141,6 +141,25 @@ opt = true
 
 You can then load the plugin with the `:Rocks[!] packadd {rock}` command.
 
+> [!NOTE]
+>
+> A note on loading rocks:
+>
+> Luarocks packages are installed differently than you are used to
+> from Git repositories.
+>
+> Specifically, `luarocks` installs a rock's Lua API to the [`package.path`](https://neovim.io/doc/user/luaref.html#package.path)
+> and the [`package.cpath`](https://neovim.io/doc/user/luaref.html#package.cpath).
+> It does not have to be added to Neovim's runtime path
+> (e.g. using `:Rocks packadd`), for it to become available.
+> This does not impact Neovim's startup time.
+>
+> Runtime directories ([`:h runtimepath`](https://neovim.io/doc/user/options.html#'runtimepath')),
+> on the other hand, are installed to a separate location.
+> Plugins that utilise these directories may impact startup time
+> (if it has `ftdetect` or `plugin` scripts), so you may or may
+> not benefit from loading them lazily.
+
 ## :stethoscope: Troubleshooting
 
 The `:Rocks log` command opens a log file for the current session,
