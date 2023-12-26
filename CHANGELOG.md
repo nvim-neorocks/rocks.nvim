@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.5.0...v2.6.0) (2023-12-26)
+
+
+### Features
+
+* `:Rocks packadd` commmand for lazy-loading `opt` plugins ([#99](https://github.com/nvim-neorocks/rocks.nvim/issues/99)) ([89fa2b8](https://github.com/nvim-neorocks/rocks.nvim/commit/89fa2b800036bef4a32414b2ff28c9f373ce71ec))
+
 ## [2.5.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.4.1...v2.5.0) (2023-12-21)
 
 
