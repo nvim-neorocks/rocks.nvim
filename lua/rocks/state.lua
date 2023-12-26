@@ -126,7 +126,7 @@ state.rock_dependencies = nio.create(function(rock)
     end
 
     return dependencies
-end)
+end, 1)
 
 ---List installed rocks that are not dependencies of any other rocks
 ---and can be removed.

@@ -74,7 +74,7 @@ and the installer will do the rest!
 
 ### Installing rocks
 
-You can install rocks with the `:Rocks install [rock] [version?]` command.
+You can install rocks with the `:Rocks install {rock} {version?}` command.
 
 Arguments:
 
@@ -106,7 +106,7 @@ The `:Rocks sync` command synchronizes the installed rocks with the `rocks.toml`
 ### Uninstalling rocks
 
 To uninstall a rock and any of its dependencies,
-that are no longer needed, run the `:Rocks prune [rock]` command.
+that are no longer needed, run the `:Rocks prune {rock}` command.
 
 > [!NOTE]
 >
@@ -117,6 +117,48 @@ that are no longer needed, run the `:Rocks prune [rock]` command.
 
 The `:Rocks edit` command opens the `rocks.toml` file for manual editing.
 Make sure to run `:Rocks sync` when you are done.
+
+### Lazy loading plugins
+
+By default, `rocks.nvim` will source all plugins at startup.
+To prevent it from sourcing a plugin, you can specify `opt = true`
+in the `rocks.toml` file.
+
+For example:
+
+```toml
+[plugins]
+neorg = { version = "1.0.0", opt = true }
+```
+
+or
+
+```toml
+[plugins.neorg]
+version = "1.0.0"
+opt = true
+```
+
+You can then load the plugin with the `:Rocks[!] packadd {rock}` command.
+
+> [!NOTE]
+>
+> A note on loading rocks:
+>
+> Luarocks packages are installed differently than you are used to
+> from Git repositories.
+>
+> Specifically, `luarocks` installs a rock's Lua API to the [`package.path`](https://neovim.io/doc/user/luaref.html#package.path)
+> and the [`package.cpath`](https://neovim.io/doc/user/luaref.html#package.cpath).
+> It does not have to be added to Neovim's runtime path
+> (e.g. using `:Rocks packadd`), for it to become available.
+> This does not impact Neovim's startup time.
+>
+> Runtime directories ([`:h runtimepath`](https://neovim.io/doc/user/options.html#'runtimepath')),
+> on the other hand, are installed to a separate location.
+> Plugins that utilise these directories may impact startup time
+> (if it has `ftdetect` or `plugin` scripts), so you may or may
+> not benefit from loading them lazily.
 
 ## :stethoscope: Troubleshooting
 
