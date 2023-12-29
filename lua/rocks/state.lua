@@ -109,9 +109,12 @@ state.rock_dependencies = nio.create(function(rock)
         end
     end, { text = true })
 
-    local success, result = pcall(future.wait)
+    local co = coroutine.create(function()
+        coroutine.yield(future.wait())
+    end)
+    local success, result = coroutine.resume(co)
     if not success then
-        log.error(result)
+        log.error(debug.traceback(co))
         return {}
     end
 
