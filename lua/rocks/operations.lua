@@ -491,7 +491,15 @@ operations.update = function()
                     percentage = get_percentage(ct, #outdated_rocks),
                 })
             end
-            user_rocks.plugins[ret.name] = ret.version
+            ---@type rock_name
+            local rock_name = ret.name
+            local user_rock = user_rocks.plugins[rock_name]
+            if user_rock and user_rock.version then
+                -- Rock is configured as a table -> Update version.
+                user_rocks.plugins[rock_name].version = ret.version
+            else
+                user_rocks.plugins[rock_name] = ret.version
+            end
             progress_handle:report({
                 message = ("Updated %s: %s -> %s"):format(rock.name, rock.version, rock.target_version),
                 percentage = get_percentage(ct, #outdated_rocks),
@@ -568,7 +576,13 @@ operations.add = function(rock_name, version)
             if version == "dev" then
                 installed_rock.version = "scm-1"
             end
-            user_rocks.plugins[installed_rock.name] = installed_rock.version
+            local user_rock = user_rocks.plugins[rock_name]
+            if user_rock and user_rock.version then
+                -- Rock already exists in rock.toml and is configured as a table -> Update version.
+                user_rocks.plugins[rock_name].version = installed_rock.version
+            else
+                user_rocks.plugins[rock_name] = installed_rock.version
+            end
             fs.write_file(config.config_path, "w", tostring(user_rocks))
             if success then
                 progress_handle:finish()

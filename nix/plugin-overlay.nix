@@ -4,6 +4,48 @@
 }: final: prev: let
   lib = final.lib;
   rocks-nvim-luaPackage-override = luaself: luaprev: {
+    toml-edit =
+      (luaself.callPackage ({
+        buildLuarocksPackage,
+        fetchgit,
+        fetchurl,
+        lua,
+        luaOlder,
+        luarocks-build-rust-mlua,
+      }:
+        buildLuarocksPackage {
+          pname = "toml-edit";
+          version = "0.1.5-1";
+          knownRockspec =
+            (fetchurl {
+              url = "mirror://luarocks/toml-edit-0.1.5-1.rockspec";
+              sha256 = "1xgjh8x44kn24vc29si811zq2a7pr24zqj4w07pys5k6ccnv26qz";
+            })
+            .outPath;
+          src = fetchgit (removeAttrs (builtins.fromJSON ''            {
+              "url": "https://github.com/vhyrro/toml-edit.lua",
+              "rev": "34f072d8ff054b3124d9d2efc0263028d7425525",
+              "date": "2023-12-29T15:53:36+01:00",
+              "path": "/nix/store/z1gn59hz9ypk3icn3gmafaa19nzx7a1v-toml-edit.lua",
+              "sha256": "0jzzp4sd48haq1kmh2k85gkygfq39i10kvgjyqffcrv3frdihxvx",
+              "hash": "sha256-fXcYW3ZjZ+Yc9vLtCUJMA7vn5ytoClhnwAoi0jS5/0s=",
+              "fetchLFS": false,
+              "fetchSubmodules": true,
+              "deepClone": false,
+              "leaveDotGit": false
+            }
+          '') ["date" "path" "sha256"]);
+
+          propagatedBuildInputs = [lua luarocks-build-rust-mlua];
+        }) {})
+      .overrideAttrs (oa: {
+        cargoDeps = final.rustPlatform.fetchCargoTarball {
+          src = oa.src;
+          hash = "sha256-gvUqkLOa0WvAK4GcTkufr0lC2BOs2FQ2bgFpB0qa47k=";
+        };
+        nativeBuildInputs = with final; [cargo rustPlatform.cargoSetupHook] ++ oa.nativeBuildInputs;
+      });
+
     nvim-nio =
       # TODO: Replace with nixpkgs package when available
       luaself.callPackage ({
