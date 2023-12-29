@@ -34,7 +34,7 @@ constants.DEFAULT_CONFIG = string.format(
 # Here is a small yet pretty detailed example on how to use it:
 #
 # [plugins]
-# nvim-treesitter = "semver_version-rev"  # e.g. "1.0.0-0"
+# nvim-treesitter = "semver_version"  # e.g. "1.0.0"
 
 # List of non-Neovim rocks.
 # This includes things like `toml` or other lua packages.
