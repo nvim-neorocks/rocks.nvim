@@ -52,8 +52,8 @@
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
-            plugin-overlay
             neorocks.overlays.default
+            plugin-overlay
             test-overlay
           ];
         };

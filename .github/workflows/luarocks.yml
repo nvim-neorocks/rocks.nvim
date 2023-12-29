@@ -31,7 +31,7 @@ jobs:
           version: ${{ env.LUAROCKS_VERSION }}
           test_interpreters: ""
           dependencies: |
-            toml-edit
+            toml-edit >= 0.1.5
             toml
             fidget.nvim >= 1.1.0
             fzy
