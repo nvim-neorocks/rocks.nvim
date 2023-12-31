@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.6.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.6.0...v2.6.1) (2023-12-31)
+
+
+### Bug Fixes
+
+* **api:** ensure `get_rocks_toml` returns `RockSpec[]` tables ([dcfd23c](https://github.com/nvim-neorocks/rocks.nvim/commit/dcfd23c3bad72c82e2904312a3060892ef4b29ae))
+* **sync:** error when downgrading from `scm`/`dev` versions ([afee345](https://github.com/nvim-neorocks/rocks.nvim/commit/afee34525629d9cc160be0c4cba70b2c15666bcf))
+* **update,install:** rocks.toml entries coerced to strings ([ef8d8af](https://github.com/nvim-neorocks/rocks.nvim/commit/ef8d8afe8e0b13cbbea437ca546b04bf95657da1))
+
 ## [2.6.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.5.0...v2.6.0) (2023-12-26)
 
 
