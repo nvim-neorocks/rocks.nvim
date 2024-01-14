@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.6.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.6.1...v2.6.2) (2024-01-14)
+
+
+### Bug Fixes
+
+* better stack traces ([#104](https://github.com/nvim-neorocks/rocks.nvim/issues/104)) ([af1d92f](https://github.com/nvim-neorocks/rocks.nvim/commit/af1d92f5a5f2b27f429df76298743ac4741ed4f2))
+* **runtime:** variable naming conflict ([#112](https://github.com/nvim-neorocks/rocks.nvim/issues/112)) ([e3294ee](https://github.com/nvim-neorocks/rocks.nvim/commit/e3294eeef1f148ed3f3c937c330ab234ddf9a387))
+
 ## [2.6.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.6.0...v2.6.1) (2023-12-31)
 
 
