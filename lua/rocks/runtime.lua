@@ -120,7 +120,7 @@ function runtime.packadd(rock_name, opts)
     ---@cast opts table
     opts = vim.tbl_deep_extend("force", {
         bang = false,
-        error_on_not_found = true,
+        error_on_not_found = false,
     }, opts or {})
     local rtp_glob = mk_rtp_glob(rock_name)
     rtp_append(rtp_glob)
