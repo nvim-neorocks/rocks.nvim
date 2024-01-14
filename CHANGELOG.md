@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.6.2...v2.7.0) (2024-01-14)
+
+
+### Features
+
+* **packadd:** Fall back to builtin `packadd` if no rock is found. ([#114](https://github.com/nvim-neorocks/rocks.nvim/issues/114)) ([816b916](https://github.com/nvim-neorocks/rocks.nvim/commit/816b9164f234a34445ee89374b719b35540ee225))
+
 ## [2.6.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.6.1...v2.6.2) (2024-01-14)
 
 
