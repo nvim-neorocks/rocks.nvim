@@ -34,9 +34,10 @@ rocks.nvim commands                                             *rocks.commands*
                                   The rock must be installed by luarocks.
                                   It is added to the 'runtimepath' if it wasn't there yet.
                                   If `Rocks` is called with the optional `!`, the rock is added
-                                  to the 'runtimepath' and no 'plugin' or 'ftdetect' scripts are
+                                  to the |runtimepath| and no |plugin| or |ftdetect| scripts are
                                   sourced.
-                                  This command aims to behave similarly to the builtin 'packadd'.
+                                  This command aims to behave similarly to the builtin |packadd|,
+                                  and will fall back to it if no rock is found.
                                   To make a rock optional, set `opt = true` in `rocks.toml`.
  log                              Open the log file.
 

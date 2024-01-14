@@ -111,7 +111,8 @@ end
 
 ---@class (exact) PackaddOpts
 ---@field bang? boolean
----@field error_on_not_found? boolean
+---@field packadd_fallback? boolean Fall back to the builtin |packadd|? Default `true`.
+---@field error_on_not_found? boolean Notify with an error message if no plugin could be found. Ignored if `packadd_fallback` is set to `true`.
 
 ---@param rock_name rock_name
 ---@param opts? PackaddOpts
@@ -120,6 +121,7 @@ function runtime.packadd(rock_name, opts)
     ---@cast opts table
     opts = vim.tbl_deep_extend("force", {
         bang = false,
+        packadd_fallback = true,
         error_on_not_found = false,
     }, opts or {})
     local rtp_glob = mk_rtp_glob(rock_name)
@@ -129,7 +131,9 @@ function runtime.packadd(rock_name, opts)
     end
     local paths = vim.fn.glob(rtp_glob, nil, true)
     if #paths == 0 then
-        if opts.error_on_not_found then
+        if opts.packadd_fallback then
+            vim.cmd.packadd({ rock_name, bang = opts.bang })
+        elseif opts.error_on_not_found then
             vim.notify(("No path found for %s"):format(rock_name), vim.log.levels.ERROR)
         end
         return
