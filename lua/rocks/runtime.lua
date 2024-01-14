@@ -46,17 +46,17 @@ local function iter_children(dir)
     return coroutine.wrap(function()
         local handle = vim.uv.fs_scandir(dir)
         while handle do
-            local name, type = vim.uv.fs_scandir_next(handle)
+            local name, ty = vim.uv.fs_scandir_next(handle)
             local path = vim.fs.joinpath(dir, name)
-            type = type or vim.uv.fs_stat(path).type
+            ty = ty or vim.uv.fs_stat(path).type
             if not name then
                 return
-            elseif type == "directory" then
+            elseif ty == "directory" then
                 for child_path, child, child_type in iter_children(path) do
                     coroutine.yield(child_path, child, child_type)
                 end
             end
-            coroutine.yield(path, name, type)
+            coroutine.yield(path, name, ty)
         end
     end)
 end
@@ -65,9 +65,9 @@ end
 ---@param dir string
 local function source(rtp_source_dir, dir)
     local rtp_dir = vim.fs.joinpath(dir, rtp_source_dir)
-    for script, name, type in iter_children(rtp_dir) do
+    for script, name, ty in iter_children(rtp_dir) do
         local ext = name:sub(-3)
-        if vim.tbl_contains({ "file", "link" }, type) and vim.tbl_contains({ "lua", "vim" }, ext) then
+        if vim.tbl_contains({ "file", "link" }, ty) and vim.tbl_contains({ "lua", "vim" }, ext) then
             local ok, err = pcall(vim.cmd.source, script)
             if not ok and type(err) == "string" then
                 log.error(err)
