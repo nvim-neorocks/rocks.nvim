@@ -48,7 +48,7 @@ local default_config = {
         local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
         local rocks_toml = require("toml").decode(config_file)
         for key, tbl in pairs(rocks_toml) do
-            if key == "rocks" or key == "plugins" then
+            if key == "rocks" or key == "plugins" or key == "settings" then
                 for name, data in pairs(tbl) do
                     if type(data) == "string" then
                         ---@type RockSpec
@@ -69,6 +69,10 @@ local default_config = {
         local rocks_toml = config.get_rocks_toml()
         return vim.tbl_deep_extend("force", rocks_toml.rocks or {}, rocks_toml.plugins or {})
     end,
+    get_user_settings = function()
+        local rocks_toml = config.get_rocks_toml()
+        return rocks_toml.settings or {}
+    end
 }
 
 ---@type RocksOpts

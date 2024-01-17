@@ -150,12 +150,16 @@ function runtime.packadd(rock_name, opts)
     source_ftdetect(path)
 end
 
----Source all plugins with `opt ~= true`
+---Source all plugins with `opt ~= true` unless settings.lazy is set to true
 ---NOTE: We don't want this to be async,
 ---to ensure Neovim sources `after/plugin` scripts
 ---after we source start plugins.
 function runtime.source_start_plugins()
     local user_rocks = config.get_user_rocks()
+    local user_settings = config.get_user_settings()
+    if user_settings.lazy and user_settings.lazy == "true" then
+        return
+    end
     for _, rock_spec in pairs(user_rocks) do
         if not rock_spec.opt and rock_spec.version and rock_spec.name ~= constants.ROCKS_NVIM then
             -- Append to rtp first in case a plugin needs another plugin's `autoload`
