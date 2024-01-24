@@ -68,10 +68,8 @@ local function source(rtp_source_dir, dir)
     for script, name, ty in iter_children(rtp_dir) do
         local ext = name:sub(-3)
         if vim.tbl_contains({ "file", "link" }, ty) and vim.tbl_contains({ "lua", "vim" }, ext) then
-            local co = coroutine.create(vim.cmd.source)
-            local ok = coroutine.resume(co, script)
-            if not ok then
-                local err = debug.traceback(co, "rocks.nvim: Error to sourcing " .. name)
+            local ok, err = pcall(vim.cmd.source, script)
+            if not ok and type(err) == "string" then
                 log.error(err)
                 vim.notify(err, vim.log.levels.ERROR)
                 break
