@@ -482,32 +482,28 @@ operations.update = function()
                 name = name,
                 version = rock.target_version,
             })
-            local co = coroutine.create(function()
-                coroutine.yield(future.wait())
-            end)
-            local success, ret = coroutine.resume(co)
+            local success, ret = pcall(future.wait)
             ct = ct + 1
             nio.scheduler()
-            if success then
-                ---@type rock_name
-                local rock_name = ret.name
-                local user_rock = user_rocks.plugins[rock_name]
-                if user_rock and user_rock.version then
-                    -- Rock is configured as a table -> Update version.
-                    user_rocks.plugins[rock_name].version = ret.version
-                else
-                    user_rocks.plugins[rock_name] = ret.version
-                end
-                progress_handle:report({
-                    message = ("Updated %s: %s -> %s"):format(rock.name, rock.version, rock.target_version),
-                    percentage = get_percentage(ct, #outdated_rocks),
-                })
-            else
+            if not success then
                 report_error(("Failed to update %s."):format(rock.name))
                 progress_handle:report({
                     percentage = get_percentage(ct, #outdated_rocks),
                 })
             end
+            ---@type rock_name
+            local rock_name = ret.name
+            local user_rock = user_rocks.plugins[rock_name]
+            if user_rock and user_rock.version then
+                -- Rock is configured as a table -> Update version.
+                user_rocks.plugins[rock_name].version = ret.version
+            else
+                user_rocks.plugins[rock_name] = ret.version
+            end
+            progress_handle:report({
+                message = ("Updated %s: %s -> %s"):format(rock.name, rock.version, rock.target_version),
+                percentage = get_percentage(ct, #outdated_rocks),
+            })
         end
 
         if vim.tbl_isempty(outdated_rocks) then
