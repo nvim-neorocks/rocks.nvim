@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.7.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.7.0...v2.7.1) (2024-01-25)
+
+
+### Bug Fixes
+
+* don't show "Updated rock" notification on failed update ([996c0c6](https://github.com/nvim-neorocks/rocks.nvim/commit/996c0c673218eb633580a413364a81eb3c7dccfd))
+
+
+### Reverts
+
+* better stack traces ([#104](https://github.com/nvim-neorocks/rocks.nvim/issues/104)) ([d4d057c](https://github.com/nvim-neorocks/rocks.nvim/commit/d4d057c36e01096c3fe0e674c932978035243a0e))
+
 ## [2.7.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.6.2...v2.7.0) (2024-01-14)
 
 
