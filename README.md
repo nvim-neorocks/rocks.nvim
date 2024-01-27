@@ -65,6 +65,13 @@ and the installer will do the rest!
 :source https://raw.githubusercontent.com/nvim-neorocks/rocks.nvim/master/installer.lua
 ```
 
+If you already have plugins installed, we suggest running the installer
+without loading RC files, as some plugins may interfere with the script:
+
+```sh
+nvim -u NORC -c "source https://raw.githubusercontent.com/nvim-neorocks/rocks.nvim/master/installer.lua"
+```
+
 > [!IMPORTANT]
 >
 > For security reasons, we recommend that you read `:help :source`
