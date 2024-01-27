@@ -276,6 +276,7 @@ local function install()
                 win = window,
                 bufpos = { i - 1, start - 1 },
             })
+            vim.wo[win_id].wrap = false
 
             input_fields[name] = {
                 window = win_id,
