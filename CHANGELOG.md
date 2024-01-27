@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.7.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.7.1...v2.7.2) (2024-01-27)
+
+
+### Bug Fixes
+
+* **installer:** disable line wrapping for option's windows ([#125](https://github.com/nvim-neorocks/rocks.nvim/issues/125)) ([298e10a](https://github.com/nvim-neorocks/rocks.nvim/commit/298e10aba4b81b3ddd624d34aa60669261a243c2))
+* **installer:** don't fail if pinning luarocks revision fails ([474a7ca](https://github.com/nvim-neorocks/rocks.nvim/commit/474a7ca5822cbe9b41537914c73b37781bb1833d))
+* **installer:** prevent invalid temp directory name generation ([#118](https://github.com/nvim-neorocks/rocks.nvim/issues/118)) ([14578d0](https://github.com/nvim-neorocks/rocks.nvim/commit/14578d07bc64e45c369ca6d841855174ae243075))
+* **installer:** print `stderr` + `stdout` on failure ([1c5efc9](https://github.com/nvim-neorocks/rocks.nvim/commit/1c5efc98121491455d9fd337b8ce80d6c2a53595))
+* **runtime:** only show `packadd` fallback error if configured to do so ([#128](https://github.com/nvim-neorocks/rocks.nvim/issues/128)) ([9682c0c](https://github.com/nvim-neorocks/rocks.nvim/commit/9682c0c9ed66487df887bbe4ea3248058eac036e))
+
 ## [2.7.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.7.0...v2.7.1) (2024-01-25)
 
 
