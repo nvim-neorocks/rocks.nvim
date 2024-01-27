@@ -154,7 +154,7 @@ local function set_up_luarocks(install_path)
     end
 
     ---@diagnostic disable-next-line: param-type-mismatch
-    local tempdir = vim.fs.joinpath(vim.fn.stdpath("run"), "luarocks-" .. vim.loop.random(7))
+    local tempdir = vim.fs.joinpath(vim.fn.stdpath("run"), ("luarocks-%X"):format(math.random(256 ^ 7)))
 
     vim.notify("Downloading luarocks...")
 
