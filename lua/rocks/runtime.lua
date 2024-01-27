@@ -129,10 +129,15 @@ function runtime.packadd(rock_name, opts)
     end
     local paths = vim.fn.glob(rtp_glob, nil, true)
     if #paths == 0 then
+        local ok, packadd_err = false, nil
         if opts.packadd_fallback then
-            vim.cmd.packadd({ rock_name, bang = opts.bang })
-        elseif opts.error_on_not_found then
+            ok, packadd_err = pcall(vim.cmd.packadd, { rock_name, bang = opts.bang })
+        end
+        if not ok and opts.error_on_not_found then
             vim.notify(("No path found for %s"):format(rock_name), vim.log.levels.ERROR)
+            if packadd_err then
+                vim.notify(packadd_err, vim.log.levels.ERROR)
+            end
         end
         return
     end
