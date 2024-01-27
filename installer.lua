@@ -187,9 +187,8 @@ local function set_up_luarocks(install_path)
     if sc.code ~= 0 then
         vim.notify(
             ("Pinning luarocks failed.\nstderr: {}\nstdout: {}"):format(sc.stderr, sc.stdout),
-            vim.log.levels.ERROR
+            vim.log.levels.WARN
         )
-        return false
     end
 
     sc = vim.system({
