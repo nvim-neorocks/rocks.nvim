@@ -166,7 +166,10 @@ local function set_up_luarocks(install_path)
     }):wait()
 
     if sc.code ~= 0 then
-        vim.notify("Cloning luarocks failed: " .. sc.stderr, vim.log.levels.ERROR)
+        vim.notify(
+            ("Cloning luarocks failed.\nstderr: {}\nstdout: {}"):format(sc.stderr, sc.stdout),
+            vim.log.levels.ERROR
+        )
         return false
     end
 
@@ -182,7 +185,10 @@ local function set_up_luarocks(install_path)
     }):wait()
 
     if sc.code ~= 0 then
-        vim.notify("Configuring luarocks failed: " .. sc.stderr, vim.log.levels.ERROR)
+        vim.notify(
+            ("Pinning luarocks failed.\nstderr: {}\nstdout: {}"):format(sc.stderr, sc.stdout),
+            vim.log.levels.ERROR
+        )
         return false
     end
 
@@ -197,7 +203,10 @@ local function set_up_luarocks(install_path)
     }):wait()
 
     if sc.code ~= 0 then
-        vim.notify("Configuring luarocks failed: " .. sc.stderr, vim.log.levels.ERROR)
+        vim.notify(
+            ("Configuring luarocks failed.\nstderr: {}\nstdout: {}"):format(sc.stderr, sc.stdout),
+            vim.log.levels.ERROR
+        )
         return false
     end
 
@@ -211,7 +220,10 @@ local function set_up_luarocks(install_path)
     }):wait()
 
     if sc.code ~= 0 then
-        vim.notify("Installing luarocks failed: " .. sc.stderr, vim.log.levels.ERROR)
+        vim.notify(
+            ("Installing luarocks failed.\nstderr: {}\nstdout: {}"):format(sc.stderr, sc.stdout),
+            vim.log.levels.ERROR
+        )
         return false
     end
 
