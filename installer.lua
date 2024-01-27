@@ -114,7 +114,7 @@ Once you start editing a value, you may exit it by pressing Enter or by clicking
 
 Rocks installation path: [install_path:50:{{vim.fs.joinpath(vim.fn.stdpath('data'), "rocks")}}]
 
-Should rocks.nvim set up luarocks?: [setup_luarocks:5:{{true}}]
+Should rocks.nvim set up luarocks?: [setup_luarocks:6:{{true }}]
 It is highly recommended that you allow rocks.nvim to set up luarocks for you.
 
 < OK >
