@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.7.2...v2.7.3) (2024-02-01)
+
+
+### Bug Fixes
+
+* **installer:** remove color seqence from shell output ([#130](https://github.com/nvim-neorocks/rocks.nvim/issues/130)) ([6c6da2b](https://github.com/nvim-neorocks/rocks.nvim/commit/6c6da2b3690e87283fb584f32a18c7f1a5246a3f))
+
 ## [2.7.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.7.1...v2.7.2) (2024-01-27)
 
 
