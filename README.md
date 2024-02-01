@@ -77,6 +77,15 @@ nvim -u NORC -c "source https://raw.githubusercontent.com/nvim-neorocks/rocks.nv
 > For security reasons, we recommend that you read `:help :source`
 > and the installer code before running it so you know exactly what it does.
 
+> [!TIP]
+>
+> To configure the luarocks installation to use a specific lua install,
+> use environment variables `LUA_BINDIR=<Directory of lua binary>` and `LUA_BINDIR_SET=yes`.
+>
+> For example:
+>
+> `LUA_BINDIR="${XDG_BIN_DIR:-$HOME/.local/bin}" LUA_BINDIR_SET=yes nvim -u NORC -c "source ...`
+
 ## :books: Usage
 
 ### Installing rocks
