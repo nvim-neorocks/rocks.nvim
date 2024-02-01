@@ -79,7 +79,7 @@ nvim -u NORC -c "source https://raw.githubusercontent.com/nvim-neorocks/rocks.nv
 
 > [!TIP]
 >
-> In order to configure luarocks installation to use a specific lua install,
+> To configure the luarocks installation to use a specific lua install,
 > use environment variables `LUA_BINDIR=<Directory of lua binary>` and `LUA_BINDIR_SET=yes`.
 >
 > For example:
