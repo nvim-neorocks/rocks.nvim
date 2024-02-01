@@ -137,6 +137,24 @@ local function guard_set_up_luarocks_dependency_missing(dep)
     return false
 end
 
+--- Notify command output.
+---@param msg string
+---@param sc vim.SystemCompleted
+---@param level integer|nil
+local function notify_output(msg, sc, level)
+    local function remove_shell_color(s)
+        return tostring(s):gsub("\x1B%[[0-9;]+m", "")
+    end
+    vim.notify(
+        table.concat({
+            msg,
+            sc and "stderr: " .. remove_shell_color(sc.stderr),
+            sc and "stdout: " .. remove_shell_color(sc.stdout),
+        }, "\n"),
+        level
+    )
+end
+
 --- Sets up luarocks for use with rocks.nvim
 ---@param install_path string
 ---@return boolean success
@@ -166,10 +184,7 @@ local function set_up_luarocks(install_path)
     }):wait()
 
     if sc.code ~= 0 then
-        vim.notify(
-            ("Cloning luarocks failed.\nstderr: {}\nstdout: {}"):format(sc.stderr, sc.stdout),
-            vim.log.levels.ERROR
-        )
+        notify_output("Cloning luarocks failed.", sc, vim.log.levels.ERROR)
         return false
     end
 
@@ -185,10 +200,7 @@ local function set_up_luarocks(install_path)
     }):wait()
 
     if sc.code ~= 0 then
-        vim.notify(
-            ("Pinning luarocks failed.\nstderr: {}\nstdout: {}"):format(sc.stderr, sc.stdout),
-            vim.log.levels.WARN
-        )
+        notify_output("Pinning luarocks failed.", sc, vim.log.levels.WARN)
     end
 
     sc = vim.system({
@@ -202,10 +214,7 @@ local function set_up_luarocks(install_path)
     }):wait()
 
     if sc.code ~= 0 then
-        vim.notify(
-            ("Configuring luarocks failed.\nstderr: {}\nstdout: {}"):format(sc.stderr, sc.stdout),
-            vim.log.levels.ERROR
-        )
+        notify_output("Configuring luarocks failed.", sc, vim.log.levels.ERROR)
         return false
     end
 
@@ -219,10 +228,7 @@ local function set_up_luarocks(install_path)
     }):wait()
 
     if sc.code ~= 0 then
-        vim.notify(
-            ("Installing luarocks failed.\nstderr: {}\nstdout: {}"):format(sc.stderr, sc.stdout),
-            vim.log.levels.ERROR
-        )
+        notify_output("Installing luarocks failed.", sc, vim.log.levels.ERROR)
         return false
     end
 
@@ -386,7 +392,7 @@ local function install()
             }):wait()
 
             if sc.code ~= 0 then
-                vim.notify("Installing rocks.nvim failed: " .. sc.stderr, vim.log.levels.ERROR)
+                notify_output("Installing rocks.nvim failed:", sc, vim.log.levels.ERROR)
                 return
             end
 
