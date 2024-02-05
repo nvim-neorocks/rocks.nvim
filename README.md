@@ -58,15 +58,8 @@
 The days of bootstrapping and editing your configuration are over.
 `rocks.nvim` can be installed directly through an interactive installer within Neovim.
 
-You just have to run the following command inside your editor
-and the installer will do the rest!
-
-```vim
-:source https://raw.githubusercontent.com/nvim-neorocks/rocks.nvim/master/installer.lua
-```
-
-If you already have plugins installed, we suggest running the installer
-without loading RC files, as some plugins may interfere with the script:
+We suggest starting nvim without loading RC files, such that already installed plugins do not interfere
+with the installer:
 
 ```sh
 nvim -u NORC -c "source https://raw.githubusercontent.com/nvim-neorocks/rocks.nvim/master/installer.lua"
