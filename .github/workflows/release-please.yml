@@ -1,3 +1,8 @@
+---
+permissions:
+  contents: write
+  pull-requests: write
+
 name: Release Please
 
 on:
