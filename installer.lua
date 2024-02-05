@@ -113,9 +113,7 @@ Once you start editing a value, you may exit it by pressing Enter or by clicking
 -------------------------------------------------------------------------------------------
 
 Rocks installation path: [install_path:50:{{vim.fs.joinpath(vim.fn.stdpath('data'), "rocks")}}]
-
-Should rocks.nvim set up luarocks?: [setup_luarocks:6:{{true }}]
-It is highly recommended that you allow rocks.nvim to set up luarocks for you.
+Set up luarocks (recommended) ?: [setup_luarocks:6:{{true }}]
 
 < OK >
     ]],
@@ -375,7 +373,7 @@ local function install()
             elseif vim.fn.executable(luarocks_binary) ~= 1 then
                 vim.notify(
                     luarocks_binary
-                        .. " not found. Please ensure luarocks is installed or configure the instllert to setup luarocks automatically",
+                        .. " not found. Please ensure luarocks is installed or configure the installer to setup luarocks automatically",
                     vim.log.levels.ERROR
                 )
                 return
