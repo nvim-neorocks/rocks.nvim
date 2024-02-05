@@ -100,8 +100,10 @@ local function create_body()
 
 
 Welcome to the rocks.nvim installer!
-rocks.nvim is a modern approach to Neovim plugin management.
-
+rocks.nvim is a modern approach to Neovim plugin management:
+- Automatic dependency and build script management.
+- True semver versioning!
+- Command completions for plugins on luarocks.org.
 
 This page lists all of the most important tweakable aspects of the installation process.
 To edit a value, move your cursor over it and modify the value using regular Neovim keybinds.
