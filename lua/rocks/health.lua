@@ -21,10 +21,10 @@ local health = {}
 local config = require("rocks.config.internal")
 
 local h = vim.health
-local start = h.start or h.report_start
-local ok = h.ok or h.report_ok
-local error = h.error or h.report_error
-local warn = h.warn or h.report_warn
+local start = h.start
+local ok = h.ok
+local error = h.error
+local warn = h.warn
 
 ---@class (exact) LuaDependency
 ---@field module string The name of a module
