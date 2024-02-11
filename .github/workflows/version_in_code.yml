@@ -25,12 +25,14 @@ jobs:
 
       - name: Commit Changes
         run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          git config --local user.email "marc@jakobi.dev"
+          git config --local user.name "Marc Jakobi"
           if [[ ! -z $(git status -s) ]]; then
             git add .
             git commit -m "chore(constants.lua): update version variable"
           fi
+        with:
+          token: ${{ secrets.GH_TOKEN_FOR_UPDATES }}
 
       - name: Push to Github
         uses: ad-m/github-push-action@master
