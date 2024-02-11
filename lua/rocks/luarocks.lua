@@ -22,7 +22,7 @@ local config = require("rocks.config.internal")
 local log = require("rocks.log")
 local nio = require("nio")
 
----@class LuarocksCliOpts: SystemOpts
+---@class LuarocksCliOpts: vim.SystemOpts
 ---@field synchronized? boolean Whether to wait for and acquire a lock (recommended for file system IO, default: `true`)
 
 local lock = nio.control.future()
