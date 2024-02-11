@@ -492,7 +492,7 @@ operations.update = function()
                 if user_rock and user_rock.version then
                     -- Rock is configured as a table -> Update version.
                     user_rocks.plugins[rock_name].version = ret.version
-                else
+                elseif user_rock then -- Only insert the version if there's an entry in rocks.toml
                     user_rocks.plugins[rock_name] = ret.version
                 end
                 progress_handle:report({
