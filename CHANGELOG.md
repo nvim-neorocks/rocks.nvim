@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.4](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.7.3...v2.7.4) (2024-02-11)
+
+
+### Bug Fixes
+
+* **update:** dependencies added to rocks.toml after updating ([#143](https://github.com/nvim-neorocks/rocks.nvim/issues/143)) ([7e650f2](https://github.com/nvim-neorocks/rocks.nvim/commit/7e650f20f9ad840d5499fd8f4076604e12465d0a))
+
 ## [2.7.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.7.2...v2.7.3) (2024-02-01)
 
 
