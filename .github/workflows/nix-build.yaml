@@ -1,5 +1,5 @@
 ---
-name: "Checks"
+name: "Nix build"
 on:
   pull_request:
   push:
