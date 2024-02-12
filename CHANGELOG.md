@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.8.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.7.4...v2.8.0) (2024-02-12)
+
+
+### Features
+
+* generate plugins help pages tags on install/update ([#145](https://github.com/nvim-neorocks/rocks.nvim/issues/145)) ([ab1f8c6](https://github.com/nvim-neorocks/rocks.nvim/commit/ab1f8c61286029344c82de0cc8a1c1b9ab957aec))
+
 ## [2.7.4](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.7.3...v2.7.4) (2024-02-11)
 
 
