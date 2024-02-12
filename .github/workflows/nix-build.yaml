@@ -1,11 +1,11 @@
 ---
-name: "Checks"
+name: "Nix build"
 on:
   pull_request:
   push:
   workflow_call:
 jobs:
-  checks:
+  nix-flake-check:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -14,7 +14,7 @@ jobs:
         name: neorocks
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
     - run: nix flake check -L --accept-flake-config --option sandbox false
-  shell:
+  build-devShell:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
