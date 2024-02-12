@@ -125,11 +125,6 @@ operations.install = function(rock_spec, progress_handle)
                 runtime.packadd(name)
             end
 
-            -- Re-generate help tags
-            if config.generate_help_pages then
-                vim.cmd("helptags ALL")
-            end
-
             future.set(installed_rock)
         end
     end)
@@ -607,6 +602,11 @@ operations.add = function(rock_name, version)
             end
         end)
         cache.populate_removable_rock_cache()
+
+        -- Re-generate help tags
+        if config.generate_help_pages then
+            vim.cmd("helptags ALL")
+        end
     end)
 end
 
