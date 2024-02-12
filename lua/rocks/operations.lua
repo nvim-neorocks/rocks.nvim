@@ -127,7 +127,7 @@ operations.install = function(rock_spec, progress_handle)
 
             -- Re-generate help tags
             if config.generate_help_pages then
-                vim.cmd("heltags ALL")
+                vim.cmd("helptags ALL")
             end
 
             future.set(installed_rock)
@@ -446,7 +446,7 @@ operations.sync = function(user_rocks)
 
         -- Re-generate help tags
         if config.generate_help_pages then
-            vim.cmd("heltags ALL")
+            vim.cmd("helptags ALL")
         end
     end)
 end
@@ -542,7 +542,7 @@ operations.update = function()
 
         -- Re-generate help tags
         if config.generate_help_pages then
-            vim.cmd("heltags ALL")
+            vim.cmd("helptags ALL")
         end
     end)
 end
