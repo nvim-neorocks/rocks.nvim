@@ -36,6 +36,8 @@ local default_config = {
     lazy = false,
     ---@type boolean Whether to automatically add freshly installed plugins to the 'runtimepath'
     dynamic_rtp = true,
+    ---@type boolean Whether to re-generate plugins help pages after installation/upgrade
+    generate_help_pages = true,
     ---@class RocksConfigDebugInfo
     debug_info = {
         ---@type boolean

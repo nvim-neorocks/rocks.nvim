@@ -125,6 +125,11 @@ operations.install = function(rock_spec, progress_handle)
                 runtime.packadd(name)
             end
 
+            -- Re-generate help tags
+            if config.generate_help_pages then
+                vim.cmd("heltags ALL")
+            end
+
             future.set(installed_rock)
         end
     end)
@@ -438,6 +443,11 @@ operations.sync = function(user_rocks)
             progress_handle:finish()
         end
         cache.populate_removable_rock_cache()
+
+        -- Re-generate help tags
+        if config.generate_help_pages then
+            vim.cmd("heltags ALL")
+        end
     end)
 end
 
@@ -529,6 +539,11 @@ operations.update = function()
             progress_handle:finish()
         end
         cache.populate_removable_rock_cache()
+
+        -- Re-generate help tags
+        if config.generate_help_pages then
+            vim.cmd("heltags ALL")
+        end
     end)
 end
 
