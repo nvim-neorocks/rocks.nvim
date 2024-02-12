@@ -37,6 +37,7 @@ function check.validate(cfg)
         luarocks_binary = { cfg.luarocks_binary, "string" },
         lazy = { cfg.lazy, "boolean" },
         dynamic_rtp = { cfg.dynamic_rtp, "boolean" },
+        generate_help_pages = { cfg.generate_help_pages, "boolean" },
     })
     if not ok then
         return false, err

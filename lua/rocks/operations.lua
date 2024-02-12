@@ -438,6 +438,11 @@ operations.sync = function(user_rocks)
             progress_handle:finish()
         end
         cache.populate_removable_rock_cache()
+
+        -- Re-generate help tags
+        if config.generate_help_pages then
+            vim.cmd("helptags ALL")
+        end
     end)
 end
 
@@ -529,6 +534,11 @@ operations.update = function()
             progress_handle:finish()
         end
         cache.populate_removable_rock_cache()
+
+        -- Re-generate help tags
+        if config.generate_help_pages then
+            vim.cmd("helptags ALL")
+        end
     end)
 end
 
@@ -592,6 +602,11 @@ operations.add = function(rock_name, version)
             end
         end)
         cache.populate_removable_rock_cache()
+
+        -- Re-generate help tags
+        if config.generate_help_pages then
+            vim.cmd("helptags ALL")
+        end
     end)
 end
 
