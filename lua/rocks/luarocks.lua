@@ -54,6 +54,9 @@ luarocks.cli = function(args, on_exit, opts)
         lock.wait()
         lock = nio.control.future()
     end
+    opts.env = vim.tbl_deep_extend("force", opts.env or {}, {
+        LUAROCKS_CONFIG = "",
+    })
     local luarocks_cmd = vim.list_extend({
         config.luarocks_binary,
         "--lua-version=" .. constants.LUA_VERSION,
