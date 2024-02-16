@@ -201,6 +201,10 @@ in {
             package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
 
             vim.opt.runtimepath:append(vim.fs.joinpath("${rocks}", "rocks.nvim-scm-1-rocks", "rocks.nvim", "*"))
+
+            --- FIXME: nix somehow propagates the LUAROCKS_CONFIG used to build rocks.nvim to neovim
+            --- See https://github.com/nvim-neorocks/rocks.nvim/issues/148
+            vim.fn.setenv("LUAROCKS_CONFIG", "")
           '';
         wrapRc = true;
         wrapperArgs =
