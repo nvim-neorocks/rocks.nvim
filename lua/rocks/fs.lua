@@ -20,6 +20,7 @@
 
 local fs = {}
 
+local log = require("rocks.log")
 local uv = vim.uv
 
 --- Check if a file exists
@@ -39,6 +40,8 @@ end
 ---@param mode string mode to open the file for
 ---@param contents string file contents
 function fs.write_file(location, mode, contents)
+    local dir = vim.fn.fnamemodify(location, ":h")
+    vim.fn.mkdir(dir, "p")
     -- 644 sets read and write permissions for the owner, and it sets read-only
     -- mode for the group and others
     uv.fs_open(location, mode, tonumber("644", 8), function(err, file)
@@ -48,6 +51,10 @@ function fs.write_file(location, mode, contents)
             uv.pipe_open(file_pipe, file)
             uv.write(file_pipe, contents)
             uv.fs_close(file)
+        else
+            local msg = ("Error writing %s: %s"):format(location, err)
+            log.error(msg)
+            vim.notify(msg, vim.log.levels.ERROR)
         end
     end)
 end
