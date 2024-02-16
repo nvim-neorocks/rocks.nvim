@@ -160,49 +160,57 @@ in {
   neovim-with-rocks = let
     neovimConfig = final.neovimUtils.makeNeovimConfig {
       withPython3 = true;
-      viAlias = true;
-      vimAlias = true;
-      plugins = with final.vimPlugins; [
-        rocks-nvim
-      ];
+      viAlias = false;
+      vimAlias = false;
     };
     runtimeDeps = with final; [
       lua5_1
       luarocks
     ];
-    customRC = builtins.readFile ./init.lua;
+    rocks = lua51Packages.rocks-nvim;
   in
     final.wrapNeovimUnstable final.neovim-nightly (neovimConfig
       // {
+        luaRcContent =
+          /*
+          lua
+          */
+          ''
+            -- Copied from installer.lua
+            local rocks_config = {
+                rocks_path = vim.fn.stdpath("data") .. "/rocks",
+                luarocks_binary = "${final.luarocks}/bin/luarocks",
+            }
+
+            vim.g.rocks_nvim = rocks_config
+
+            local luarocks_path = {
+                vim.fs.joinpath("${rocks}", "share", "lua", "5.1", "?.lua"),
+                vim.fs.joinpath("${rocks}", "share", "lua", "5.1", "?", "init.lua"),
+                vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?.lua"),
+                vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?", "init.lua"),
+            }
+            package.path = package.path .. ";" .. table.concat(luarocks_path, ";")
+
+            local luarocks_cpath = {
+                vim.fs.joinpath("${rocks}", "lib", "lua", "5.1", "?.so"),
+                vim.fs.joinpath("${rocks}", "lib64", "lua", "5.1", "?.so"),
+                vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.so"),
+                vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.so"),
+            }
+            package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
+
+            vim.opt.runtimepath:append(vim.fs.joinpath("${rocks}", "rocks.nvim-scm-1-rocks", "rocks.nvim", "*"))
+
+            --- FIXME: nix somehow propagates the LUAROCKS_CONFIG used to build rocks.nvim to neovim
+            --- See https://github.com/nvim-neorocks/rocks.nvim/issues/148
+            vim.fn.setenv("LUAROCKS_CONFIG", "")
+          '';
+        wrapRc = true;
         wrapperArgs =
           lib.escapeShellArgs neovimConfig.wrapperArgs
           + " "
-          + ''--add-flags -u --add-flags "${final.writeText "init.lua" customRC}"''
-          + " "
           + ''--set NVIM_APPNAME "nvimrocks"''
-          + " "
-          # XXX: Luarocks packages need to be added manaully,
-          # using LUA_PATH and LUA_CPATH.
-          # It looks like buildNeovimPlugin is broken?
-          + ''--suffix LUA_CPATH ";" "${
-              lib.concatMapStringsSep ";" lua51Packages.getLuaCPath
-              (with lua51Packages; [
-                toml
-                toml-edit
-                fidget-nvim
-                nvim-nio
-                fzy
-              ])
-            }"''
-          + " "
-          + ''--suffix LUA_PATH ";" "${
-              lib.concatMapStringsSep ";" lua51Packages.getLuaPath
-              (with lua51Packages; [
-                fidget-nvim
-                nvim-nio
-                fzy
-              ])
-            }"''
           + " "
           + ''--prefix PATH : "${lib.makeBinPath runtimeDeps}"'';
       });
