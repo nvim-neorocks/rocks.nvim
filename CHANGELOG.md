@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.8.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.8.0...v2.8.1) (2024-02-16)
+
+
+### Bug Fixes
+
+* **config:** create default config on `:Rocks edit` if it does not exist ([7b35d9a](https://github.com/nvim-neorocks/rocks.nvim/commit/7b35d9a718b22be53770f42f3276fb619f2746c1))
+* **config:** create directory before creating default config ([5446cd4](https://github.com/nvim-neorocks/rocks.nvim/commit/5446cd41ba1f7aac096e680620ec3e63a281ee0b))
+
 ## [2.8.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.7.4...v2.8.0) (2024-02-12)
 
 
