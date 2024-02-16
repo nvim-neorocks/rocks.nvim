@@ -41,6 +41,8 @@ local commands = {}
 
 local fzy = require("rocks.fzy")
 local cache = require("rocks.cache")
+local fs = require("rocks.fs")
+local constants = require("rocks.constants")
 
 ---@param name string
 ---@param query string | nil
@@ -140,7 +142,11 @@ local rocks_command_tbl = {
     },
     edit = {
         impl = function(_)
-            vim.cmd.e(require("rocks.config.internal").config_path)
+            local config_path = require("rocks.config.internal").config_path
+            if not fs.file_exists(config_path) then
+                fs.write_file(config_path, "w+", vim.trim(constants.DEFAULT_CONFIG))
+            end
+            vim.cmd.e(config_path)
         end,
     },
     packadd = {
