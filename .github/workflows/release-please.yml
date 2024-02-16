@@ -6,6 +6,7 @@ permissions:
 name: Release Please
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
