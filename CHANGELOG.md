@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.8.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.8.1...v2.8.2) (2024-02-16)
+
+
+### Bug Fixes
+
+* **luarocks:** make sure `LUAROCKS_CONFIG` is unset ([#150](https://github.com/nvim-neorocks/rocks.nvim/issues/150)) ([8cfb41b](https://github.com/nvim-neorocks/rocks.nvim/commit/8cfb41bb73a7f4f013810a1ae0da8dd5f54fd90c))
+
 ## [2.8.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.8.0...v2.8.1) (2024-02-16)
 
 
