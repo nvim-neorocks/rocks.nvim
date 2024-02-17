@@ -7,6 +7,11 @@ require("rocks.commands").create_commands()
 
 local config = require("rocks.config.internal")
 
+local env_path_seperator = vim.uv.os_uname().sysname:lower():find("windows") and ";" or ":"
+
+-- Append the binary directory to the system path.
+vim.env.PATH = vim.fs.joinpath(config.rocks_path, "bin") .. env_path_seperator .. vim.env.PATH
+
 if not config.lazy then
     local nio = require("nio")
     nio.run(function()
