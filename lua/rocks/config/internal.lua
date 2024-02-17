@@ -97,6 +97,11 @@ if #config.debug_info.unrecognized_configs > 0 then
     )
 end
 
+-- Append the binary directory to the system path.
+-- Note: All major operating system follow the same PATH structure, so there should be little
+-- issue with modifying the environment variable this way.
+vim.env.PATH = vim.env.PATH .. ":" .. vim.fs.joinpath(config.rocks_path, "bin")
+
 return config
 
 --- config.lua ends here
