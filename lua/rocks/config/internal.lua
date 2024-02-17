@@ -100,7 +100,7 @@ end
 -- Append the binary directory to the system path.
 -- Note: All major operating system follow the same PATH structure, so there should be little
 -- issue with modifying the environment variable this way.
-vim.env.PATH = vim.env.PATH .. ":" .. vim.fs.joinpath(config.rocks_path, "bin")
+vim.env.PATH = vim.fs.joinpath(config.rocks_path, "bin") .. ":" .. vim.env.PATH
 
 return config
 
