@@ -36,7 +36,6 @@ jobs:
             fidget.nvim >= 1.1.0
             fzy
             nvim-nio
-            sysdetect
           labels: |
             neovim
           detailed_description: |

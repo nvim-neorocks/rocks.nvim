@@ -7,25 +7,7 @@ require("rocks.commands").create_commands()
 
 local config = require("rocks.config.internal")
 
----@type
----| "sysv"
----| "hpux"
----| "netbsd"
----| "linux"
----| "hurd"
----| "solaris"
----| "aix"
----| "irix"
----| "freebsd"
----| "openbsd"
----| "dragonfly"
----| "haiku"
----| "windows"
----| "cygwin"
----| "macosx"
-local current_os = assert((require("sysdetect").detect()), "[rocks]: unable to detect current operating system!")
-
-local env_path_seperator = current_os == "windows" and ";" or ":"
+local env_path_seperator = vim.uv.os_uname().sysname:lower():find("windows") and ";" or ":"
 
 -- Append the binary directory to the system path.
 vim.env.PATH = vim.fs.joinpath(config.rocks_path, "bin") .. env_path_seperator .. vim.env.PATH
