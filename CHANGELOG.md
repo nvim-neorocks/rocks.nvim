@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.8.2...v2.9.0) (2024-02-17)
+
+
+### Features
+
+* add luarocks `bin` directory to the Neovim path ([#153](https://github.com/nvim-neorocks/rocks.nvim/issues/153)) ([13c2103](https://github.com/nvim-neorocks/rocks.nvim/commit/13c2103d580920367c4c7e63cb321befafcf36c4))
+
 ## [2.8.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.8.1...v2.8.2) (2024-02-16)
 
 
