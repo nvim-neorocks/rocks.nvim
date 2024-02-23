@@ -153,6 +153,13 @@ function runtime.packadd(rock_name, opts)
     source_ftdetect(path)
 end
 
+---Source the `plugin` and `ftdetect` directories
+---@param dir string
+function runtime.source_rtp_dir(dir)
+    source_plugin(dir)
+    source_ftdetect(dir)
+end
+
 ---Source all plugins with `opt ~= true`
 ---NOTE: We don't want this to be async,
 ---to ensure Neovim sources `after/plugin` scripts

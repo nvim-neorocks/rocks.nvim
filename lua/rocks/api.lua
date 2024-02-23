@@ -32,6 +32,7 @@ local luarocks = require("rocks.luarocks")
 local nio = require("nio")
 local state = require("rocks.state")
 local operations = require("rocks.operations")
+local runtime = require("rocks.runtime")
 
 ---Tries to get the cached rocks.
 ---Returns an empty list if the cache has not been populated
@@ -148,6 +149,12 @@ end
 ---@param handler RockHandler
 function api.register_rock_handler(handler)
     operations.register_handler(handler)
+end
+
+---Source the `plugin` and `ftdetect` directories.
+---@param dir string The runtime directory to source
+function api.source_runtime_dir(dir)
+    runtime.source_runtime_dir(dir)
 end
 
 return api
