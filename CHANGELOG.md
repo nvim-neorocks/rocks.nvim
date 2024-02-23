@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.9.0...v2.10.0) (2024-02-23)
+
+
+### Features
+
+* **api:** add `source_runtime_dir` ([c47327b](https://github.com/nvim-neorocks/rocks.nvim/commit/c47327bf5a8d2554b4f3f9100f94d6e5be3d15c8))
+
 ## [2.9.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.8.2...v2.9.0) (2024-02-17)
 
 
