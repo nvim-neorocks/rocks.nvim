@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.11.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.10.0...v2.11.0) (2024-02-23)
+
+
+### Features
+
+* add support for `:checkhealth` ([5b77337](https://github.com/nvim-neorocks/rocks.nvim/commit/5b7733755d3208465f226c3ff51dd69703379015))
+
 ## [2.10.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.9.0...v2.10.0) (2024-02-23)
 
 
