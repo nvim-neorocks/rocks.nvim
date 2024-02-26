@@ -110,7 +110,7 @@ local rocks_command_tbl = {
                 return
             end
             local package, version = args[1], args[2]
-            require("rocks.operations").add(package, version)
+            require("rocks.operations").add(args, package, version)
         end,
         complete = function(query)
             local name, version_query = query:match("([^%s]+)%s(.+)$")

@@ -102,7 +102,7 @@ end
 ---@brief [[
 ---        { name: rock_name, version?: string, opt?: boolean, [string]: V }
 ---
----Specification for a rock in rocks.toml.
+---Specification for a rock in rocks.toml. May be extended by external modules.
 ---@brief ]]
 
 ---@class RocksToml: { rocks?: RockSpec[], plugins?: RockSpec[], [string]: unknown }
@@ -137,14 +137,30 @@ function api.register_rocks_subcommand(name, cmd)
     commands.register_subcommand(name, cmd)
 end
 
+---@alias rock_config_table table<rock_name, RockSpec|rock_version>
+
+---@alias rock_version string
+
+---@class MutRocksTomlRef
+---@field rocks? rock_config_table
+---@field plugins? rock_config_table
+
+---@brief [[
+---        { rocks?: rock_config_table, plugins?: rocks_command_tbl, [string]: V }
+---
+---A mutable Lua representation of rocks.toml. May be extended by external modules.
+---@brief ]]
+
 ---@alias rock_handler_callback fun(report_progress: fun(message: string), report_error: fun(message: string))
 ---@brief [[
----A function that operates on the rock, syncing it with the entry in rocks.toml
+---An async callback that handles an operation on a rock.
 ---@brief ]]
 
 ---@class RockHandler
----@field get_sync_callback fun(spec: RockSpec):rock_handler_callback|nil Return a function that installs or updates the rock, or `nil` if the handler cannot or does not need to sync the rock.
----@field get_prune_callback fun(specs: table<rock_name, RockSpec>):rock_handler_callback|nil Return a function that prunes unused rocks, or `nil` if the handler cannot or does not need to prune any rocks.
+---@field get_sync_callback? fun(spec: RockSpec):rock_handler_callback|nil Return a function that installs or updates the rock, or `nil` if the handler cannot or does not need to sync the rock.
+---@field get_prune_callback? fun(specs: table<rock_name, RockSpec>):rock_handler_callback|nil Return a function that prunes unused rocks, or `nil` if the handler cannot or does not need to prune any rocks.
+---@field get_install_callback? fun(rocks_toml: MutRocksTomlRef, arg_list: string[]):rock_handler_callback|nil Return a function that installs a rock, or `nil` if the handler cannot install this rock. The `rocks_toml` table is mutable, and should be updated with the installed rock by the returned callback.
+---@field get_update_callbacks? fun(rocks_toml: MutRocksTomlRef):rock_handler_callback[] Return a list of functions that update user rocks, or an empty list if the handler cannot or does not need to update any rocks. The `rocks_toml` table is mutable, and should be updated by the returned callbacks.
 
 ---@param handler RockHandler
 function api.register_rock_handler(handler)
