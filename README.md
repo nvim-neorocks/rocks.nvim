@@ -174,6 +174,27 @@ You can then load the plugin with the `:Rocks[!] packadd {rock}` command.
 The `:Rocks log` command opens a log file for the current session,
 which contains the `luarocks` stderr output, among other logs.
 
+### Known issues and fixes
+
+#### nvim-treesitter parsers
+
+`nvim-treesitter` version `0.9.2` tries to install its parsers in the
+plugin's package directory. This is broken when the plugin is
+installed using luarocks, because the `lua` and `share` directories
+are in separate branches of the file tree.
+Later versions of `nvim-treesitter` should fix this
+by installing parsers to the `"site"` directory.
+
+For version `0.9.2`, you can work around this by explicitly setting
+the `parser_install_dir`:
+
+```lua
+local site_dir = vim.fs.joinpath(vim.fn.stdpath("data"), "site")
+require("nvim-treesitter.configs").setup {
+  parser_install_dir = site_dir,
+}
+```
+
 ## :package: Extending `rocks.nvim`
 
 This plugin provides a Lua API for extensibility.
