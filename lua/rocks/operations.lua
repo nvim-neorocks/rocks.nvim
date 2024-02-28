@@ -37,30 +37,69 @@ function operations.register_handler(handler)
     table.insert(_handlers, handler)
 end
 
----@param spec RockSpec
----@return fun() | nil
-local function get_sync_handler_callback(spec)
+--- `vim.schedule` a callback in an async context,
+--- waiting for it to be executed
+---@type async fun(func: fun())
+local vim_schedule_nio_wait = nio.create(function(func)
+    ---@cast func fun()
+    local future = nio.control.future()
+    vim.schedule(function()
+        func()
+        future.set(true)
+    end)
+    future.wait()
+end, 1)
+
+---@param rocks_toml_ref MutRocksTomlRef
+---@param arg_list string[]
+---@return rock_handler_callback | nil
+local function get_install_handler_callback(rocks_toml_ref, arg_list)
     return vim.iter(_handlers)
         :map(function(handler)
             ---@cast handler RockHandler
-            local get_callback = handler.get_sync_callback
-            return get_callback and get_callback(spec)
+            local get_callback = handler.get_install_callback
+            return type(get_callback) == "function" and get_callback(rocks_toml_ref, arg_list)
         end)
         :find(function(callback)
             return callback ~= nil
         end)
 end
 
+---@param spec RockSpec
+---@return rock_handler_callback | nil
+local function get_sync_handler_callback(spec)
+    return vim.iter(_handlers)
+        :map(function(handler)
+            ---@cast handler RockHandler
+            local get_callback = handler.get_sync_callback
+            return type(get_callback) == "function" and get_callback(spec)
+        end)
+        :find(function(callback)
+            return callback ~= nil
+        end)
+end
+
+---@param rocks_toml_ref MutRocksTomlRef
+---@return rock_handler_callback[]
+local function get_update_handler_callbacks(rocks_toml_ref)
+    return vim.iter(_handlers)
+        :map(function(handler)
+            ---@cast handler RockHandler
+            return handler.get_update_callbacks(rocks_toml_ref) or {}
+        end)
+        :flatten()
+        :totable()
+end
+
 ---@class (exact) Future
 ---@field wait fun() Wait in an async context. Does not block in a sync context
 ---@field wait_sync fun() Wait in a sync context
 
----@alias rock_config_table { [rock_name]: Rock|string }
----@alias rock_table { [rock_name]: Rock }
+---@alias rock_table table<rock_name, Rock>
 
 ---Decode the user rocks from rocks.toml, creating a default config file if it does not exist
----@return { rocks?: rock_config_table, plugins?: rock_config_table }
-local function parse_user_rocks()
+---@return MutRocksTomlRef
+local function parse_rocks_toml()
     local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
     return require("toml_edit").parse(config_file)
 end
@@ -373,7 +412,7 @@ operations.sync = function(user_rocks)
 
         -- Tell external handlers to prune their rocks
         for _, handler in pairs(_handlers) do
-            local callback = handler.get_prune_callback(user_rocks)
+            local callback = type(handler.get_prune_callback) == "function" and handler.get_prune_callback(user_rocks)
             if callback then
                 callback(report_progress, report_error)
             end
@@ -471,9 +510,12 @@ operations.update = function()
             )
         end
 
-        local user_rocks = parse_user_rocks()
+        local user_rocks = parse_rocks_toml()
 
         local outdated_rocks = state.outdated_rocks()
+        local external_update_handlers = get_update_handler_callbacks(user_rocks)
+
+        local total_update_count = #outdated_rocks + #external_update_handlers
 
         nio.scheduler()
 
@@ -502,21 +544,35 @@ operations.update = function()
                 end
                 progress_handle:report({
                     message = ("Updated %s: %s -> %s"):format(rock.name, rock.version, rock.target_version),
-                    percentage = get_percentage(ct, #outdated_rocks),
+                    percentage = get_percentage(ct, total_update_count),
                 })
             else
                 report_error(("Failed to update %s."):format(rock.name))
                 progress_handle:report({
-                    percentage = get_percentage(ct, #outdated_rocks),
+                    percentage = get_percentage(ct, total_update_count),
                 })
             end
         end
-
-        if vim.tbl_isempty(outdated_rocks) then
-            nio.scheduler()
-            progress_handle:report({ message = "Nothing to update!", percentage = 100 })
+        for _, handler in pairs(external_update_handlers) do
+            local function report_progress(message)
+                progress_handle:report({
+                    message = message,
+                })
+            end
+            handler(report_progress, report_error)
+            progress_handle:report({
+                percentage = get_percentage(ct, total_update_count),
+            })
+            ct = ct + 1
         end
-        fs.write_file(config.config_path, "w", tostring(user_rocks))
+
+        if vim.tbl_isempty(outdated_rocks) and vim.tbl_isempty(external_update_handlers) then
+            progress_handle:report({ message = "Nothing to update!", percentage = 100 })
+        else
+            vim_schedule_nio_wait(function()
+                fs.write_file(config.config_path, "w", tostring(user_rocks))
+            end)
+        end
         nio.scheduler()
         if not vim.tbl_isempty(error_handles) then
             local message = "Update completed with errors!"
@@ -543,22 +599,47 @@ operations.update = function()
 end
 
 --- Adds a new rock and updates the `rocks.toml` file
----@param rock_name string #The rock name
+---@param arg_list string[] #Argument list, potentially used by external handlers
+---@param rock_name rock_name #The rock name
 ---@param version? string #The version of the rock to use
-operations.add = function(rock_name, version)
+operations.add = function(arg_list, rock_name, version)
     local progress_handle = progress.handle.create({
         title = "Installing",
-        message = version and ("%s -> %s"):format(rock_name, version) or rock_name,
         lsp_client = { name = constants.ROCKS_NVIM },
     })
 
     nio.run(function()
+        local user_rocks = parse_rocks_toml()
+        local handler = get_install_handler_callback(user_rocks, arg_list)
+        if type(handler) == "function" then
+            local function report_progress(message)
+                progress_handle:report({
+                    message = message,
+                })
+            end
+            local function report_error(message)
+                progress_handle:report({
+                    title = "Error",
+                    message = message,
+                })
+                progress_handle:cancel()
+            end
+            handler(report_progress, report_error)
+            vim_schedule_nio_wait(function()
+                fs.write_file(config.config_path, "w", tostring(user_rocks))
+                progress_handle:finish()
+            end)
+            return
+        end
+        progress_handle:report({
+            message = version and ("%s -> %s"):format(rock_name, version) or rock_name,
+        })
         local future = operations.install({
             name = rock_name,
             version = version,
         })
         local success, installed_rock = pcall(future.wait)
-        vim.schedule(function()
+        vim_schedule_nio_wait(function()
             if not success then
                 progress_handle:report({
                     title = "Error",
@@ -572,7 +653,6 @@ operations.add = function(rock_name, version)
                 message = ("%s -> %s"):format(installed_rock.name, installed_rock.version),
                 percentage = 100,
             })
-            local user_rocks = parse_user_rocks()
             -- FIXME(vhyrro): This currently works in a half-baked way.
             -- The `toml-edit` libary will create a new empty table here, but if you were to try
             -- and populate the table upfront then none of the values will be registered by `toml-edit`.
@@ -618,7 +698,7 @@ operations.prune = function(rock_name)
         lsp_client = { name = constants.ROCKS_NVIM },
     })
     nio.run(function()
-        local user_config = parse_user_rocks()
+        local user_config = parse_rocks_toml()
         if user_config.plugins then
             user_config.plugins[rock_name] = nil
         end
@@ -629,7 +709,7 @@ operations.prune = function(rock_name)
             ---@diagnostic disable-next-line: invisible
             nio.fn.keys(vim.tbl_deep_extend("force", user_config.rocks or {}, user_config.plugins or {}))
         local success = operations.remove_recursive(rock_name, user_rock_names, progress_handle)
-        vim.schedule(function()
+        vim_schedule_nio_wait(function()
             fs.write_file(config.config_path, "w", tostring(user_config))
             if success then
                 progress_handle:finish()

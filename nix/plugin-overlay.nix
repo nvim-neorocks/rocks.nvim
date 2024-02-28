@@ -162,6 +162,9 @@ in {
       withPython3 = true;
       viAlias = false;
       vimAlias = false;
+      plugins = [
+        final.vimPlugins.rocks-git-nvim
+      ];
     };
     runtimeDeps = with final; [
       lua5_1
