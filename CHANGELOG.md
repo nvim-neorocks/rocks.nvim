@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.12.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.11.0...v2.12.0) (2024-02-28)
+
+
+### Features
+
+* **api:** ability to hook into `:Rocks install` and `:Rocks update` ([#165](https://github.com/nvim-neorocks/rocks.nvim/issues/165)) ([7f6e26f](https://github.com/nvim-neorocks/rocks.nvim/commit/7f6e26f66ab68fa46ae99514d2a6f59708c289ad))
+
 ## [2.11.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.10.0...v2.11.0) (2024-02-23)
 
 
