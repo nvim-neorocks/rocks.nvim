@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.12.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.12.0...v2.12.1) (2024-02-29)
+
+
+### Bug Fixes
+
+* check that handler callbacks are set before trying to call them ([02a2749](https://github.com/nvim-neorocks/rocks.nvim/commit/02a2749fce07b0c52c28c3a5b03d1fc89a15dcba))
+
 ## [2.12.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.11.0...v2.12.0) (2024-02-28)
 
 
