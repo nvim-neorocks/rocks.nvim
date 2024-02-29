@@ -351,9 +351,7 @@ operations.sync = function(user_rocks)
         for _, key in ipairs(to_install) do
             nio.scheduler()
             if not user_rocks[key].version then
-                local message = ("Could not parse rock: %s"):format(vim.inspect(user_rocks[key]))
-                log.error(message)
-                report_error(message)
+                -- TODO(vhyrro): Maybe add a rocks option that warns on malformed rocks?
                 goto skip_install
             end
             progress_handle:report({
