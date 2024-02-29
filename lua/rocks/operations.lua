@@ -55,6 +55,10 @@ end, 1)
 ---@return rock_handler_callback | nil
 local function get_install_handler_callback(rocks_toml_ref, arg_list)
     return vim.iter(_handlers)
+        :filter(function(handler)
+            ---@cast handler RockHandler
+            return type(handler.get_install_callback) == "function"
+        end)
         :map(function(handler)
             ---@cast handler RockHandler
             local get_callback = handler.get_install_callback
@@ -69,10 +73,13 @@ end
 ---@return rock_handler_callback | nil
 local function get_sync_handler_callback(spec)
     return vim.iter(_handlers)
+        :filter(function(handler)
+            ---@cast handler RockHandler
+            return type(handler.get_sync_callback) == "function"
+        end)
         :map(function(handler)
             ---@cast handler RockHandler
-            local get_callback = handler.get_sync_callback
-            return type(get_callback) == "function" and get_callback(spec)
+            return handler.get_sync_callback(spec)
         end)
         :find(function(callback)
             return callback ~= nil
@@ -83,6 +90,10 @@ end
 ---@return rock_handler_callback[]
 local function get_update_handler_callbacks(rocks_toml_ref)
     return vim.iter(_handlers)
+        :filter(function(handler)
+            ---@cast handler RockHandler
+            return type(handler.get_update_callbacks) == "function"
+        end)
         :map(function(handler)
             ---@cast handler RockHandler
             return handler.get_update_callbacks(rocks_toml_ref) or {}
