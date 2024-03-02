@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.13.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.12.1...v2.13.0) (2024-03-02)
+
+
+### Features
+
+* use the neorocks manifest as a fallback server ([7e9cf5d](https://github.com/nvim-neorocks/rocks.nvim/commit/7e9cf5d9128708447ed8e478533520272a51ca2f))
+
+
+### Bug Fixes
+
+* ignore malformed rocks ([5407b73](https://github.com/nvim-neorocks/rocks.nvim/commit/5407b736d1214a09d99f9cbc0c71fbab14fd3a22))
+
 ## [2.12.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.12.0...v2.12.1) (2024-02-29)
 
 
