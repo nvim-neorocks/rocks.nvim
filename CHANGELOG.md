@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.13.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.13.0...v2.13.1) (2024-03-02)
+
+
+### Bug Fixes
+
+* invocation of invalid rtp sourcing function ([073d8e5](https://github.com/nvim-neorocks/rocks.nvim/commit/073d8e588d9f6776cb661d513a3d1f5149f928c6))
+
 ## [2.13.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.12.1...v2.13.0) (2024-03-02)
 
 
