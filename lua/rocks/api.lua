@@ -170,7 +170,7 @@ end
 ---Source the `plugin` and `ftdetect` directories.
 ---@param dir string The runtime directory to source
 function api.source_runtime_dir(dir)
-    runtime.source_runtime_dir(dir)
+    runtime.source_rtp_dir(dir)
 end
 
 return api
