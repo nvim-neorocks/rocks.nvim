@@ -5,9 +5,9 @@
 -- Version:    0.1.0
 -- License:    GPLv3
 -- Created:    05 Jul 2023
--- Updated:    09 Dec 2023
+-- Updated:    07 Mar 2024
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
--- Maintainer: NTBBloodbath <bloodbathalchemist@protonmail.com>
+-- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>
 --
 ---@brief [[
 --
@@ -22,20 +22,14 @@ local fs = require("rocks.fs")
 local config = require("rocks.config.internal")
 local state = require("rocks.state")
 local cache = require("rocks.cache")
-local luarocks = require("rocks.luarocks")
-local runtime = require("rocks.runtime")
+local helpers = require("rocks.operations.helpers")
+local handlers = require("rocks.operations.handlers")
 local nio = require("nio")
 local progress = require("fidget.progress")
 
 local operations = {}
 
----@type RockHandler[]
-local _handlers = {}
-
----@param handler RockHandler
-function operations.register_handler(handler)
-    table.insert(_handlers, handler)
-end
+operations.register_handler = handlers.register_handler
 
 --- `vim.schedule` a callback in an async context,
 --- waiting for it to be executed
@@ -49,58 +43,6 @@ local vim_schedule_nio_wait = nio.create(function(func)
     end)
     future.wait()
 end, 1)
-
----@param rocks_toml_ref MutRocksTomlRef
----@param arg_list string[]
----@return rock_handler_callback | nil
-local function get_install_handler_callback(rocks_toml_ref, arg_list)
-    return vim.iter(_handlers)
-        :filter(function(handler)
-            ---@cast handler RockHandler
-            return type(handler.get_install_callback) == "function"
-        end)
-        :map(function(handler)
-            ---@cast handler RockHandler
-            local get_callback = handler.get_install_callback
-            return type(get_callback) == "function" and get_callback(rocks_toml_ref, arg_list)
-        end)
-        :find(function(callback)
-            return callback ~= nil
-        end)
-end
-
----@param spec RockSpec
----@return rock_handler_callback | nil
-local function get_sync_handler_callback(spec)
-    return vim.iter(_handlers)
-        :filter(function(handler)
-            ---@cast handler RockHandler
-            return type(handler.get_sync_callback) == "function"
-        end)
-        :map(function(handler)
-            ---@cast handler RockHandler
-            return handler.get_sync_callback(spec)
-        end)
-        :find(function(callback)
-            return callback ~= nil
-        end)
-end
-
----@param rocks_toml_ref MutRocksTomlRef
----@return rock_handler_callback[]
-local function get_update_handler_callbacks(rocks_toml_ref)
-    return vim.iter(_handlers)
-        :filter(function(handler)
-            ---@cast handler RockHandler
-            return type(handler.get_update_callbacks) == "function"
-        end)
-        :map(function(handler)
-            ---@cast handler RockHandler
-            return handler.get_update_callbacks(rocks_toml_ref) or {}
-        end)
-        :flatten()
-        :totable()
-end
 
 ---@class (exact) Future
 ---@field wait fun() Wait in an async context. Does not block in a sync context
@@ -120,132 +62,6 @@ end
 local function get_percentage(counter, total)
     return counter > 0 and math.min(100, math.floor((counter / total) * 100)) or 0
 end
-
----@param rock_spec RockSpec
----@param progress_handle? ProgressHandle
----@return Future
-operations.install = function(rock_spec, progress_handle)
-    cache.invalidate_removable_rocks()
-    local name = rock_spec.name:lower()
-    local version = rock_spec.version
-    local message = version and ("Installing: %s -> %s"):format(name, version) or ("Installing: %s"):format(name)
-    log.info(message)
-    if progress_handle then
-        progress_handle:report({ message = message })
-    end
-    -- TODO(vhyrro): Input checking on name and version
-    local future = nio.control.future()
-    local install_cmd = {
-        "install",
-        name,
-    }
-    if version then
-        -- If specified version is dev then install the `scm-1` version of the rock
-        if version == "dev" then
-            table.insert(install_cmd, 2, "--dev")
-        else
-            table.insert(install_cmd, version)
-        end
-    end
-    local systemObj = luarocks.cli(install_cmd, function(sc)
-        ---@cast sc vim.SystemCompleted
-        if sc.code ~= 0 then
-            message = ("Failed to install %s"):format(name)
-            log.error(message)
-            if progress_handle then
-                progress_handle:report({ message = message })
-            end
-            future.set_error(sc.stderr)
-        else
-            ---@type Rock
-            local installed_rock = {
-                name = name,
-                -- The `gsub` makes sure to escape all punctuation characters
-                -- so they do not get misinterpreted by the lua pattern engine.
-                -- We also exclude `-<specrev>` from the version match.
-                version = sc.stdout:match(name:gsub("%p", "%%%1") .. "%s+([^-%s]+)"),
-            }
-            message = ("Installed: %s -> %s"):format(installed_rock.name, installed_rock.version)
-            log.info(message)
-            if progress_handle then
-                progress_handle:report({ message = message })
-            end
-
-            if config.dynamic_rtp and rock_spec.opt then
-                runtime.packadd(name)
-            end
-
-            future.set(installed_rock)
-        end
-    end)
-    return {
-        wait = future.wait,
-        wait_sync = function()
-            systemObj:wait()
-        end,
-    }
-end
-
----Removes a rock
----@param name string
----@param progress_handle? ProgressHandle
----@return Future
-operations.remove = function(name, progress_handle)
-    cache.invalidate_removable_rocks()
-    local message = ("Uninstalling: %s"):format(name)
-    log.info(message)
-    if progress_handle then
-        progress_handle:report({ message = message })
-    end
-    local future = nio.control.future()
-    local systemObj = luarocks.cli({
-        "remove",
-        name,
-    }, function(sc)
-        ---@cast sc vim.SystemCompleted
-        if sc.code ~= 0 then
-            message = ("Failed to remove %s."):format(name)
-            if progress_handle then
-                progress_handle:report({ message = message })
-            end
-            future.set_error(sc.stderr)
-        else
-            log.info(("Uninstalled: %s"):format(name))
-            future.set(sc)
-        end
-    end)
-    return {
-        wait = future.wait,
-        wait_sync = function()
-            systemObj:wait()
-        end,
-    }
-end
-
----Removes a rock, and recursively removes its dependencies
----if they are no longer needed.
----@type async fun(name: string, keep: string[], progress_handle?: ProgressHandle): boolean
-operations.remove_recursive = nio.create(function(name, keep, progress_handle)
-    ---@cast name string
-    local dependencies = state.rock_dependencies(name)
-    local future = operations.remove(name, progress_handle)
-    local success, _ = pcall(future.wait)
-    if not success then
-        return false
-    end
-    local removable_rocks = state.query_removable_rocks()
-    local removable_dependencies = vim.iter(dependencies)
-        :filter(function(rock_name)
-            return vim.list_contains(removable_rocks, rock_name) and not vim.list_contains(keep, rock_name)
-        end)
-        :totable()
-    for _, dep in pairs(removable_dependencies) do
-        if vim.list_contains(removable_rocks, dep.name) then
-            success = success and operations.remove_recursive(dep.name, keep, progress_handle)
-        end
-    end
-    return success
-end, 3)
 
 --- Synchronizes the user rocks with the physical state on the current machine.
 --- - Installs missing rocks
@@ -317,7 +133,7 @@ operations.sync = function(user_rocks)
         ---@cast to_prune string[]
         for _, key in ipairs(key_list) do
             local user_rock = user_rocks[key]
-            local callback = user_rock and get_sync_handler_callback(user_rock)
+            local callback = user_rock and handlers.get_sync_handler_callback(user_rock)
             if callback then
                 table.insert(external_actions, callback)
             elseif user_rocks and not installed_rocks[key] then
@@ -362,7 +178,7 @@ operations.sync = function(user_rocks)
             if vim.startswith(user_rocks[key].version, "scm-") then
                 user_rocks[key].version = "dev"
             end
-            local future = operations.install(user_rocks[key])
+            local future = helpers.install(user_rocks[key])
             local success = pcall(future.wait)
 
             ct = ct + 1
@@ -386,7 +202,7 @@ operations.sync = function(user_rocks)
                 message = is_downgrading and ("Downgrading: %s"):format(key) or ("Updating: %s"):format(key),
             })
 
-            local future = operations.install(user_rocks[key])
+            local future = helpers.install(user_rocks[key])
             local success = pcall(future.wait)
 
             ct = ct + 1
@@ -419,13 +235,7 @@ operations.sync = function(user_rocks)
             end
         end
 
-        -- Tell external handlers to prune their rocks
-        for _, handler in pairs(_handlers) do
-            local callback = type(handler.get_prune_callback) == "function" and handler.get_prune_callback(user_rocks)
-            if callback then
-                callback(report_progress, report_error)
-            end
-        end
+        handlers.prune_user_rocks(user_rocks, report_progress, report_error)
 
         ---@type string[]
         local prunable_rocks = vim.iter(to_prune)
@@ -452,7 +262,7 @@ operations.sync = function(user_rocks)
             nio.scheduler()
             progress_handle:report({ message = ("Removing: %s"):format(key) })
 
-            local success = operations.remove_recursive(installed_rocks[key].name, user_rock_names)
+            local success = helpers.remove_recursive(installed_rocks[key].name, user_rock_names)
 
             ct = ct + 1
             nio.scheduler()
@@ -522,7 +332,7 @@ operations.update = function()
         local user_rocks = parse_rocks_toml()
 
         local outdated_rocks = state.outdated_rocks()
-        local external_update_handlers = get_update_handler_callbacks(user_rocks)
+        local external_update_handlers = handlers.get_update_handler_callbacks(user_rocks)
 
         local total_update_count = #outdated_rocks + #external_update_handlers
 
@@ -534,7 +344,7 @@ operations.update = function()
             progress_handle:report({
                 message = name,
             })
-            local future = operations.install({
+            local future = helpers.install({
                 name = name,
                 version = rock.target_version,
             })
@@ -619,7 +429,7 @@ operations.add = function(arg_list, rock_name, version)
 
     nio.run(function()
         local user_rocks = parse_rocks_toml()
-        local handler = get_install_handler_callback(user_rocks, arg_list)
+        local handler = handlers.get_install_handler_callback(user_rocks, arg_list)
         if type(handler) == "function" then
             local function report_progress(message)
                 progress_handle:report({
@@ -643,7 +453,7 @@ operations.add = function(arg_list, rock_name, version)
         progress_handle:report({
             message = version and ("%s -> %s"):format(rock_name, version) or rock_name,
         })
-        local future = operations.install({
+        local future = helpers.install({
             name = rock_name,
             version = version,
         })
@@ -717,7 +527,7 @@ operations.prune = function(rock_name)
         local user_rock_names =
             ---@diagnostic disable-next-line: invisible
             nio.fn.keys(vim.tbl_deep_extend("force", user_config.rocks or {}, user_config.plugins or {}))
-        local success = operations.remove_recursive(rock_name, user_rock_names, progress_handle)
+        local success = helpers.remove_recursive(rock_name, user_rock_names, progress_handle)
         vim_schedule_nio_wait(function()
             fs.write_file(config.config_path, "w", tostring(user_config))
             if success then
