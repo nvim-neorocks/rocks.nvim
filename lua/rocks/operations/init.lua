@@ -7,7 +7,7 @@
 -- Created:    05 Jul 2023
 -- Updated:    07 Mar 2024
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
--- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>
+-- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 --
 ---@brief [[
 --
