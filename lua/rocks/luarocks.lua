@@ -74,7 +74,7 @@ luarocks.search_all = nio.create(function(callback)
     local rocks_table = vim.empty_dict()
     ---@cast rocks_table { [string]: Rock }
     local future = nio.control.future()
-    luarocks.cli({ "search", "--porcelain", "--all" }, function(obj)
+    luarocks.cli({ "search", "--porcelain", "--all", "--dev" }, function(obj)
         ---@cast obj vim.SystemCompleted
         future.set(obj)
     end, { text = true, synchronized = false })
@@ -89,7 +89,8 @@ luarocks.search_all = nio.create(function(callback)
         if name ~= "lua" then
             local rock_list = rocks_table[name] or vim.empty_dict()
             ---@cast rock_list Rock[]
-            table.insert(rock_list, { name = name, version = version })
+            -- Exclude -<specrev> from version
+            table.insert(rock_list, { name = name, version = version:match("([^-]+)") })
             rocks_table[name] = rock_list
         end
     end
