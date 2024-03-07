@@ -14,7 +14,7 @@
 -- Created:    12 Dec 2023
 -- Updated:    12 Dec 2023
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
--- Maintainer: NTBBloodbath <bloodbathalchemist@protonmail.com>
+-- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 
 local log = {}
 
