@@ -189,19 +189,6 @@ local function set_up_luarocks(install_path)
     vim.notify("Configuring luarocks...")
 
     sc = vim.system({
-        "git",
-        "reset",
-        "--hard",
-        "d81020338c99ff4116431ee496a7db516eb91f00",
-    }, {
-        cwd = tempdir,
-    }):wait()
-
-    if sc.code ~= 0 then
-        notify_output("Pinning luarocks failed.", sc, vim.log.levels.WARN)
-    end
-
-    sc = vim.system({
         vim.o.sh,
         "configure",
         "--prefix=" .. install_path,
