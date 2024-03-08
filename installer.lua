@@ -177,6 +177,7 @@ local function set_up_luarocks(install_path)
     local sc = vim.system({
         "git",
         "clone",
+        "--filter=blob:none",
         "https://github.com/luarocks/luarocks.git",
         tempdir,
     }):wait()
