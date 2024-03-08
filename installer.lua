@@ -202,7 +202,7 @@ local function set_up_luarocks(install_path)
     end
 
     sc = vim.system({
-        "sh",
+        vim.o.sh,
         "configure",
         "--prefix=" .. install_path,
         "--lua-version=5.1",
