@@ -4,11 +4,13 @@ describe("operations", function()
     vim.system({ "mkdir", "-p", config.rocks_path })
     it("install", function()
         operations.install({ name = "plenary.nvim" }).wait_sync()
+        ---@diagnostic disable-next-line: missing-fields
         local result = vim.fs.find("plenary", { path = config.rocks_path, type = "directory" })
         assert(#result > 0, "install failed")
     end)
     it("remove", function()
         operations.remove("plenary.nvim").wait_sync()
+        ---@diagnostic disable-next-line: missing-fields
         local result = vim.fs.find("plenary", { path = config.rocks_path, type = "directory" })
         assert(#result == 0, "remove failed")
     end)
