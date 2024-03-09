@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.14.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.13.1...v2.14.0) (2024-03-09)
+
+
+### Features
+
+* **completions:** include dev versions in luarocks search ([98ae8fc](https://github.com/nvim-neorocks/rocks.nvim/commit/98ae8fcb4a19e985561b75ea37a91806de328b78))
+
+
+### Bug Fixes
+
+* **installer:** use `vim.o.sh` instead of `'sh'` ([#179](https://github.com/nvim-neorocks/rocks.nvim/issues/179)) ([54b67ce](https://github.com/nvim-neorocks/rocks.nvim/commit/54b67cec53f4152c85fb8f7b77a939514b5f78a5))
+
+
+### Performance Improvements
+
+* **installer:** Use `--filter=blob:none` when cloning luarocks ([919541e](https://github.com/nvim-neorocks/rocks.nvim/commit/919541e564f80a288a5fe3587963cdf4f4e6b099))
+
+
+### Reverts
+
+* **installer:** stay on old luarocks commit ([#180](https://github.com/nvim-neorocks/rocks.nvim/issues/180)) ([6c0403a](https://github.com/nvim-neorocks/rocks.nvim/commit/6c0403a3fff682a0c1266b62567eca4ce5f2f139))
+
 ## [2.13.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.13.0...v2.13.1) (2024-03-02)
 
 
