@@ -19,6 +19,7 @@
 local luarocks = require("rocks.luarocks")
 local config = require("rocks.config.internal")
 local runtime = require("rocks.runtime")
+local adapter = require("rocks.adapter")
 local state = require("rocks.state")
 local log = require("rocks.log")
 local cache = require("rocks.cache")
@@ -78,6 +79,7 @@ helpers.install = function(rock_spec, progress_handle)
 
             if config.dynamic_rtp and rock_spec.opt then
                 runtime.packadd(name)
+                adapter.init_tree_sitter_parser_symlinks()
             end
 
             future.set(installed_rock)
