@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.15.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.14.0...v2.15.0) (2024-03-13)
+
+
+### Features
+
+* add support for tree-sitter parsers installed from luarocks ([141e5f8](https://github.com/nvim-neorocks/rocks.nvim/commit/141e5f8044435fc191874cac7f6923a22c78e5fb))
+* **treesitter:** set `TREE_SITTER_LANGUAGE_VERSION` ([34996d8](https://github.com/nvim-neorocks/rocks.nvim/commit/34996d83d936fd2c32e7f341fdeb13e87593f0f4))
+
+
+### Bug Fixes
+
+* **install:** don't `packadd` if installed rockspec is `opt` ([217ef32](https://github.com/nvim-neorocks/rocks.nvim/commit/217ef32876c0298eaf46d95c1d845ce545e0b4e8))
+* **installer:** proper C lib file extension on darwin and windows ([#186](https://github.com/nvim-neorocks/rocks.nvim/issues/186)) ([855d556](https://github.com/nvim-neorocks/rocks.nvim/commit/855d5563c878047c02205065afff36a1959163a4))
+* **operations:** ensure luarocks prioritizes rocks-binaries ([de3cbb6](https://github.com/nvim-neorocks/rocks.nvim/commit/de3cbb642d81d2185fca93c55ede9f4b9c5a104e))
+
 ## [2.14.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.13.1...v2.14.0) (2024-03-09)
 
 
