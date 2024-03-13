@@ -178,14 +178,21 @@ for luarocks, ensuring a seamless and efficient user experience.
 
 [^1]: We only upload parsers which we can install in the NURR CI.
 
+When installing, rocks.nvim will also search our [rocks-binaries](https://nvim-neorocks.github.io/rocks-binaries/)
+server, which means you don't even need to compile many parsers
+on your machine[^2].
+
+[^2]: We currently do not provide binary rocks for parsers that need
+      to have their sources generated using the tree-sitter CLI.
+
 ### Simplifying dependencies
 
 For plugin developers, specifying a tree-sitter parser as a dependency
-is now as straightforward as including it in their project's rockspec[^2].
+is now as straightforward as including it in their project's rockspec[^3].
 This eliminates the need for manual parser management and ensures that
 dependencies are automatically resolved and installed.
 
-[^2]: [example](https://luarocks.org/modules/MrcJkb/neotest-haskell).
+[^3]: [example](https://luarocks.org/modules/MrcJkb/neotest-haskell).
 
 Example rockspec dependency specification:
 
