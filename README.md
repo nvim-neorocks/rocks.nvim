@@ -34,7 +34,14 @@
 - Minimal, non-intrusive UI.
 - Async execution.
 - Extensible, with a Lua API.
-- Command completions for plugins on luarocks.org.
+  - [`rocks-git.nvim`](https://github.com/nvim-neorocks/rocks-git.nvim)
+    for installing from git repositories.
+  - [`rocks-config.nvim`](https://github.com/nvim-neorocks/rocks-config.nvim)
+    for plugin configuration.
+  - And more...
+- Command completions for plugins and versions on luarocks.org.
+- Binary rocks pulled from [rocks-binaries](https://nvim-neorocks.github.io/rocks-binaries/)
+  so you don't have to compile them.
 
 ![demo](https://github.com/nvim-neorocks/rocks.nvim/assets/12857160/955c3ae7-c916-4a70-8fbd-4e28b7f0d77e)
 
