@@ -21,29 +21,57 @@ local nio = require("nio")
 local log = require("rocks.log")
 local config = require("rocks.config.internal")
 
+local rtp_link_dir = vim.fs.joinpath(config.rocks_path, "rocks_rtp")
+
+--- Initialise the rocks_rtp directory
+---@return boolean success
+local function init_rocks_rtp_dir()
+    if not vim.uv.fs_stat(rtp_link_dir) and vim.fn.mkdir(rtp_link_dir, "p") ~= 1 then
+        log.error("Failed to create rocks_rtp symlink directory.")
+        return false
+    end
+    return true
+end
+
+---@param symlink_dir_name string
+---@param dest_dir_path string
+local function add_rtp_symlink(symlink_dir_name, dest_dir_path)
+    local symlink_dir_path = vim.fs.joinpath(rtp_link_dir, symlink_dir_name)
+    -- NOTE: nio.uv.fs_stat behaves differently than vim.uv.fs_stat
+    if not vim.uv.fs_stat(symlink_dir_path) then
+        log.info("Creating symlink directory: " .. symlink_dir_name)
+        nio.uv.fs_symlink(dest_dir_path, symlink_dir_path)
+    end
+end
+
 --- Neovim doesn't support `:checkhealth` for luarocks plugins.
 --- To work around this, we create a symlink in the `rocks_path` that
 --- we add to the runtimepath, so that Neovim can find health files.
 local function init_checkhealth_symlink()
-    local health_link_dir = vim.fs.joinpath(config.rocks_path, "healthlink")
-    local lua_symlink_dir = vim.fs.joinpath(health_link_dir, "lua")
-    -- NOTE: nio.uv.fs_stat behaves differently than vim.uv.fs_stat
-    if not vim.uv.fs_stat(lua_symlink_dir) then
-        log.info("Creating health symlink directory.")
-        if vim.fn.mkdir(health_link_dir, "p") ~= 1 then
-            log.error("Failed to create health symlink directory.")
-        end
-        local rocks_lua_dir = vim.fs.joinpath(config.rocks_path, "share", "lua", "5.1")
-        nio.uv.fs_symlink(rocks_lua_dir, lua_symlink_dir)
+    local rocks_lua_dir = vim.fs.joinpath(config.rocks_path, "share", "lua", "5.1")
+    if vim.uv.fs_stat(rocks_lua_dir) then
+        add_rtp_symlink("lua", rocks_lua_dir)
     end
-    vim.schedule(function()
-        vim.opt.runtimepath:append(health_link_dir)
-    end)
+end
+
+--- If any tree-sitter parsers are installed,
+-- initialise a symlink so that Neovim can find them.
+function adapter.init_tree_sitter_parser_symlinks()
+    local rocks_parser_dir = vim.fs.joinpath(config.rocks_path, "lib", "lua", "5.1", "parser")
+    if vim.uv.fs_stat(rocks_parser_dir) then
+        add_rtp_symlink("parser", rocks_parser_dir)
+    end
 end
 
 function adapter.init()
+    vim.opt.runtimepath:append(rtp_link_dir)
     nio.run(function()
+        local ok = init_rocks_rtp_dir()
+        if not ok then
+            return
+        end
         init_checkhealth_symlink()
+        adapter.init_tree_sitter_parser_symlinks()
     end)
 end
 

@@ -118,6 +118,14 @@
               luacheck
               editorconfig-checker
             ]
+            ++ (with pkgs; [
+              # For tree-sitter parsers that need sources
+              # to be generated
+              gcc
+              tree-sitter
+              nodejs_21
+              # TODO: Package luarocks-build-treesitter-parser
+            ])
             ++ oa.buildInputs;
           doCheck = false;
         });
