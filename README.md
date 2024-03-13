@@ -87,7 +87,7 @@ This setup illustrates several pain points in the status quo:
 - Platform-specific instructions:
   Build instructions and dependencies may vary by platform, adding complexity.
 - Because of this horrible UX, plugin authors have been reluctant to
-  add dependencies, preferring to copy/past code instead.
+  add dependencies, preferring to copy/paste code instead.
 
 rocks.nvim simplifies the above example to:
 
