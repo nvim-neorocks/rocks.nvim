@@ -387,6 +387,8 @@ local function install()
                 pcall(vim.api.nvim_win_close, data.window, true)
             end
 
+            local sysname = vim.uv.os_uname().sysname:lower()
+            local lib_extension = (sysname:find("windows") and "dll") or (sysname:find("darwin") and "dylib") or "so"
             acquire_buffer_lock(buffer, function()
                 vim.api.nvim_buf_set_lines(buffer, 0, -1, true, {
                     "INSTALLATION COMPLETE",
@@ -408,8 +410,12 @@ local function install()
                     ' package.path = package.path .. ";" .. table.concat(luarocks_path, ";")',
                     " ",
                     " local luarocks_cpath = {",
-                    '     vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.so"),',
-                    '     vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.so"),',
+                    ('     vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.%s"),'):format(
+                        lib_extension
+                    ),
+                    ('     vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.%s"),'):format(
+                        lib_extension
+                    ),
                     " }",
                     ' package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")',
                     " ",
@@ -441,8 +447,12 @@ local function install()
                     'package.path = package.path .. ";" .. table.concat(luarocks_path, ";")',
                     "",
                     "local luarocks_cpath = {",
-                    '    vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.so"),',
-                    '    vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.so"),',
+                    ('    vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.%s"),'):format(
+                        lib_extension
+                    ),
+                    ('    vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.%s"),'):format(
+                        lib_extension
+                    ),
                     "}",
                     'package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")',
                     "",
