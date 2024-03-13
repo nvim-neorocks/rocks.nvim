@@ -56,6 +56,7 @@ luarocks.cli = function(args, on_exit, opts)
     end
     opts.env = vim.tbl_deep_extend("force", opts.env or {}, {
         LUAROCKS_CONFIG = "",
+        TREE_SITTER_LANGUAGE_VERSION = tostring(vim.treesitter.language_version),
     })
     local luarocks_cmd = vim.list_extend({
         config.luarocks_binary,
