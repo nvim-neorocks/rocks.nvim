@@ -45,6 +45,73 @@
 
 ![demo](https://github.com/nvim-neorocks/rocks.nvim/assets/12857160/955c3ae7-c916-4a70-8fbd-4e28b7f0d77e)
 
+## :moon: Introduction
+
+rocks.nvim revolutionizes Neovim plugin management by streamlining the way users
+and developers handle plugins and dependencies.
+Integrating directly with [`luarocks`](https://luarocks.org),
+this plugin offers an automated approach that shifts the responsibility
+of specifying dependencies and build steps from users to plugin authors.
+
+### Why rocks.nvim?
+
+The traditional approach to Neovim plugin management often places
+an unjust burden on users.
+
+Consider the following example using lazy.nvim:
+
+```lua
+{
+  'foo/bar.nvim',
+  dependencies = {
+    'nvim-lua/plenary.nvim',
+    'MunifTanjim/nui.nvim',
+    {
+      '4O4/reactivex', -- LuaRocks dependency
+      build = function(plugin)
+        -- post-install build step required to link the luarocks dependency
+        vim.uv.fs_symlink(plugin.dir, plugin.dir .. "/lua", { dir = true })
+      end,
+    },
+  },
+  build = "make install" -- Post-install build step of the main plugin
+}
+```
+
+This setup illustrates several pain points in the status quo:
+
+- Manual dependency management:
+  Users are often required to manually specify and manage dependencies.
+- Breaking changes:
+  Updates to a plugin's dependencies can lead to breaking changes for users.
+- Platform-specific instructions:
+  Build instructions and dependencies may vary by platform, adding complexity.
+- Because of this horrible UX, plugin authors have been reluctant to
+  add dependencies, preferring to copy/past code instead.
+
+rocks.nvim simplifies the above example to:
+
+```
+:Rocks install bar.nvim
+```
+
+Welcome to a new era of Neovim plugin management - where simplicity meets efficiency!
+
+### Philosophy
+
+rocks.nvim itself is designed based on the UNIX philosophy:
+Do one thing well.
+
+It doesn't dictate how you as a user should configure your plugins.
+But there's an optional module for those seeking
+additional configuration capabilities: [`rocks-config.nvim`](https://github.com/nvim-neorocks/rocks-config.nvim).
+
+We have packaged [many Neovim plugins and tree-sitter parsers](https://luarocks.org/modules/neorocks)
+for luarocks, and an increasing number of plugin authors
+[have been publishing themselves](https://luarocks.org/labels/neovim?non_root=on).
+Additionally, [`rocks-git.nvim`](https://github.com/nvim-neorocks/rocks-git.nvim)
+ensures you're covered even when a plugin isn't directly available on LuaRocks.
+
 ## :pencil: Requirements
 
 - An up-to-date `Neovim` nightly (>= 0.10) installation.
@@ -232,6 +299,8 @@ Following are some examples:
   Adds the ability to install plugins from git.
 - [`rocks-config.nvim`](https://github.com/nvim-neorocks/rocks-config.nvim):
   Adds an API for safely loading plugin configurations.
+- [`rocks-dev.nvim`](https://github.com/nvim-neorocks/rocks-dev.nvim):
+  Adds an API for developing and testing luarocks plugins locally.
 
 To extend `rocks.nvim`, simply install a module with `:Rocks install`,
 and you're good to go!
