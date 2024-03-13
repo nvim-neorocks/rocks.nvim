@@ -62,8 +62,10 @@ luarocks.cli = function(args, on_exit, opts)
         config.luarocks_binary,
         "--lua-version=" .. constants.LUA_VERSION,
         "--tree=" .. config.rocks_path,
-        "--server='https://nvim-neorocks.github.io/rocks-binaries/'",
+        -- WARNING: The servers are prioritised by luarocks in the reverse order
+        -- in which they are passed
         "--server='https://luarocks.org/manifests/neorocks'",
+        "--server='https://nvim-neorocks.github.io/rocks-binaries/'",
     }, args)
     log.info(luarocks_cmd)
     return vim.system(luarocks_cmd, opts, on_exit_wrapped)
