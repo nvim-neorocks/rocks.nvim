@@ -77,7 +77,7 @@ helpers.install = function(rock_spec, progress_handle)
                 progress_handle:report({ message = message })
             end
 
-            if config.dynamic_rtp and rock_spec.opt then
+            if config.dynamic_rtp and not rock_spec.opt then
                 runtime.packadd(name)
                 adapter.init_tree_sitter_parser_symlinks()
             end
