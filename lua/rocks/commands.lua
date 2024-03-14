@@ -58,6 +58,9 @@ local function complete_versions(name, query)
     end, rocks)
     local unique_versions = {}
     for _, rock in pairs(matching_rocks) do
+        if rock.version == "scm" then
+            rock.version = "dev"
+        end
         unique_versions[rock.version] = rock
     end
 
