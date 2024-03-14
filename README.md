@@ -215,6 +215,10 @@ dependencies = {
 If you need a tree-sitter parser for syntax highlighting or other features,
 you can easily install them with rocks.nvim: `:Rocks install tree-sitter-<lang>`.
 
+Or, if you want something that comes with lots of tree-sitter parsers and
+automatically configures nvim-treesitter for you,
+check out our [`rocks-treesiter.nvim` module](https://github.com/nvim-neorocks/rocks-treesitter.nvim).
+
 > [!IMPORTANT]
 >
 > You still need to install [nvim-treesitter](https://luarocks.org/modules/neovim/nvim-treesitter)
