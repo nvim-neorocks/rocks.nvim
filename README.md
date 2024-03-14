@@ -120,7 +120,8 @@ ensures you're covered even when a plugin isn't directly available on LuaRocks.
 - `netrw` enabled in your Neovim configuration - enabled by default but some configurations manually disable the plugin.
 
 > [!IMPORTANT]
-> If you are running on Windows or an esoteric architecture, `rocks.nvim` will
+>
+> If you are running on an esoteric architecture, `rocks.nvim` will
 > attempt to compile its dependencies instead of pulling a prebuilt binary. For
 > the process to succeed you must have a **C++17 parser** and **Rust
 > toolchain** installed on your system.
@@ -281,6 +282,10 @@ dependencies = {
 
 If you need a tree-sitter parser for syntax highlighting or other features,
 you can easily install them with rocks.nvim: `:Rocks install tree-sitter-<lang>`.
+
+Or, if you want something that comes with lots of tree-sitter parsers and
+automatically configures nvim-treesitter for you,
+check out our [`rocks-treesiter.nvim` module](https://github.com/nvim-neorocks/rocks-treesitter.nvim).
 
 > [!IMPORTANT]
 >
