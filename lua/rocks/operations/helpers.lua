@@ -47,7 +47,7 @@ helpers.install = function(rock_spec, progress_handle)
     }
     if version then
         -- If specified version is dev then install the `scm-1` version of the rock
-        if version == "dev" then
+        if version == "dev" or version == "scm" then
             table.insert(install_cmd, 2, "--dev")
         else
             table.insert(install_cmd, version)
