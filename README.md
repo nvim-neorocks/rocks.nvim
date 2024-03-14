@@ -53,7 +53,8 @@
 - `netrw` enabled in your Neovim configuration - enabled by default but some configurations manually disable the plugin.
 
 > [!IMPORTANT]
-> If you are running on Windows or an esoteric architecture, `rocks.nvim` will
+>
+> If you are running on an esoteric architecture, `rocks.nvim` will
 > attempt to compile its dependencies instead of pulling a prebuilt binary. For
 > the process to succeed you must have a **C++17 parser** and **Rust
 > toolchain** installed on your system.
