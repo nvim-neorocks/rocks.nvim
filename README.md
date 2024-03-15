@@ -171,6 +171,9 @@ Arguments:
 > - Installs the latest version if `version` is omitted.
 > - This plugin keeps track of installed plugins in a `rocks.toml` file,
 >   which you can commit to version control.
+> - If you specify `dev` or `scm` as the version, luarocks will search the `dev`
+>   manifest. This has the side-effect that it will prioritise `dev` versions
+>   of any dependencies that aren't declared with version constraints.
 
 ### Updating rocks
 
