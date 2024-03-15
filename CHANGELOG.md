@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.16.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.15.0...v2.16.0) (2024-03-15)
+
+
+### Features
+
+* **install:** prompt to search dev version if rock not found ([#191](https://github.com/nvim-neorocks/rocks.nvim/issues/191)) ([66d6e8a](https://github.com/nvim-neorocks/rocks.nvim/commit/66d6e8ad1a7e616f73ed34a435b77ee968effa2f))
+
+
+### Bug Fixes
+
+* **install:** add `--dev` flag if version is `scm` ([69921f1](https://github.com/nvim-neorocks/rocks.nvim/commit/69921f1e82283965f687f417378b753436f26745))
+
 ## [2.15.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.14.0...v2.15.0) (2024-03-13)
 
 
