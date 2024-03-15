@@ -417,6 +417,23 @@ operations.update = function()
     end)
 end
 
+--- Prompt to retry an installation searching the dev manifest, if the version
+--- is not "dev" or "scm"
+---@param arg_list string[] #Argument list, potentially used by external handlers
+---@param rock_name rock_name #The rock name
+---@param version? string #The version of the rock to use
+local function prompt_retry_install_with_dev(arg_list, rock_name, version)
+    if version ~= "dev" then
+        local yesno = vim.fn.input("Could not find " .. rock_name .. ". Search for 'dev' version? y/n: ")
+        print("\n ")
+        if string.match(yesno, "^y.*") then
+            nio.run(function()
+                operations.add(arg_list, rock_name, "dev")
+            end)
+        end
+    end
+end
+
 --- Adds a new rock and updates the `rocks.toml` file
 ---@param arg_list string[] #Argument list, potentially used by external handlers
 ---@param rock_name rock_name #The rock name
@@ -457,13 +474,24 @@ operations.add = function(arg_list, rock_name, version)
             name = rock_name,
             version = version,
         })
+        ---@type boolean, Rock | string
         local success, installed_rock = pcall(future.wait)
         vim_schedule_nio_wait(function()
             if not success then
+                local stderr = installed_rock
+                ---@cast stderr string
+                local not_found = stderr:match("No results matching query were found") ~= nil
+                local message = ("Installation of %s failed"):format(rock_name)
+                if not_found then
+                    message = ("Could not find %s %s"):format(rock_name, version or "")
+                end
                 progress_handle:report({
                     title = "Error",
-                    message = ("Installation of %s failed"):format(rock_name),
+                    message = message,
                 })
+                if not_found then
+                    prompt_retry_install_with_dev(arg_list, rock_name, version)
+                end
                 progress_handle:cancel()
                 return
             end
