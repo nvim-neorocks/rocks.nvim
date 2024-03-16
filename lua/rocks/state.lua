@@ -18,6 +18,7 @@
 local state = {}
 
 local luarocks = require("rocks.luarocks")
+local constants = require("rocks.constants")
 local log = require("rocks.log")
 local nio = require("nio")
 
@@ -66,7 +67,7 @@ state.outdated_rocks = nio.create(function()
         else
             future.set(obj.stdout)
         end
-    end, { text = true })
+    end, { text = true, servers = constants.ALL_SERVERS })
 
     local installed_rock_list = future.wait()
 

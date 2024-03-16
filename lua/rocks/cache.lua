@@ -19,10 +19,14 @@ local cache = {}
 
 local luarocks = require("rocks.luarocks")
 local state = require("rocks.state")
+local constants = require("rocks.constants")
 local nio = require("nio")
 
----@type { [string]: Rock[] } | nil
+---@type { [rock_name]: Rock[] } | nil
 local _cached_rocks = nil
+
+---@type { [rock_name]: Rock[] } | nil
+local _cached_dev_binaries = nil
 
 ---Used for completions only
 ---@type string[] | nil
@@ -83,5 +87,42 @@ end
 cache.invalidate_removable_rocks = function()
     _removable_rock_cache = nil
 end
+
+---Search the cache for rocks-binaries-dev rocks.
+---Repopulates the cache and runs a second search if not found
+---@type async fun(rock_name: string, version: string?)
+cache.search_binary_dev_rocks = nio.create(function(rock_name, version)
+    ---@cast rock_name rock_name
+    ---@cast version string
+    local function search_cache()
+        local rocks
+        if _cached_dev_binaries then
+            rocks = _cached_dev_binaries[rock_name]
+        end
+        return rocks
+            and vim.iter(rocks):any(function(rock)
+                ---@cast rock Rock
+                if version == "dev" then
+                    version = "scm"
+                end
+                return not version or rock.version == version
+            end)
+    end
+    local found = search_cache()
+    if found then
+        return found
+    end
+    local future = nio.control.future()
+    luarocks.search_all(function(result)
+        if not vim.tbl_isempty(result) then
+            _cached_dev_binaries = result
+        end
+        future.set(true)
+    end, {
+        servers = constants.ROCKS_BINARIES_DEV,
+    })
+    future.wait()
+    return search_cache()
+end, 2)
 
 return cache

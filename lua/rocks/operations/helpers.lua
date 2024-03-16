@@ -17,6 +17,7 @@
 ---@brief ]]
 
 local luarocks = require("rocks.luarocks")
+local constants = require("rocks.constants")
 local config = require("rocks.config.internal")
 local runtime = require("rocks.runtime")
 local adapter = require("rocks.adapter")
@@ -45,10 +46,18 @@ helpers.install = function(rock_spec, progress_handle)
         "install",
         name,
     }
+    local servers = {}
+    vim.list_extend(servers, constants.ROCKS_SERVERS)
     if version then
         -- If specified version is dev then install the `scm-1` version of the rock
         if version == "dev" or version == "scm" then
-            table.insert(install_cmd, 2, "--dev")
+            if cache.search_binary_dev_rocks(rock_spec.name, version) then
+                -- Rock found on rocks-binaries-dev
+                table.insert(servers, constants.ROCKS_BINARIES_DEV)
+            else
+                -- Search dev manifest
+                table.insert(install_cmd, 2, "--dev")
+            end
         else
             table.insert(install_cmd, version)
         end
@@ -84,7 +93,9 @@ helpers.install = function(rock_spec, progress_handle)
 
             future.set(installed_rock)
         end
-    end)
+    end, {
+        servers = servers,
+    })
     return {
         wait = future.wait,
         wait_sync = function()
