@@ -51,6 +51,27 @@ constants.DEFAULT_CONFIG = string.format(
 ---@type string
 constants.ROCKS_NVIM = "rocks.nvim"
 
+---@alias server_url string
+---@alias only_server_url string
+
+--- WARNING: The servers are prioritised by luarocks in the reverse order
+--- in which they are passed
+---@type server_url[]
+constants.ROCKS_SERVERS = {
+    "https://luarocks.org/manifests/neorocks/",
+    "https://nvim-neorocks.github.io/rocks-binaries/",
+}
+
+---@type only_server_url
+constants.ROCKS_BINARIES_DEV = "https://nvim-neorocks.github.io/rocks-binaries-dev/"
+
+---@type server_url[]
+constants.DEV_SERVERS = {
+    constants.ROCKS_BINARIES_DEV,
+}
+
+constants.ALL_SERVERS = vim.list_extend(constants.DEV_SERVERS, constants.ROCKS_SERVERS)
+
 return constants
 
 --- constants.lua
