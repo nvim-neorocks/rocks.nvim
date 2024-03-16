@@ -116,6 +116,7 @@
       luaOlder,
       buildLuarocksPackage,
       lua,
+      luarocks,
       toml,
       toml-edit,
       fidget-nvim,
@@ -129,6 +130,7 @@
         src = self;
         disabled = luaOlder "5.1";
         propagatedBuildInputs = [
+          luarocks
           toml
           toml-edit
           fidget-nvim
@@ -166,10 +168,6 @@ in {
         final.vimPlugins.rocks-git-nvim
       ];
     };
-    runtimeDeps = with final; [
-      lua5_1
-      luarocks
-    ];
     rocks = lua51Packages.rocks-nvim;
   in
     final.wrapNeovimUnstable final.neovim-nightly (neovimConfig
@@ -209,8 +207,6 @@ in {
         wrapperArgs =
           lib.escapeShellArgs neovimConfig.wrapperArgs
           + " "
-          + ''--set NVIM_APPNAME "nvimrocks"''
-          + " "
-          + ''--prefix PATH : "${lib.makeBinPath runtimeDeps}"'';
+          + ''--set NVIM_APPNAME "nvimrocks"'';
       });
 }
