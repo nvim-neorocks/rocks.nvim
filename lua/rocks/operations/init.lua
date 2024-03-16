@@ -194,8 +194,11 @@ operations.sync = function(user_rocks)
             ::skip_install::
         end
         for _, key in ipairs(to_updowngrade) do
-            local is_downgrading = vim.startswith(installed_rocks[key].version, "scm")
-                or vim.version.parse(user_rocks[key].version) < vim.version.parse(installed_rocks[key].version)
+            local is_installed_version_semver, installed_version =
+                pcall(vim.version.parse, installed_rocks[key].version)
+            local is_user_version_semver, user_version = pcall(vim.version.parse, user_rocks[key].version or "dev")
+            local is_downgrading = not is_installed_version_semver and is_user_version_semver
+                or is_user_version_semver and is_installed_version_semver and user_version < installed_version
 
             nio.scheduler()
             progress_handle:report({
