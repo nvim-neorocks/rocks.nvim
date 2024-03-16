@@ -23,10 +23,27 @@ local log = require("rocks.log")
 local nio = require("nio")
 
 ---@class LuarocksCliOpts: vim.SystemOpts
+---@field servers? server_url[] | only_server_url
 ---@field synchronized? boolean Whether to wait for and acquire a lock (recommended for file system IO, default: `true`)
 
 local lock = nio.control.future()
 lock.set(true) -- initialise as unlocked
+
+--- --only-server if `servers` is a `string`, otherwise --server for each element
+---@param servers server_url[]|only_server_url|nil
+---@return string[]
+local function mk_server_args(servers)
+    if type(servers) == "string" then
+        ---@cast servers string
+        return { ("--only-server='%s'"):format(servers) }
+    end
+    return vim.iter(servers or {})
+        :map(function(server)
+            ---@cast server string
+            return ("--server='%s'"):format(server)
+        end)
+        :totable()
+end
 
 ---@param args string[] luarocks CLI arguments
 ---@param on_exit (function|nil) Called asynchronously when the luarocks command exits.
@@ -58,29 +75,36 @@ luarocks.cli = function(args, on_exit, opts)
         LUAROCKS_CONFIG = nil,
         TREE_SITTER_LANGUAGE_VERSION = tostring(vim.treesitter.language_version),
     })
-    local luarocks_cmd = vim.list_extend({
+    local luarocks_cmd = {
         config.luarocks_binary,
         "--lua-version=" .. constants.LUA_VERSION,
         "--tree=" .. config.rocks_path,
-        -- WARNING: The servers are prioritised by luarocks in the reverse order
-        -- in which they are passed
-        "--server='https://luarocks.org/manifests/neorocks'",
-        "--server='https://nvim-neorocks.github.io/rocks-binaries/'",
-    }, args)
+    }
+    luarocks_cmd = vim.list_extend(luarocks_cmd, mk_server_args(opts.servers))
+    luarocks_cmd = vim.list_extend(luarocks_cmd, args)
     log.info(luarocks_cmd)
     return vim.system(luarocks_cmd, opts, on_exit_wrapped)
 end
 
+---@class LuarocksSearchOpts
+---@field dev? boolean Include dev manifest? Default: false
+---@field servers? server_url[]|only_server_url Optional servers. Defaults to constants.ROCKS_SERVERS
+
 ---Search luarocks.org for all packages.
----@type async fun(callback: fun(rocks_table: { [string]: Rock } ))
-luarocks.search_all = nio.create(function(callback)
+---@type async fun(callback: fun(rocks_table: { [string]: Rock } ), opts?: LuarocksSearchOpts)
+luarocks.search_all = nio.create(function(callback, opts)
+    ---@cast opts LuarocksSearchOpts | nil
     local rocks_table = vim.empty_dict()
     ---@cast rocks_table { [string]: Rock }
     local future = nio.control.future()
-    luarocks.cli({ "search", "--porcelain", "--all", "--dev" }, function(obj)
+    local cmd = { "search", "--porcelain", "--all" }
+    if opts and opts.dev then
+        table.insert(cmd, "--dev")
+    end
+    luarocks.cli(cmd, function(obj)
         ---@cast obj vim.SystemCompleted
         future.set(obj)
-    end, { text = true, synchronized = false })
+    end, { text = true, synchronized = false, servers = opts and opts.servers or constants.ALL_SERVERS })
     ---@type vim.SystemCompleted
     local obj = future.wait()
     local result = obj.stdout
@@ -88,7 +112,7 @@ luarocks.search_all = nio.create(function(callback)
         callback(vim.empty_dict())
         return
     end
-    for name, version in result:gmatch("(%S+)%s+(%S+)%srockspec%s+[^\n]+") do
+    for name, version in result:gmatch("(%S+)%s+(%S+)%s+[^\n]+") do
         if name ~= "lua" then
             local rock_list = rocks_table[name] or vim.empty_dict()
             ---@cast rock_list Rock[]
