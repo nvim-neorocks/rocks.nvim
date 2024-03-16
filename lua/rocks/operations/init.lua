@@ -513,9 +513,9 @@ operations.add = function(arg_list, rock_name, version)
                 user_rocks.plugins = plugins
             end
 
-            -- Set installed version as `scm-1` if development version has been installed
+            -- Set installed version as `scm` if development version has been installed
             if version == "dev" then
-                installed_rock.version = "scm-1"
+                installed_rock.version = "scm"
             end
             local user_rock = user_rocks.plugins[rock_name]
             if user_rock and user_rock.version then
