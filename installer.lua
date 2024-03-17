@@ -18,6 +18,8 @@ local buffer = vim.api.nvim_create_buf(false, true)
 ---@type number
 local window = vim.api.nvim_get_current_win()
 
+local windows = vim.uv.os_uname().sysname:lower():find("windows")
+
 -- STEP 1: Set up appropriate variables for newly created buffer.
 
 vim.api.nvim_buf_set_name(buffer, "rocks.nvim installer")
@@ -157,8 +159,6 @@ end
 ---@param install_path string
 ---@return boolean success
 local function set_up_luarocks(install_path)
-    local windows = vim.uv.os_uname().sysname:lower():find("windows")
-
     if guard_set_up_luarocks_dependency_missing("git") then
         return false
     end
@@ -374,7 +374,12 @@ local function install()
                 if not success then
                     return
                 end
-                luarocks_binary = vim.fs.joinpath(install_path, "bin", "luarocks")
+                -- Windows overrides the global PATH with `luarocks.bat` as a command.
+                if windows then
+                    luarocks_binary = "luarocks.bat"
+                else
+                    luarocks_binary = vim.fs.joinpath(install_path, "bin", "luarocks")
+                end
             elseif vim.fn.executable(luarocks_binary) ~= 1 then
                 vim.notify(
                     luarocks_binary
@@ -385,15 +390,29 @@ local function install()
             end
 
             vim.notify("Installing rocks.nvim...")
-            local sc = vim.system({
-                luarocks_binary,
-                "--lua-version=5.1",
-                "--tree=" .. install_path,
-                "--server='https://nvim-neorocks.github.io/rocks-binaries/'",
-                "install",
-                "rocks.nvim",
-            }):wait()
 
+            local sc
+
+            if windows then
+                sc = vim.system({
+                    luarocks_binary,
+                    "--lua-version=5.1",
+                    "--tree=" .. install_path,
+                    "--server='https://nvim-neorocks.github.io/rocks-binaries/'",
+                    "install",
+                    "rocks.nvim",
+                }):wait()
+            else
+                sc = vim.system({
+                    luarocks_binary,
+                    "--lua-version=5.1",
+                    "--tree=" .. install_path,
+                    "--server='https://nvim-neorocks.github.io/rocks-binaries/'",
+                    "install",
+                    "rocks.nvim",
+                }):wait()
+
+            end
             if sc.code ~= 0 then
                 notify_output("Installing rocks.nvim failed:", sc, vim.log.levels.ERROR)
                 return
