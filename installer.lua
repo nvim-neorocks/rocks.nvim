@@ -188,23 +188,17 @@ local function set_up_luarocks(install_path)
     vim.notify("Configuring luarocks...")
 
     if windows then
-        print(vim.inspect(vim.system({
-            "echo 'hello'"
-        }, {
-            cwd = tempdir,
-            text = true,
-        }):wait()))
-
         sc = vim.system({
-            "powershell",
             "install.bat",
-            "/P " .. install_path,
-            "/LV 5.1",
+            "/P",
+            install_path,
+            "/LV",
+            "5.1",
             "/FORCECONFIG",
             "/NOADMIN",
             "/Q",
         }, {
-            cwd = luarocks_dir,
+            cwd = tempdir:gsub("/", "\\"),
         }):wait()
     else
         sc = vim.system({
