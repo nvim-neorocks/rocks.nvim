@@ -189,6 +189,8 @@ local function set_up_luarocks(install_path)
 
     if windows then
         sc = vim.system({
+            "cmd.exe",
+            "\\c",
             "install.bat",
             "/P",
             install_path,
@@ -199,7 +201,7 @@ local function set_up_luarocks(install_path)
             "/Q",
         }, {
             cwd = tempdir,
-        }):wait()
+        })
     else
         sc = vim.system({
             vim.o.sh,
