@@ -112,7 +112,7 @@ Once you start editing a value, you may exit it by pressing Enter or by clicking
 
 -------------------------------------------------------------------------------------------
 
-Rocks installation path: [install_path:50:{{vim.fs.joinpath(vim.fn.stdpath('data'), "rocks")}}]
+Rocks installation path: [install_path:50:{{vim.fs.normalize(vim.fs.joinpath(vim.fn.stdpath('data'), "rocks"))}}]
 Set up luarocks (recommended) ?: [setup_luarocks:6:{{true }}]
 
 < OK >
@@ -167,7 +167,7 @@ local function set_up_luarocks(install_path)
     end
 
     ---@diagnostic disable-next-line: param-type-mismatch
-    local tempdir = vim.fs.joinpath(vim.fn.stdpath("run"), ("luarocks-%X"):format(math.random(256 ^ 7)))
+    local tempdir = vim.fs.normalize(vim.fs.joinpath(vim.fn.stdpath("run"), ("luarocks-%X"):format(math.random(256 ^ 7))))
 
     vim.notify("Downloading luarocks...")
 
