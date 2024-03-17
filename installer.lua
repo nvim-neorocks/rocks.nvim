@@ -157,10 +157,12 @@ end
 ---@param install_path string
 ---@return boolean success
 local function set_up_luarocks(install_path)
+    local windows = vim.uv.os_uname().sysname:lower():find("windows")
+
     if guard_set_up_luarocks_dependency_missing("git") then
         return false
     end
-    if guard_set_up_luarocks_dependency_missing("make") then
+    if not windows and guard_set_up_luarocks_dependency_missing("make") then
         return false
     end
 
@@ -184,33 +186,49 @@ local function set_up_luarocks(install_path)
 
     vim.notify("Configuring luarocks...")
 
-    sc = vim.system({
-        vim.o.sh,
-        "configure",
-        "--prefix=" .. install_path,
-        "--lua-version=5.1",
-        "--force-config",
-    }, {
-        cwd = tempdir,
-    }):wait()
+    if windows then
+        sc = vim.system({
+            "call",
+            "install.bat",
+            "/P " .. install_path,
+            "/LV 5.1",
+            "/FORCECONFIG",
+            "/NOADMIN",
+            "/Q",
+        }, {
+            cwd = tempdir,
+        }):wait()
+    else
+        sc = vim.system({
+            vim.o.sh,
+            "configure",
+            "--prefix=" .. install_path,
+            "--lua-version=5.1",
+            "--force-config",
+        }, {
+            cwd = tempdir,
+        }):wait()
+    end
 
     if sc.code ~= 0 then
         notify_output("Configuring luarocks failed.", sc, vim.log.levels.ERROR)
         return false
     end
 
-    vim.notify("Installing luarocks...")
+    if not windows then
+        vim.notify("Installing luarocks...")
 
-    sc = vim.system({
-        "make",
-        "install",
-    }, {
-        cwd = tempdir,
-    }):wait()
+        sc = vim.system({
+            "make",
+            "install",
+        }, {
+            cwd = tempdir,
+        }):wait()
 
-    if sc.code ~= 0 then
-        notify_output("Installing luarocks failed.", sc, vim.log.levels.ERROR)
-        return false
+        if sc.code ~= 0 then
+            notify_output("Installing luarocks failed.", sc, vim.log.levels.ERROR)
+            return false
+        end
     end
 
     return true
