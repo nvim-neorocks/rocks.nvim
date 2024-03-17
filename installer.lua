@@ -188,12 +188,10 @@ local function set_up_luarocks(install_path)
     vim.notify("Configuring luarocks...")
 
     if windows then
-        local luarocks_dir = tempdir:gsub("/", "\\")
-
         print(vim.inspect(vim.system({
             "dir"
         }, {
-            cwd = luarocks_dir,
+            cwd = tempdir,
             text = true,
         }):wait()))
 
