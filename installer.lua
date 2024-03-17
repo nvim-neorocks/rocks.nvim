@@ -188,7 +188,6 @@ local function set_up_luarocks(install_path)
 
     if windows then
         sc = vim.system({
-            "call",
             "install.bat",
             "/P " .. install_path,
             "/LV 5.1",
