@@ -190,12 +190,12 @@ local function set_up_luarocks(install_path)
     if windows then
         local luarocks_dir = tempdir:gsub("/", "\\")
 
-        print(vim.system({
+        print(vim.inspect(vim.system({
             "dir"
         }, {
             cwd = luarocks_dir,
             text = true,
-        }):wait())
+        }):wait()))
 
         sc = vim.system({
             "powershell",
