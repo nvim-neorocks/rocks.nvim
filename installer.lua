@@ -198,7 +198,7 @@ local function set_up_luarocks(install_path)
             "5.1",
             "/FORCECONFIG",
             "/NOADMIN",
-            "/Q",
+            -- "/Q",
         }, {
             cwd = tempdir,
         }):wait()
