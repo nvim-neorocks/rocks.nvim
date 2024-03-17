@@ -190,7 +190,7 @@ local function set_up_luarocks(install_path)
     if windows then
         sc = vim.system({
             "cmd.exe",
-            "\\c",
+            "/c",
             "install.bat",
             "/P",
             install_path,
