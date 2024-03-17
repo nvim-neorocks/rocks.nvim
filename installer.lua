@@ -189,7 +189,7 @@ local function set_up_luarocks(install_path)
 
     if windows then
         print(vim.inspect(vim.system({
-            "dir"
+            "echo 'hello'"
         }, {
             cwd = tempdir,
             text = true,
