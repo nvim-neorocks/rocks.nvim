@@ -189,14 +189,12 @@ local function set_up_luarocks(install_path)
     if windows then
         sc = vim.system({
             "powershell",
-            "install.bat",
+            table.concat({ tempdir:gsub("/", "\\"), "install.bat" }, "\\"),
             "/P " .. install_path,
             "/LV 5.1",
             "/FORCECONFIG",
             "/NOADMIN",
             "/Q",
-        }, {
-            cwd = tempdir:gsub("/", "\\"),
         }):wait()
     else
         sc = vim.system({
