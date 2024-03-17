@@ -189,6 +189,14 @@ local function set_up_luarocks(install_path)
 
     if windows then
         local luarocks_dir = table.concat({ tempdir:gsub("/", "\\"), "install.bat" }, "\\")
+
+        print(vim.system({
+            "dir"
+        }, {
+            cwd = luarocks_dir,
+            text = true,
+        }):wait())
+
         sc = vim.system({
             "powershell",
             luarocks_dir,
