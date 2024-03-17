@@ -167,7 +167,8 @@ local function set_up_luarocks(install_path)
     end
 
     ---@diagnostic disable-next-line: param-type-mismatch
-    local tempdir = vim.fs.normalize(vim.fs.joinpath(vim.fn.stdpath("run"), ("luarocks-%X"):format(math.random(256 ^ 7))))
+    local tempdir =
+        vim.fs.normalize(vim.fs.joinpath(vim.fn.stdpath("run"), ("luarocks-%X"):format(math.random(256 ^ 7))))
 
     vim.notify("Downloading luarocks...")
 
@@ -187,16 +188,17 @@ local function set_up_luarocks(install_path)
     vim.notify("Configuring luarocks...")
 
     if windows then
-        print(table.concat({ tempdir:gsub("/", "\\"), "install.bat" }, "\\"))
-        print(tempdir)
+        local luarocks_dir = table.concat({ tempdir:gsub("/", "\\"), "install.bat" }, "\\")
         sc = vim.system({
             "powershell",
-            table.concat({ tempdir:gsub("/", "\\"), "install.bat" }, "\\"),
+            luarocks_dir,
             "/P " .. install_path,
             "/LV 5.1",
             "/FORCECONFIG",
             "/NOADMIN",
             "/Q",
+        }, {
+            cwd = luarocks_dir,
         }):wait()
     else
         sc = vim.system({
