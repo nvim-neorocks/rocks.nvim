@@ -195,7 +195,7 @@ local function set_up_luarocks(install_path)
             "/NOADMIN",
             "/Q",
         }, {
-            cwd = tempdir,
+            cwd = tempdir:gsub("/", "\\"),
         }):wait()
     else
         sc = vim.system({
