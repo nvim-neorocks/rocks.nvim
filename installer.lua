@@ -201,7 +201,7 @@ local function set_up_luarocks(install_path)
             "/Q",
         }, {
             cwd = tempdir,
-        })
+        }):wait()
     else
         sc = vim.system({
             vim.o.sh,
