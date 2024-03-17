@@ -157,12 +157,7 @@ end
 ---@param install_path string
 ---@return boolean success
 local function set_up_luarocks(install_path)
-    -- TODO: Check running OS here
     if guard_set_up_luarocks_dependency_missing("git") then
-        return false
-    end
-    if guard_set_up_luarocks_dependency_missing("sh") then
-        -- TODO: Add support for Windows?
         return false
     end
     if guard_set_up_luarocks_dependency_missing("make") then
