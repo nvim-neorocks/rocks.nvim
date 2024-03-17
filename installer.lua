@@ -187,6 +187,8 @@ local function set_up_luarocks(install_path)
     vim.notify("Configuring luarocks...")
 
     if windows then
+        print(table.concat({ tempdir:gsub("/", "\\"), "install.bat" }, "\\"))
+        print(tempdir)
         sc = vim.system({
             "powershell",
             table.concat({ tempdir:gsub("/", "\\"), "install.bat" }, "\\"),
