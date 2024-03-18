@@ -185,7 +185,8 @@ local function set_up_luarocks(install_path)
     vim.notify("Configuring luarocks...")
 
     sc = vim.system({
-        "./configure",
+        "sh"
+        "configure",
         "--prefix=" .. install_path,
         "--lua-version=5.1",
         "--force-config",
