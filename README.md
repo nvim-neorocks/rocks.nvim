@@ -254,23 +254,48 @@ With the introduction of the [Neovim User Rocks Repository (NURR)](https://githu
 we have automated the packaging and publishing of many plugins and curated[^1] tree-sitter parsers
 for luarocks, ensuring a seamless and efficient user experience.
 
-[^1]: We only upload parsers which we can install in the NURR CI.
+[^1]: We only upload parsers which we can install in the NURR CI
+      (tested on Linux).
 
-When installing, rocks.nvim will also search our [rocks-binaries](https://nvim-neorocks.github.io/rocks-binaries/)
+When installing, rocks.nvim will also search our [rocks-binaries (dev)](https://nvim-neorocks.github.io/rocks-binaries-dev/)
 server, which means you don't even need to compile many parsers
-on your machine[^2].
+on your machine.
 
-[^2]: We currently do not provide binary rocks for parsers that need
-      to have their sources generated using the tree-sitter CLI.
+### Effortless installation for users
+
+If you need a tree-sitter parser for syntax highlighting or other features,
+you can easily install them with rocks.nvim: `:Rocks install tree-sitter-<lang>`.
+
+They come bundled with queries, so once installed,
+all you need to do is run `vim.treesitter.start()` to enable syntax highlighting[^3].
+
+[^3]: You can put this in a `ftplugin/<filetype>.lua`, for example.
+      [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) is
+      still required for tree-sitter based folding, indentation, etc.,
+      but you don't need to configure it to install any parsers.
+
+<!-- Or, if you want something that comes with lots of tree-sitter parsers and -->
+<!-- automatically configures nvim-treesitter for you, -->
+<!-- check out our [`rocks-treesiter.nvim` module](https://github.com/nvim-neorocks/rocks-treesitter.nvim). -->
+
+> [!WARNING]
+>
+> - Tree-sitter is an experimental feature of Neovim.
+>   As is the case with nvim-treesitter,
+>   please consider tree-sitter support in rocks.nvim experimental.
+>
+> - We are not affiliated with the nvim-treesitter maintainers.
+>   If you are facing issues with tree-sitter support in rocks.nvim,
+>   please don't bug them.
 
 ### Simplifying dependencies
 
 For plugin developers, specifying a tree-sitter parser as a dependency
-is now as straightforward as including it in their project's rockspec[^3].
+is now as straightforward as including it in their project's rockspec[^2].
 This eliminates the need for manual parser management and ensures that
 dependencies are automatically resolved and installed.
 
-[^3]: [example](https://luarocks.org/modules/MrcJkb/neotest-haskell).
+[^2]: [example](https://luarocks.org/modules/mrcjkb/neotest-haskell).
 
 Example rockspec dependency specification:
 
@@ -280,21 +305,6 @@ dependencies = {
   "tree-sitter-haskell"
 }
 ```
-
-### Effortless installation for users
-
-If you need a tree-sitter parser for syntax highlighting or other features,
-you can easily install them with rocks.nvim: `:Rocks install tree-sitter-<lang>`.
-
-Or, if you want something that comes with lots of tree-sitter parsers and
-automatically configures nvim-treesitter for you,
-check out our [`rocks-treesiter.nvim` module](https://github.com/nvim-neorocks/rocks-treesitter.nvim).
-
-> [!IMPORTANT]
->
-> You still need to install [nvim-treesitter](https://luarocks.org/modules/neovim/nvim-treesitter)
-> for tree-sitter based syntax highlighting, injections, etc.,
-> as the queries are not provided by the parsers.
 
 ## :package: Extending `rocks.nvim`
 
