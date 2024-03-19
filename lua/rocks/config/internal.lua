@@ -38,6 +38,8 @@ local default_config = {
     dynamic_rtp = true,
     ---@type boolean Whether to re-generate plugins help pages after installation/upgrade
     generate_help_pages = true,
+    ---@type boolean Whether to reinstall 'dev' rocks on update
+    reinstall_dev_rocks_on_update = true,
     ---@class RocksConfigDebugInfo
     debug_info = {
         ---@type boolean
@@ -66,7 +68,7 @@ local default_config = {
         end
         return rocks_toml
     end,
-    ---@type fun():RockSpec[]
+    ---@type fun():table<rock_name, RockSpec>
     get_user_rocks = function()
         local rocks_toml = config.get_rocks_toml()
         return vim.tbl_deep_extend("force", rocks_toml.rocks or {}, rocks_toml.plugins or {})

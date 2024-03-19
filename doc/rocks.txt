@@ -152,7 +152,7 @@ Specification for a rock in rocks.toml. May be extended by external modules.
 RocksToml                                                            *RocksToml*
 
 
-        { rocks?: RockSpec[], plugins?: RockSpec[], [string]: V }
+        { rocks?: table<string, RockSpec[]>, plugins?: table<string,RockSpec[]>, [string]: V }
 
 Content of rocks.toml
 
@@ -169,7 +169,7 @@ api.get_user_rocks()                                        *api.get_user_rocks*
     If the file doesn't exist a file with the default configuration will be created.
 
     Returns: ~
-        (RockSpec[])
+        (table<rock_name,RockSpec>)
 
 
 RocksCmd                                                              *RocksCmd*

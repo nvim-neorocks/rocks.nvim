@@ -20,6 +20,7 @@ local config = {}
 ---@field lazy? boolean Whether to query luarocks.org lazily. Defaults to `false`. Setting this to `true` may improve startup time, but features like auto-completion will lag initially.
 ---@field dynamic_rtp? boolean Whether to automatically add freshly installed plugins to the 'runtimepath'. Defaults to `true` for the best default experience.
 ---@field generate_help_pages? boolean Whether to re-generate plugins help pages after installation/upgrade.
+---@field reinstall_dev_rocks_on_update boolean Whether to reinstall 'dev' rocks on update (Default: `true`, as rocks.nvim cannot determine if 'dev' rocks are up to date).
 
 ---@type RocksOpts | fun():RocksOpts
 vim.g.rocks_nvim = vim.g.rocks_nvim
