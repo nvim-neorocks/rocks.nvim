@@ -176,16 +176,14 @@ operations.sync = function(user_rocks)
             return get_percentage(ct, action_count)
         end
 
-        -- Sync actions handled by external modules that have registered handlers
-        for _, callback in ipairs(external_actions) do
-            ct = ct + 1
-            callback(report_progress, report_error)
-        end
+        ---@type RockSpec[]
+        local skipped_rocks = {}
 
         for _, key in ipairs(to_install) do
             nio.scheduler()
             if not user_rocks[key].version then
-                -- TODO(vhyrro): Maybe add a rocks option that warns on malformed rocks?
+                -- Save it for later, when an external handler may have been bootstrapped
+                table.insert(skipped_rocks, user_rocks[key])
                 goto skip_install
             end
             progress_handle:report({
@@ -211,6 +209,27 @@ operations.sync = function(user_rocks)
             })
             ::skip_install::
         end
+
+        action_count = action_count + #skipped_rocks
+
+        -- Sync actions handled by external modules that have registered handlers
+        for _, callback in ipairs(external_actions) do
+            ct = ct + 1
+            callback(report_progress, report_error)
+        end
+
+        -- rocks.nvim sync handlers should be installed now.
+        -- try installing any rocks that rocks.nvim could not handle itself
+        for _, spec in ipairs(skipped_rocks) do
+            ct = ct + 1
+            local callback = handlers.get_sync_handler_callback(spec)
+            if callback then
+                callback(report_progress, report_error)
+            else
+                report_error(("Failed to install %s."):format(spec.name))
+            end
+        end
+
         for _, key in ipairs(to_updowngrade) do
             local is_installed_version_semver, installed_version =
                 pcall(vim.version.parse, installed_rocks[key].version)
