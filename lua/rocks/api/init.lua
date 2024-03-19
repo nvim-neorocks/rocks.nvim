@@ -105,9 +105,9 @@ end
 ---Specification for a rock in rocks.toml. May be extended by external modules.
 ---@brief ]]
 
----@class RocksToml: { rocks?: RockSpec[], plugins?: RockSpec[], [string]: unknown }
+---@class RocksToml: { rocks?: table<string, RockSpec[]>, plugins?: table<string, RockSpec[]>, [string]: unknown }
 ---@brief [[
----        { rocks?: RockSpec[], plugins?: RockSpec[], [string]: V }
+---        { rocks?: table<string, RockSpec[]>, plugins?: table<string,RockSpec[]>, [string]: V }
 ---
 ---Content of rocks.toml
 ---@brief ]]
@@ -121,7 +121,7 @@ end
 
 ---Returns a table with the rock specifications parsed from the rocks.toml file.
 ---If the file doesn't exist a file with the default configuration will be created.
----@return RockSpec[]
+---@return table<rock_name, RockSpec>
 function api.get_user_rocks()
     return config.get_user_rocks()
 end

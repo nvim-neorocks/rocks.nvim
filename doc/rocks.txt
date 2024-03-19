@@ -58,12 +58,13 @@ rocks.nvim configuration                                          *rocks.config*
 RocksOpts                                                            *RocksOpts*
 
     Fields: ~
-        {rocks_path?}           (string)   Local path in your filesystem to install rocks. Defaults to a `rocks` directory in `vim.fn.stdpath("data")`.
-        {config_path?}          (string)   Rocks declaration file path. Defaults to `rocks.toml` in `vim.fn.stdpath("config")`.
-        {luarocks_binary?}      (string)   Luarocks binary path. Defaults to `luarocks`.
-        {lazy?}                 (boolean)  Whether to query luarocks.org lazily. Defaults to `false`. Setting this to `true` may improve startup time, but features like auto-completion will lag initially.
-        {dynamic_rtp?}          (boolean)  Whether to automatically add freshly installed plugins to the 'runtimepath'. Defaults to `true` for the best default experience.
-        {generate_help_pages?}  (boolean)  Whether to re-generate plugins help pages after installation/upgrade.
+        {rocks_path?}                    (string)   Local path in your filesystem to install rocks. Defaults to a `rocks` directory in `vim.fn.stdpath("data")`.
+        {config_path?}                   (string)   Rocks declaration file path. Defaults to `rocks.toml` in `vim.fn.stdpath("config")`.
+        {luarocks_binary?}               (string)   Luarocks binary path. Defaults to `luarocks`.
+        {lazy?}                          (boolean)  Whether to query luarocks.org lazily. Defaults to `false`. Setting this to `true` may improve startup time, but features like auto-completion will lag initially.
+        {dynamic_rtp?}                   (boolean)  Whether to automatically add freshly installed plugins to the 'runtimepath'. Defaults to `true` for the best default experience.
+        {generate_help_pages?}           (boolean)  Whether to re-generate plugins help pages after installation/upgrade.
+        {reinstall_dev_rocks_on_update}  (boolean)  Whether to reinstall 'dev' rocks on update (Default: `true`, as rocks.nvim cannot determine if 'dev' rocks are up to date).
 
 
 ==============================================================================
@@ -152,7 +153,7 @@ Specification for a rock in rocks.toml. May be extended by external modules.
 RocksToml                                                            *RocksToml*
 
 
-        { rocks?: RockSpec[], plugins?: RockSpec[], [string]: V }
+        { rocks?: table<string, RockSpec[]>, plugins?: table<string,RockSpec[]>, [string]: V }
 
 Content of rocks.toml
 
@@ -169,7 +170,7 @@ api.get_user_rocks()                                        *api.get_user_rocks*
     If the file doesn't exist a file with the default configuration will be created.
 
     Returns: ~
-        (RockSpec[])
+        (table<rock_name,RockSpec>)
 
 
 RocksCmd                                                              *RocksCmd*

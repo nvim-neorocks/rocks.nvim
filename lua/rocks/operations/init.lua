@@ -63,6 +63,24 @@ local function get_percentage(counter, total)
     return counter > 0 and math.min(100, math.floor((counter / total) * 100)) or 0
 end
 
+---@param outdated_rocks table<rock_name, OutdatedRock>
+---@return table<rock_name, OutdatedRock>
+local function add_dev_rocks_for_update(outdated_rocks)
+    return vim.iter(config.get_user_rocks()):fold(outdated_rocks, function(acc, name, spec)
+        ---@cast acc table<rock_name, OutdatedRock>
+        ---@cast name rock_name
+        ---@cast spec RockSpec
+        if spec.version == "scm" then
+            acc[name] = {
+                name = spec.name,
+                version = spec.version,
+                target_version = spec.version,
+            }
+        end
+        return acc
+    end)
+end
+
 --- Synchronizes the user rocks with the physical state on the current machine.
 --- - Installs missing rocks
 --- - Ensures that the correct versions are installed
@@ -335,6 +353,9 @@ operations.update = function()
         local user_rocks = parse_rocks_toml()
 
         local outdated_rocks = state.outdated_rocks()
+        if config.reinstall_dev_rocks_on_update then
+            outdated_rocks = add_dev_rocks_for_update(outdated_rocks)
+        end
         local external_update_handlers = handlers.get_update_handler_callbacks(user_rocks)
 
         local total_update_count = #outdated_rocks + #external_update_handlers
@@ -365,7 +386,9 @@ operations.update = function()
                     user_rocks.plugins[rock_name] = ret.version
                 end
                 progress_handle:report({
-                    message = ("Updated %s: %s -> %s"):format(rock.name, rock.version, rock.target_version),
+                    message = rock.version == rock.target_version
+                            and ("Updated rock %s: %s"):format(rock.name, rock.version)
+                        or ("Updated %s: %s -> %s"):format(rock.name, rock.version, rock.target_version),
                     percentage = get_percentage(ct, total_update_count),
                 })
             else
