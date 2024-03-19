@@ -88,13 +88,16 @@ local function open_logfile()
     return true
 end
 
+local log_levels = vim.deepcopy(vim.log.levels)
+for levelstr, levelnr in pairs(log_levels) do
+    log_levels[levelnr] = levelstr
+end
+
 ---Set the log level
 ---@param level (string|integer) The log level
 ---@see vim.log.levels
 ---@package
 function log.set_level(level)
-    local log_levels = vim.deepcopy(vim.log.levels)
-    vim.tbl_add_reverse_lookup(log_levels)
     if type(level) == "string" then
         log.level = assert(log_levels[string.upper(level)], string.format("rocks.nvim: Invalid log level: %q", level))
     else
