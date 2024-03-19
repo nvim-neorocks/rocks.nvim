@@ -5,6 +5,7 @@ rocks.nvim ··································�
 rocks.nvim commands ··········································· |rocks.commands|
 rocks.nvim configuration ········································ |rocks.config|
 rocks.nvim Lua API ················································· |rocks.api|
+rocks.nvim API hooks ········································· |rocks.api.hooks|
 rocks.nvim logging API ············································· |rocks.log|
 
 ==============================================================================
@@ -238,6 +239,23 @@ api.source_runtime_dir({dir})                           *api.source_runtime_dir*
 
     Parameters: ~
         {dir}  (string)  The runtime directory to source
+
+
+==============================================================================
+rocks.nvim API hooks                                           *rocks.api.hooks*
+
+
+Hooks that rocks.nvim modules can inject behaviour into.
+Intended for use by modules that extend this plugin.
+
+
+
+ |preload|
+ By providing a module with the pattern, `rocks-<extension>.rocks.hooks.preload`,
+ rocks.nvim modules can execute code before rocks.nvim loads any plugins.
+
+ To be able to use this feature, a rocks.nvim extension *must* be named with a 'rocks-'
+ prefix.
 
 
 ==============================================================================

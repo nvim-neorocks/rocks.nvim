@@ -26,7 +26,9 @@ end
 
 adapter.init()
 
---- We don't want to run this async, to ensure plugins are sourced before `after/plugin`
-require("rocks.runtime").source_start_plugins()
+--- We don't want to run this async, to ensure proper initialisation order
+local user_rocks = config.get_user_rocks()
+require("rocks.api.hooks").run_preload_hooks(user_rocks)
+require("rocks.runtime").source_start_plugins(user_rocks)
 
 vim.g.rocks_nvim_loaded = true

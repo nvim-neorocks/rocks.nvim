@@ -164,8 +164,8 @@ end
 ---NOTE: We don't want this to be async,
 ---to ensure Neovim sources `after/plugin` scripts
 ---after we source start plugins.
-function runtime.source_start_plugins()
-    local user_rocks = config.get_user_rocks()
+---@param user_rocks RockSpec[]
+function runtime.source_start_plugins(user_rocks)
     for _, rock_spec in pairs(user_rocks) do
         if not rock_spec.opt and rock_spec.version and rock_spec.name ~= constants.ROCKS_NVIM then
             -- Append to rtp first in case a plugin needs another plugin's `autoload`
