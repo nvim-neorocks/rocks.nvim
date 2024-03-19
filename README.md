@@ -126,7 +126,7 @@ ensures you're covered even when a plugin isn't directly available on LuaRocks.
 > the process to succeed you must have a **C++17 parser** and **Rust
 > toolchain** installed on your system.
 
-## :hammer: Installation
+## :inbox_tray: Installation
 
 ### :zap: Installation script (recommended)
 
@@ -153,6 +153,10 @@ nvim -u NORC -c "source https://raw.githubusercontent.com/nvim-neorocks/rocks.nv
 > For example:
 >
 > `LUA_BINDIR="${XDG_BIN_DIR:-$HOME/.local/bin}" LUA_BINDIR_SET=yes nvim -u NORC -c "source ...`
+
+### :hammer: Manual installation
+
+For manual installation, see [this tutorial](https://github.com/nvim-neorocks/rocks.nvim/wiki/Installing-rocks.nvim-manually,-without-the-installation-script).
 
 ## :books: Usage
 
