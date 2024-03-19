@@ -22,6 +22,7 @@ local log = require("rocks.log")
 local config = require("rocks.config.internal")
 
 local rtp_link_dir = vim.fs.joinpath(config.rocks_path, "rocks_rtp")
+local rocks_parser_dir = vim.fs.joinpath(config.rocks_path, "lib", "lua", "5.1", "parser")
 
 --- Initialise the rocks_rtp directory
 ---@return boolean success
@@ -33,16 +34,15 @@ local function init_rocks_rtp_dir()
     return true
 end
 
----@param symlink_dir_name string
----@param dest_dir_path string
-local function add_rtp_symlink(symlink_dir_name, dest_dir_path)
+---@type async fun(symlink_dir_name: string, dest_dir_path: string)
+local add_rtp_symlink = nio.create(function(symlink_dir_name, dest_dir_path)
     local symlink_dir_path = vim.fs.joinpath(rtp_link_dir, symlink_dir_name)
     -- NOTE: nio.uv.fs_stat behaves differently than vim.uv.fs_stat
     if not vim.uv.fs_stat(symlink_dir_path) then
         log.info("Creating symlink directory: " .. symlink_dir_name)
         nio.uv.fs_symlink(dest_dir_path, symlink_dir_path)
     end
-end
+end, 2)
 
 --- Neovim doesn't support `:checkhealth` for luarocks plugins.
 --- To work around this, we create a symlink in the `rocks_path` that
@@ -56,10 +56,18 @@ end
 
 --- If any tree-sitter parsers are installed,
 -- initialise a symlink so that Neovim can find them.
-function adapter.init_tree_sitter_parser_symlinks()
-    local rocks_parser_dir = vim.fs.joinpath(config.rocks_path, "lib", "lua", "5.1", "parser")
+function adapter.init_tree_sitter_parser_symlink()
     if vim.uv.fs_stat(rocks_parser_dir) then
         add_rtp_symlink("parser", rocks_parser_dir)
+    end
+end
+
+--- Check if the tree-sitter parser symlink is valid,
+--- and remove it if it isn't
+function adapter.validate_tree_sitter_parser_symlink()
+    local symlink_dir_path = vim.fs.joinpath(rtp_link_dir, "parser")
+    if not vim.uv.fs_stat(rocks_parser_dir) and not vim.uv.fs_unlink(symlink_dir_path) then
+        log.error("Failed to remove 'parser' symlink: " .. symlink_dir_path)
     end
 end
 
@@ -71,7 +79,8 @@ function adapter.init()
             return
         end
         init_checkhealth_symlink()
-        adapter.init_tree_sitter_parser_symlinks()
+        adapter.validate_tree_sitter_parser_symlink()
+        adapter.init_tree_sitter_parser_symlink()
     end)
 end
 

@@ -88,7 +88,7 @@ helpers.install = function(rock_spec, progress_handle)
 
             if config.dynamic_rtp and not rock_spec.opt then
                 runtime.packadd(name)
-                adapter.init_tree_sitter_parser_symlinks()
+                adapter.init_tree_sitter_parser_symlink()
             end
 
             future.set(installed_rock)
@@ -131,6 +131,7 @@ helpers.remove = function(name, progress_handle)
             log.info(("Uninstalled: %s"):format(name))
             future.set(sc)
         end
+        adapter.validate_tree_sitter_parser_symlink()
     end)
     return {
         wait = future.wait,
