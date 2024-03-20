@@ -231,6 +231,7 @@ opt = true
 ```
 
 You can then load the plugin with the `:Rocks[!] packadd {rock}` command.
+Or, before rocks.nvim is initialised, with `require("rocks").packadd("<rock_name>")`.
 
 > [!NOTE]
 >
