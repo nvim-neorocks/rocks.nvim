@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.17.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.16.0...v2.17.0) (2024-03-20)
+
+
+### Features
+
+* **api:** introduce `preload` hooks for rocks.nvim extensions ([#209](https://github.com/nvim-neorocks/rocks.nvim/issues/209)) ([ebaf92e](https://github.com/nvim-neorocks/rocks.nvim/commit/ebaf92ed160b68a018e1bf772fb5027578149bb9))
+* search rocks-binaries-dev server if version is dev or scm ([#197](https://github.com/nvim-neorocks/rocks.nvim/issues/197)) ([11fe71a](https://github.com/nvim-neorocks/rocks.nvim/commit/11fe71a6593fa0fee29db313650cc3fae0570747))
+* **sync:** bootstrap external sync handlers and use them in one sync sweep ([#211](https://github.com/nvim-neorocks/rocks.nvim/issues/211)) ([d6e9bda](https://github.com/nvim-neorocks/rocks.nvim/commit/d6e9bdaccf3339d687b7a3a03ddd351a469fbae4))
+* **update:** reinstall `dev` rocks by default ([#210](https://github.com/nvim-neorocks/rocks.nvim/issues/210)) ([de1c86c](https://github.com/nvim-neorocks/rocks.nvim/commit/de1c86c93fb671c695f13cbba0b4ee35677e81e7))
+
+
+### Bug Fixes
+
+* async initialise + cleanup tree-sitter parser symlink ([#202](https://github.com/nvim-neorocks/rocks.nvim/issues/202)) ([621337c](https://github.com/nvim-neorocks/rocks.nvim/commit/621337c4b7346532b6c5bc957aba2b239599544e))
+* **installer:** missing comma ([#206](https://github.com/nvim-neorocks/rocks.nvim/issues/206)) ([fb195f1](https://github.com/nvim-neorocks/rocks.nvim/commit/fb195f1ff7e1ef576824d94c18359727a2fa7f5e))
+* **installer:** Respect shell shebang of luarocks configure script ([#200](https://github.com/nvim-neorocks/rocks.nvim/issues/200)) ([eaac7b1](https://github.com/nvim-neorocks/rocks.nvim/commit/eaac7b11c4730f5d74d4e5cb217ac3e5e860330d))
+* remove unnecessary guards ([#201](https://github.com/nvim-neorocks/rocks.nvim/issues/201)) ([e3b2e0d](https://github.com/nvim-neorocks/rocks.nvim/commit/e3b2e0d8df7a4e57c62478399ab90ca77301a658))
+* **sync:** error when version in rocks.toml is `scm` or `dev` ([#193](https://github.com/nvim-neorocks/rocks.nvim/issues/193)) ([5244346](https://github.com/nvim-neorocks/rocks.nvim/commit/5244346aed53834bf7d3f6dbd0ad50501036de49))
+
+
+### Reverts
+
+* set LUAROCKS_CONFIG to `nil`, not an empty string ([821f5fe](https://github.com/nvim-neorocks/rocks.nvim/commit/821f5fe15326bf9120a0e590dd63404e7481c4f6))
+
 ## [2.16.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.15.0...v2.16.0) (2024-03-15)
 
 
