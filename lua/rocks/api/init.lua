@@ -173,4 +173,12 @@ function api.source_runtime_dir(dir)
     runtime.source_rtp_dir(dir)
 end
 
+---Invoke ':Rocks install' with a callback
+---@param rock_name rock_name #The rock name
+---@param version? string The version of the rock to use
+---@param callback? fun(rock: Rock) Invoked upon successful completion
+function api.install(rock_name, version, callback)
+    operations.add({}, rock_name, version, callback)
+end
+
 return api

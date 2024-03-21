@@ -483,7 +483,8 @@ end
 ---@param arg_list string[] #Argument list, potentially used by external handlers
 ---@param rock_name rock_name #The rock name
 ---@param version? string #The version of the rock to use
-operations.add = function(arg_list, rock_name, version)
+---@param callback? fun(rock: Rock)
+operations.add = function(arg_list, rock_name, version, callback)
     local progress_handle = progress.handle.create({
         title = "Installing",
         lsp_client = { name = constants.ROCKS_NVIM },
@@ -540,6 +541,7 @@ operations.add = function(arg_list, rock_name, version)
                 progress_handle:cancel()
                 return
             end
+            ---@cast installed_rock Rock
             progress_handle:report({
                 title = "Installation successful",
                 message = ("%s -> %s"):format(installed_rock.name, installed_rock.version),
@@ -569,6 +571,9 @@ operations.add = function(arg_list, rock_name, version)
             fs.write_file(config.config_path, "w", tostring(user_rocks))
             if success then
                 progress_handle:finish()
+                if callback then
+                    callback(installed_rock)
+                end
             else
                 progress_handle:cancel()
             end
