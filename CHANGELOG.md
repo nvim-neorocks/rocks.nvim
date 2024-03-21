@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.18.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.17.0...v2.18.0) (2024-03-21)
+
+
+### Features
+
+* **lua-api:** add `rocks.packadd` function ([#214](https://github.com/nvim-neorocks/rocks.nvim/issues/214)) ([ad6cd44](https://github.com/nvim-neorocks/rocks.nvim/commit/ad6cd4483b55c8ac2cfb48c7d6509561febee87c))
+
 ## [2.17.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.16.0...v2.17.0) (2024-03-20)
 
 
