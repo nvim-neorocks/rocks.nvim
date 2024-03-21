@@ -340,7 +340,7 @@ which contains the `luarocks` stderr output, among other logs.
 - [NURR](https://github.com/nvim-neorocks/nurr):
   A repository that publishes Neovim plugins and tree-sitter parsers
   to luarocks.org
-- [luarocks.nvim](https://github.com/camspiers/luarocks):
+- [luarocks.nvim](https://github.com/vhyrro/luarocks.nvim):
   Adds basic support for installing lua rocks to [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ## :book: License
