@@ -107,21 +107,19 @@ local function rtp_append(rtp_glob)
     _appended_rtp[rtp_glob] = true
 end
 
----@class (exact) PackaddOpts
----@field bang? boolean
----@field packadd_fallback? boolean Fall back to the builtin |packadd|? Default `true`.
+---@class PackaddOpts: rocks.PackaddOpts
 ---@field error_on_not_found? boolean Notify with an error message if no plugin could be found. Ignored if `packadd_fallback` is set to `true`.
 
 ---@param rock_name rock_name
----@param opts? PackaddOpts
+---@param opts? rocks.PackaddOpts
 function runtime.packadd(rock_name, opts)
     ---@cast rock_name rock_name
-    ---@cast opts table
     opts = vim.tbl_deep_extend("force", {
         bang = false,
         packadd_fallback = true,
         error_on_not_found = false,
     }, opts or {})
+    ---@cast opts PackaddOpts
     local rtp_glob = mk_rtp_glob(rock_name)
     rtp_append(rtp_glob)
     if opts.bang then

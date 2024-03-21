@@ -1,4 +1,4 @@
----@mod rocks.api rocks.nvim Lua API
+---@mod rocks.api Lua API for rocks.nvim extensions
 ---
 ---@brief [[
 ---

@@ -1,18 +1,37 @@
 ==============================================================================
 Table of Contents                                               *rocks.contents*
 
-rocks.nvim ····························································· |rocks|
+rocks.nvim ························································ |rocks.nvim|
+rocks.nvim Lua API ················································· |rocks.lua|
 rocks.nvim commands ··········································· |rocks.commands|
 rocks.nvim configuration ········································ |rocks.config|
-rocks.nvim Lua API ················································· |rocks.api|
+Lua API for rocks.nvim extensions ·································· |rocks.api|
 rocks.nvim API hooks ········································· |rocks.api.hooks|
 rocks.nvim logging API ············································· |rocks.log|
 
 ==============================================================================
-rocks.nvim                                                               *rocks*
+rocks.nvim                                                          *rocks.nvim*
 
 
 A luarocks plugin manager for Neovim.
+
+
+==============================================================================
+rocks.nvim Lua API                                                   *rocks.lua*
+
+rocks.packadd({rock_name}, {opts})                               *rocks.packadd*
+    Search for a rock with `opt = true`, add it to the runtimepath and source any plugin files found.
+
+    Parameters: ~
+        {rock_name}  (string)
+        {opts}       (rocks.PackaddOpts)
+
+
+rocks.PackaddOpts                                            *rocks.PackaddOpts*
+
+    Fields: ~
+        {bang?}              (boolean)  If `true`, rocks.nvim will only add the rock to the runtimepath, but not source any plugin or ftdetect scripts. Default: `false`.
+        {packadd_fallback?}  (boolean)  Fall back to the builtin |packadd|? Default `true`.
 
 
 ==============================================================================
@@ -68,7 +87,7 @@ RocksOpts                                                            *RocksOpts*
 
 
 ==============================================================================
-rocks.nvim Lua API                                                   *rocks.api*
+Lua API for rocks.nvim extensions                                    *rocks.api*
 
 
 The Lua API for rocks.nvim.
