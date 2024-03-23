@@ -261,6 +261,16 @@ api.source_runtime_dir({dir})                           *api.source_runtime_dir*
         {dir}  (string)  The runtime directory to source
 
 
+                                                                   *api.install*
+api.install({rock_name}, {version?}, {callback?})
+    Invoke ':Rocks install' with a callback
+
+    Parameters: ~
+        {rock_name}  (rock_name)       #The rock name
+        {version?}   (string)          The version of the rock to use
+        {callback?}  (fun(rock:Rock))  Invoked upon successful completion
+
+
 ==============================================================================
 rocks.nvim API hooks                                           *rocks.api.hooks*
 
