@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.19.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.18.0...v2.19.0) (2024-03-23)
+
+
+### Features
+
+* **api:** `install` function for installing rocks with a callback ([#217](https://github.com/nvim-neorocks/rocks.nvim/issues/217)) ([0df5915](https://github.com/nvim-neorocks/rocks.nvim/commit/0df5915c28d8871e41cf833f5b50176951518e2b))
+
 ## [2.18.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.17.0...v2.18.0) (2024-03-21)
 
 
