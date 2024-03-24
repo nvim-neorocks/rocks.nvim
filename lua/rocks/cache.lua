@@ -42,7 +42,9 @@ cache.populate_cached_rocks = nio.create(function()
         if not vim.tbl_isempty(rocks) then
             _cached_rocks = rocks
         end
-    end)
+    end, {
+        dev = true,
+    })
 end)
 
 ---Tries to get the cached rocks.
