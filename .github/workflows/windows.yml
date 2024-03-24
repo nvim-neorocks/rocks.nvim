@@ -1,0 +1,41 @@
+---
+name: Windows test
+# An impure test case to help debug issues with rocks.nvim on windows
+on:
+  # TODO: remove
+  pull_request:
+  # We only want to manually trigger this as needed
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install C/C++ Compiler
+        uses: rlalik/setup-cpp-compiler@master
+        with:
+          compiler: clang-latest
+      - name: Install MSVC Compiler Toolchain
+        uses: ilammy/msvc-dev-cmd@v1
+      - name: Install Lua
+        uses: leso-kn/gh-actions-lua@master
+        with:
+          luaVersion: "5.1"
+      - name: Install Luarocks
+        uses: hishamhm/gh-actions-luarocks@master
+        with:
+          luarocksVersion: "3.11.0"
+      - name: Install neovim
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: nightly
+      - name: Install rocks.nvim
+        run: |
+          mkdir rocks
+          luarocks --tree rocks --lua-version 5.1 --server='https://nvim-neorocks.github.io/rocks-binaries/' install rocks.nvim
+      - name: Run neovim
+        shell: bash
+        run: |
+          nvim -u .github/resources/init-windows.lua -c "lua io.write(require('rocks.config.internal').config_path)" +q 2>&1
