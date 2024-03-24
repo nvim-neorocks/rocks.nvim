@@ -44,6 +44,7 @@ local fzy = require("rocks.fzy")
 local cache = require("rocks.cache")
 local fs = require("rocks.fs")
 local constants = require("rocks.constants")
+local log = require("rocks.log")
 
 ---@param name string
 ---@param query string | nil
@@ -186,6 +187,7 @@ end
 
 ---@package
 function commands.create_commands()
+    log.trace("Creating commands")
     vim.api.nvim_create_user_command("Rocks", rocks, {
         nargs = "+",
         desc = "Interacts with currently installed rocks",

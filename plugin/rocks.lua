@@ -5,6 +5,7 @@ end
 local nio = require("nio")
 local adapter = require("rocks.adapter")
 local config = require("rocks.config.internal")
+local log = require("rocks.log")
 
 local function get_luarocks_lua_dir_from_luarocks()
     local sc = vim.system({ config.luarocks_binary, "--lua-version=5.1", "which", "luarocks.loader" }):wait()
@@ -42,9 +43,11 @@ require("rocks.commands").create_commands()
 local env_path_seperator = vim.uv.os_uname().sysname:lower():find("windows") and ";" or ":"
 
 -- Append the binary directory to the system path.
+log.trace("Appending luarocks binary directory to the system path")
 vim.env.PATH = vim.fs.joinpath(config.rocks_path, "bin") .. env_path_seperator .. vim.env.PATH
 
 if not config.lazy then
+    log.trace("Populating caches")
     nio.run(function()
         local cache = require("rocks.cache")
         nio.gather({

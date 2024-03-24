@@ -1,5 +1,6 @@
 vim.g.rocks_nvim = {
     rocks_path = vim.fs.joinpath(vim.fn.getcwd(), "rocks"),
+    _log_level = vim.log.levels.TRACE,
 }
 
 local luarocks_path = {
