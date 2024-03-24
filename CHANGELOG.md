@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.19.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.19.0...v2.19.1) (2024-03-24)
+
+
+### Bug Fixes
+
+* **completions:** don't exclude dev versions in luarocks search ([1c56f32](https://github.com/nvim-neorocks/rocks.nvim/commit/1c56f323da8e8bed936006cb87cacc712237993a))
+
 ## [2.19.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.18.0...v2.19.0) (2024-03-23)
 
 
