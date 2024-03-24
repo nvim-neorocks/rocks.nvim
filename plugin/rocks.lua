@@ -2,10 +2,10 @@ if vim.g.rocks_nvim_loaded then
     return
 end
 
+local log = require("rocks.log")
 local nio = require("nio")
 local adapter = require("rocks.adapter")
 local config = require("rocks.config.internal")
-local log = require("rocks.log")
 
 -- Set up the Rocks user command
 require("rocks.commands").create_commands()
