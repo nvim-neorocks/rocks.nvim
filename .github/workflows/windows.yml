@@ -39,3 +39,4 @@ jobs:
         shell: bash
         run: |
           nvim -u .github/resources/init-windows.lua -c "lua io.write(require('rocks.config.internal').config_path)" +q 2>&1
+          cat rocks/rocks.log

@@ -5,6 +5,7 @@ end
 local nio = require("nio")
 local adapter = require("rocks.adapter")
 local config = require("rocks.config.internal")
+local log = require("rocks.log")
 
 -- Set up the Rocks user command
 require("rocks.commands").create_commands()
@@ -12,9 +13,11 @@ require("rocks.commands").create_commands()
 local env_path_seperator = vim.uv.os_uname().sysname:lower():find("windows") and ";" or ":"
 
 -- Append the binary directory to the system path.
+log.trace("Appending luarocks binary directory to the system path")
 vim.env.PATH = vim.fs.joinpath(config.rocks_path, "bin") .. env_path_seperator .. vim.env.PATH
 
 if not config.lazy then
+    log.trace("Populating caches")
     nio.run(function()
         local cache = require("rocks.cache")
         nio.gather({

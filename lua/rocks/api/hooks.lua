@@ -17,6 +17,8 @@
 
 local hooks = {}
 
+local log = require("rocks.log")
+
 ---@param rock RockSpec
 ---@return string | nil
 local function get_rocks_extension_module_name(rock)
@@ -54,6 +56,7 @@ end
 ---@package
 ---@param user_rocks RockSpec[]
 function hooks.run_preload_hooks(user_rocks)
+    log.trace("Running preload hooks")
     for _, rock_spec in pairs(user_rocks) do
         local rock_extension_module_name = not rock_spec.opt and get_rocks_extension_module_name(rock_spec)
         local hook = rock_extension_module_name and search_for_preload_hook(rock_extension_module_name)
