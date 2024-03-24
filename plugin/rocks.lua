@@ -3,8 +3,11 @@ if vim.g.rocks_nvim_loaded then
 end
 
 local log = require("rocks.log")
+log.trace("loading nio")
 local nio = require("nio")
+log.trace("loading rocks.adapter")
 local adapter = require("rocks.adapter")
+log.trace("loading rocks config")
 local config = require("rocks.config.internal")
 
 local function get_luarocks_lua_dir_from_luarocks()
