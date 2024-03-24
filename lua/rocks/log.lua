@@ -40,14 +40,11 @@ local function format_log(arg)
     return vim.inspect(arg)
 end
 
----For now, we have a log file per session
-local logfilename = vim.fn.tempname() .. "-rocks-nvim.log"
-
 ---Get the rocks.nvim log file path.
 ---@package
 ---@return string filepath
 function log.get_logfile()
-    return logfilename
+    return vim.fs.joinpath(require("rocks.config.internal").rocks_path, "rocks.log")
 end
 
 ---Open the rocks.nvim log file.
@@ -69,7 +66,8 @@ local function open_logfile()
         return false
     end
 
-    logfile, openerr = io.open(log.get_logfile(), "a+")
+    vim.fn.mkdir(require("rocks.config.internal").rocks_path, "-p")
+    logfile, openerr = io.open(log.get_logfile(), "w+")
     if not logfile then
         local err_msg = string.format("Failed to open rocks.nvim log file: %s", openerr)
         vim.notify(err_msg, vim.log.levels.ERROR)
@@ -139,6 +137,7 @@ for level, levelnr in pairs(vim.log.levels) do
     end
 end
 
-log.set_level(vim.log.levels.INFO)
+--- NOTE: We can't use rocks.config here, as that would lead to a cyclic module dependency
+log.set_level(vim.tbl_get(vim.g, "rocks_nvim", "_log_level") or vim.log.levels.INFO)
 
 return log
