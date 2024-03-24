@@ -2,10 +2,10 @@ if vim.g.rocks_nvim_loaded then
     return
 end
 
+local log = require("rocks.log")
 local nio = require("nio")
 local adapter = require("rocks.adapter")
 local config = require("rocks.config.internal")
-local log = require("rocks.log")
 
 local function get_luarocks_lua_dir_from_luarocks()
     local sc = vim.system({ config.luarocks_binary, "--lua-version=5.1", "which", "luarocks.loader" }):wait()
