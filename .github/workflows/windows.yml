@@ -38,5 +38,6 @@ jobs:
       - name: Run neovim with rocks.nvim
         shell: bash
         run: |
-          nvim -u .github/resources/init-windows.lua -c "lua io.write(require('rocks.config.internal').config_path)" +q 2>&1
+          nvim -u .github/resources/init-windows.lua -c "lua print(vim.uv.os_uname().sysname:lower())" +q
+          ls rocks
           cat rocks/rocks.log
