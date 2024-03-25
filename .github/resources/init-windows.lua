@@ -15,5 +15,6 @@ local luarocks_cpath = {
 }
 package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
 
-error("debug")
-vim.opt.runtimepath:append(vim.fs.joinpath("${rocks}", "rocks.nvim-scm-1-rocks", "rocks.nvim", "*"))
+vim.opt.runtimepath:append(
+    vim.fs.joinpath(vim.g.rocks_nvim.rocks_path, "lib", "luarocks", "rocks-5.1", "rocks.nvim", "*")
+)
