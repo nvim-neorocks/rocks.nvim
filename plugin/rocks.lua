@@ -5,7 +5,6 @@ end
 local log = require("rocks.log")
 log.trace("loading nio")
 local nio = require("nio")
-error("NIO LOADED")
 log.trace("loading rocks.adapter")
 local adapter = require("rocks.adapter")
 log.trace("loading rocks config")
