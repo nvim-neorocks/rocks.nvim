@@ -40,6 +40,8 @@ local default_config = {
     generate_help_pages = true,
     ---@type boolean Whether to reinstall 'dev' rocks on update
     reinstall_dev_rocks_on_update = true,
+    ---@type boolean Whether to use the luarocks loader to support multiple dependencies
+    enable_luarocks_loader = true,
     ---@class RocksConfigDebugInfo
     debug_info = {
         ---@type boolean
@@ -73,6 +75,8 @@ local default_config = {
         local rocks_toml = config.get_rocks_toml()
         return vim.tbl_deep_extend("force", rocks_toml.rocks or {}, rocks_toml.plugins or {})
     end,
+    ---@type string
+    luarocks_config = nil,
 }
 
 ---@type RocksOpts
@@ -98,6 +102,24 @@ if #config.debug_info.unrecognized_configs > 0 then
         vim.log.levels.WARN
     )
 end
+
+local luarocks_config_path = vim.fs.joinpath(config.rocks_path, "luarocks-config.lua")
+fs.write_file(
+    luarocks_config_path,
+    "w+",
+    ([==[
+lua_version = 5.1
+rocks_trees = {
+    {
+      name = "rocks.nvim",
+      root = "%s",
+    },
+}
+]==]):format(config.rocks_path)
+)
+
+---@diagnostic disable-next-line: inject-field
+config.luarocks_config = ('"%s"'):format(luarocks_config_path)
 
 return config
 

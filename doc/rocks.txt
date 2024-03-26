@@ -84,6 +84,7 @@ RocksOpts                                                            *RocksOpts*
         {dynamic_rtp?}                   (boolean)  Whether to automatically add freshly installed plugins to the 'runtimepath'. Defaults to `true` for the best default experience.
         {generate_help_pages?}           (boolean)  Whether to re-generate plugins help pages after installation/upgrade.
         {reinstall_dev_rocks_on_update}  (boolean)  Whether to reinstall 'dev' rocks on update (Default: `true`, as rocks.nvim cannot determine if 'dev' rocks are up to date).
+        {enable_luarocks_loader}         (boolean)  Whether to use the luarocks loader to support multiple dependencies (Default: `true`)
 
 
 ==============================================================================
