@@ -30,6 +30,7 @@
 - Name-based installation
   (` "nvim-neorg/neorg" ` becomes `:Rocks install neorg` instead).
 - Automatic dependency and build script management.
+- Supports [multiple versions of the same dependency](https://github.com/luarocks/luarocks/wiki/Using-LuaRocks#multiple-versions-using-the-luarocks-package-loader).
 - True semver versioning!
 - Minimal, non-intrusive UI.
 - Async execution.

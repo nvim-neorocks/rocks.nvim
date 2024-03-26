@@ -69,3 +69,7 @@ insert_final_newline = unset
 trim_trailing_whitespace = unset
 indent_style = unset
 indent_size = unset
+
+[*/**/config/internal.lua]
+indent_size = unset
+indent_style = unset
