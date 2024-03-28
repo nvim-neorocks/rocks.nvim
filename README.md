@@ -53,7 +53,7 @@ Integrating directly with [`luarocks`](https://luarocks.org),
 this plugin offers an automated approach that shifts the responsibility
 of specifying dependencies and build steps from users to plugin authors.
 
-### :grey_question: Why rocks.nvim?
+### :grey_question: Why rocks.nvim
 
 The traditional approach to Neovim plugin management often places
 an unjust burden on users.
