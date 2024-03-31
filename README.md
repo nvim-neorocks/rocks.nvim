@@ -124,7 +124,7 @@ for luarocks, ensuring a seamless and efficient user experience.
       (tested on Linux).
 
 When installing, rocks.nvim will also search our [rocks-binaries (dev)](https://nvim-neorocks.github.io/rocks-binaries-dev/)
-server, which means you don't even need to compile many parsers
+server, which means you don't even need to compile any parsers
 on your machine.
 
 #### Effortless installation for users
