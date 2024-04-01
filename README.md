@@ -164,7 +164,7 @@ is now as straightforward as including it in their project's rockspec[^3].
 This eliminates the need for manual parser management and ensures that
 dependencies are automatically resolved and installed.
 
-[^3]: [example](https://luarocks.org/modules/mrcjkb/neotest-haskell).
+[^3]: [example](https://luarocks.org/modules/MrcJkb/neotest-haskell).
 
 Example rockspec dependency specification:
 
