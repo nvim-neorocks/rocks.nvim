@@ -24,6 +24,7 @@ local state = require("rocks.state")
 local cache = require("rocks.cache")
 local helpers = require("rocks.operations.helpers")
 local handlers = require("rocks.operations.handlers")
+local parser = require("rocks.operations.parser")
 local nio = require("nio")
 local progress = require("fidget.progress")
 
@@ -472,23 +473,36 @@ local function prompt_retry_install_with_dev(arg_list, rock_name, version)
         local yesno = vim.fn.input("Could not find " .. rock_name .. ". Search for 'dev' version? y/n: ")
         print("\n ")
         if string.match(yesno, "^y.*") then
+            arg_list = vim.iter(arg_list)
+                :filter(function(arg)
+                    -- remove rock_name and version from arg_list
+                    return arg:find("=") ~= nil and not vim.startswith(arg, "version=")
+                end)
+                :totable()
+            table.insert(arg_list, 1, "dev")
+            table.insert(arg_list, 1, rock_name)
             nio.run(function()
-                operations.add(arg_list, rock_name, "dev")
+                operations.add(arg_list)
             end)
         end
     end
 end
 
 --- Adds a new rock and updates the `rocks.toml` file
----@param arg_list string[] #Argument list, potentially used by external handlers
----@param rock_name rock_name #The rock name
----@param version? string #The version of the rock to use
+---@param arg_list string[] #Argument list, potentially used by external handlers. The first argument is the package, e.g. the rock name
 ---@param callback? fun(rock: Rock)
-operations.add = function(arg_list, rock_name, version, callback)
+operations.add = function(arg_list, callback)
     local progress_handle = progress.handle.create({
         title = "Installing",
         lsp_client = { name = constants.ROCKS_NVIM },
     })
+    local function report_error(message)
+        progress_handle:report({
+            title = "Error",
+            message = message,
+        })
+        progress_handle:cancel()
+    end
 
     nio.run(function()
         local user_rocks = parse_rocks_toml()
@@ -499,13 +513,6 @@ operations.add = function(arg_list, rock_name, version, callback)
                     message = message,
                 })
             end
-            local function report_error(message)
-                progress_handle:report({
-                    title = "Error",
-                    message = message,
-                })
-                progress_handle:cancel()
-            end
             handler(report_progress, report_error)
             vim_schedule_nio_wait(function()
                 fs.write_file(config.config_path, "w", tostring(user_rocks))
@@ -513,6 +520,22 @@ operations.add = function(arg_list, rock_name, version, callback)
             end)
             return
         end
+        ---@type rock_name
+        local rock_name = arg_list[1]
+        --- We can't mutate the arg_list, because we may need it for a recursive add
+        ---@type string[]
+        local args = #arg_list == 1 and {} or { unpack(arg_list, 2, #arg_list) }
+        local parse_result = parser.parse_install_args(args)
+        if not vim.tbl_isempty(parse_result.invalid_args) then
+            report_error(("invalid install args: %s"):format(vim.inspect(parse_result.invalid_args)))
+            return
+        end
+        if not vim.tbl_isempty(parse_result.conflicting_args) then
+            report_error(("conflicting install args: %s"):format(vim.inspect(parse_result.conflicting_args)))
+            return
+        end
+        local install_spec = parse_result.spec
+        local version = install_spec.version
         progress_handle:report({
             message = version and ("%s -> %s"):format(rock_name, version) or rock_name,
         })
@@ -565,6 +588,17 @@ operations.add = function(arg_list, rock_name, version, callback)
             if user_rock and user_rock.version then
                 -- Rock already exists in rock.toml and is configured as a table -> Update version.
                 user_rocks.plugins[rock_name].version = installed_rock.version
+                if install_spec.opt then
+                    user_rocks.plugins[rock_name].opt = true
+                elseif user_rocks.plugins[rock_name].opt then
+                    user_rocks.plugins[rock_name].opt = nil
+                end
+            elseif install_spec.opt then
+                -- toml-edit's metatable can't set a table directly.
+                -- Each field has to be set individually.
+                user_rocks.plugins[rock_name] = {}
+                user_rocks.plugins[rock_name].version = installed_rock.version
+                user_rocks.plugins[rock_name].opt = true
             else
                 user_rocks.plugins[rock_name] = installed_rock.version
             end
