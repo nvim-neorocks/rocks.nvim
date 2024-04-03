@@ -227,12 +227,23 @@ For manual installation, see [this tutorial](https://github.com/nvim-neorocks/ro
 
 ### Installing rocks
 
-You can install rocks with the `:Rocks install {rock} {version?}` command.
+You can install rocks with the `:Rocks install {rock} {version?} {args[]?}` command.
 
 Arguments:
 
 - `rock`: The luarocks package.
 - `version`: Optional. Used to pin a rock to a specific version.
+- `args[]`: Optional arguments, e.g. `opt=true`, to prevent rocks.nvim
+            from automatically sourcing a rock at startup.
+
+Examples:
+
+```vim
+:Rocks install neorg
+:Rocks install neorg 8.0.0
+:Rocks install tree-sitter-toml dev
+:Rocks install kanagawa.nvim opt=true
+```
 
 > [!NOTE]
 >

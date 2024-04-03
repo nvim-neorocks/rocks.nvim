@@ -7,23 +7,24 @@
 --- command	  	                     action
 ---------------------------------------------------------------------------------
 ---
---- install {rock} {version?}  	     Install {rock} with optional {version}.
---- prune {rock}                     Uninstall {rock} and its stale dependencies,
----                                  and remove it from rocks.toml.
---- sync                             Synchronize installed rocks with rocks.toml.
----                                  It may take more than one sync to prune all rocks that can be pruned.
---- update                           Search for updated rocks and install them.
---- edit                             Edit the rocks.toml file.
---- packadd {rock}                   Search for an optional rock and source any plugin files found.
----                                  The rock must be installed by luarocks.
----                                  It is added to the 'runtimepath' if it wasn't there yet.
----                                  If `Rocks` is called with the optional `!`, the rock is added
----                                  to the |runtimepath| and no |plugin| or |ftdetect| scripts are
----                                  sourced.
----                                  This command aims to behave similarly to the builtin |packadd|,
----                                  and will fall back to it if no rock is found.
----                                  To make a rock optional, set `opt = true` in `rocks.toml`.
---- log                              Open the log file.
+--- install {rock} {version?} {args[]?} Install {rock} with optional {version} and optional {args[]}.
+---                                     Example: ':Rocks install neorg 8.0.0 opt=true'
+--- prune {rock}                        Uninstall {rock} and its stale dependencies,
+---                                     and remove it from rocks.toml.
+--- sync                                Synchronize installed rocks with rocks.toml.
+---                                     It may take more than one sync to prune all rocks that can be pruned.
+--- update                              Search for updated rocks and install them.
+--- edit                                Edit the rocks.toml file.
+--- packadd {rock}                      Search for an optional rock and source any plugin files found.
+---                                     The rock must be installed by luarocks.
+---                                     It is added to the 'runtimepath' if it wasn't there yet.
+---                                     If `Rocks` is called with the optional `!`, the rock is added
+---                                     to the |runtimepath| and no |plugin| or |ftdetect| scripts are
+---                                     sourced.
+---                                     This command aims to behave similarly to the builtin |packadd|,
+---                                     and will fall back to it if no rock is found.
+---                                     To make a rock optional, set `opt = true` in `rocks.toml`.
+--- log                                 Open the log file.
 ---
 ---@brief ]]
 ---
@@ -112,8 +113,7 @@ local rocks_command_tbl = {
                 vim.notify("Rocks install: Called without required package argument.", vim.log.levels.ERROR)
                 return
             end
-            local package, version = args[1], args[2]
-            require("rocks.operations").add(args, package, version)
+            require("rocks.operations").add(args)
         end,
         complete = function(query)
             local name, version_query = query:match("([^%s]+)%s(.+)$")

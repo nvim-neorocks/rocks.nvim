@@ -178,7 +178,7 @@ end
 ---@param version? string The version of the rock to use
 ---@param callback? fun(rock: Rock) Invoked upon successful completion
 function api.install(rock_name, version, callback)
-    operations.add({}, rock_name, version, callback)
+    operations.add({ rock_name, version }, callback)
 end
 
 return api
