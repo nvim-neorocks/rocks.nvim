@@ -522,7 +522,7 @@ operations.add = function(arg_list, callback)
         end
         ---@type rock_name
         local rock_name = arg_list[1]
-        --- We can't mutate the arg_list, because we may need it for a recursive add
+        -- We can't mutate the arg_list, because we may need it for a recursive add
         ---@type string[]
         local args = #arg_list == 1 and {} or { unpack(arg_list, 2, #arg_list) }
         local parse_result = parser.parse_install_args(args)
