@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.20.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.19.1...v2.20.0) (2024-04-03)
+
+
+### Features
+
+* **install:** support passing args, like `opt=true` ([#236](https://github.com/nvim-neorocks/rocks.nvim/issues/236)) ([f4d25d9](https://github.com/nvim-neorocks/rocks.nvim/commit/f4d25d933b95268cedaa18a1e19f781054ed0027))
+* **loader:** support multiple versions of the same dependency ([#227](https://github.com/nvim-neorocks/rocks.nvim/issues/227)) ([cb2be55](https://github.com/nvim-neorocks/rocks.nvim/commit/cb2be55ccb50badef39ac2ba0fbf0d22a7ae51f1))
+
 ## [2.19.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.19.0...v2.19.1) (2024-03-24)
 
 
