@@ -57,16 +57,16 @@
       }:
         buildLuarocksPackage {
           pname = "nvim-nio";
-          version = "1.2.0-1";
+          version = "1.9.0-1";
           knownRockspec =
             (fetchurl {
-              url = "mirror://luarocks/nvim-nio-1.2.0-1.rockspec";
-              sha256 = "0a62iv1lyx8ldrdbip6az0ixm8dmpcai3k8j5jsf49cr4zjpcjzk";
+              url = "mirror://luarocks/nvim-nio-1.9.0-1.rockspec";
+              sha256 = "0hwjkz0pjd8dfc4l7wk04ddm8qzrv5m15gskhz9gllb4frnk6hik";
             })
             .outPath;
           src = fetchzip {
-            url = "https://github.com/nvim-neotest/nvim-nio/archive/11864149f47e0c7a38c4dadbcea8fc17c968556e.zip";
-            sha256 = "141py3csgbijpqhscgmsbnkg4lbx7ma7nwpj0akfc7v37c143dq3";
+            url = "https://github.com/nvim-neotest/nvim-nio/archive/v1.9.0.zip";
+            sha256 = "0y3afl42z41ymksk29al5knasmm9wmqzby860x8zj0i0mfb1q5k5";
           };
 
           disabled = luaOlder "5.1";
