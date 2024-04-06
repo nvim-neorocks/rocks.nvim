@@ -119,6 +119,7 @@
               editorconfig-checker
             ]
             ++ (with pkgs; [
+              busted-nightly
               # For tree-sitter parsers that need sources
               # to be generated
               gcc

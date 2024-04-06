@@ -32,26 +32,6 @@ local warn = h.warn
 ---@field url string URL (markdown)
 ---@field info string Additional information
 
----@type LuaDependency[]
-local lua_dependencies = {
-    {
-        module = "toml",
-        optional = function()
-            return true
-        end,
-        url = "[toml.lua](https://luarocks.org/modules/LebJe/toml)",
-        info = "Required for TOML config serialization.",
-    },
-    {
-        module = "toml_edit",
-        optional = function()
-            return true
-        end,
-        url = "[toml-edit](https://luarocks.org/modules/neorg/toml-edit)",
-        info = "Required for TOML config editing.",
-    },
-}
-
 ---@class (exact) ExternalDependency
 ---@field name string Name of the dependency
 ---@field get_binaries fun():string[]Function that returns the binaries to check for
@@ -91,19 +71,6 @@ local external_dependencies = {
         info = "luarocks requires a Lua installation.",
     },
 }
-
----@param dep LuaDependency
-local function check_lua_dependency(dep)
-    if pcall(require, dep.module) then
-        ok(dep.url .. " installed.")
-        return
-    end
-    if dep.optional() then
-        warn(("%s not installed. %s %s"):format(dep.module, dep.info, dep.url))
-    else
-        error(("Lua dependency %s not found: %s"):format(dep.module, dep.url))
-    end
-end
 
 ---@param dep ExternalDependency
 ---@return boolean is_installed
@@ -165,11 +132,6 @@ local function check_config()
 end
 
 function health.check()
-    start("Checking for Lua dependencies")
-    for _, dep in ipairs(lua_dependencies) do
-        check_lua_dependency(dep)
-    end
-
     start("Checking external dependencies")
     for _, dep in ipairs(external_dependencies) do
         check_external_dependency(dep)

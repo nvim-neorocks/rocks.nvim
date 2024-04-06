@@ -52,7 +52,7 @@ local default_config = {
     ---@type fun():RocksToml
     get_rocks_toml = function()
         local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
-        local rocks_toml = require("toml").decode(config_file)
+        local rocks_toml = require("toml_edit").parse_as_tbl(config_file)
         for key, tbl in pairs(rocks_toml) do
             if key == "rocks" or key == "plugins" then
                 for name, data in pairs(tbl) do
