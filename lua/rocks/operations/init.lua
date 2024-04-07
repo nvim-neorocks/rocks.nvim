@@ -83,7 +83,8 @@ end
 --- - Ensures that the correct versions are installed
 --- - Uninstalls unneeded rocks
 ---@param user_rocks? table<rock_name, RockSpec|string> loaded from rocks.toml if `nil`
-operations.sync = function(user_rocks)
+---@param on_complete? function
+operations.sync = function(user_rocks, on_complete)
     log.info("syncing...")
     nio.run(function()
         local progress_handle = progress.handle.create({
@@ -337,6 +338,9 @@ operations.sync = function(user_rocks)
         -- Re-generate help tags
         if config.generate_help_pages then
             vim.cmd("helptags ALL")
+        end
+        if on_complete then
+            on_complete()
         end
     end)
 end
