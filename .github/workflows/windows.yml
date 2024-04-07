@@ -35,7 +35,6 @@ jobs:
         run: |
           mkdir rocks
           luarocks --tree ./rocks --lua-version=5.1 --server='https://nvim-neorocks.github.io/rocks-binaries/' make ./rocks.nvim-scm-1.rockspec
-          luarocks --tree ./rocks --lua-version=5.1 --server='https://nvim-neorocks.github.io/rocks-binaries/' toml-edit
       - name: Run neovim with rocks.nvim
         shell: bash
         run: |
