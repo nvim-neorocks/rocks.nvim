@@ -45,10 +45,6 @@ local vim_schedule_nio_wait = nio.create(function(func)
     future.wait()
 end, 1)
 
----@class (exact) Future
----@field wait fun() Wait in an async context. Does not block in a sync context
----@field wait_sync fun() Wait in a sync context
-
 ---@alias rock_table table<rock_name, Rock>
 
 ---Decode the user rocks from rocks.toml, creating a default config file if it does not exist
