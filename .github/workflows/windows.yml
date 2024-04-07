@@ -38,6 +38,7 @@ jobs:
       - name: Run neovim with rocks.nvim
         shell: bash
         run: |
+          ls rocks
           nvim -u .github/resources/init-windows.lua -c "lua print('OK')" +q
           ls rocks
           # Will fail if rocks.log does not exist
