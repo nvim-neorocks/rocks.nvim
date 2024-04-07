@@ -8,7 +8,7 @@ version = _MODREV .. _SPECREV
 
 dependencies = {
     "lua >= 5.1",
-    "toml-edit >= 0.3.4",
+    "toml-edit >= 0.3.6",
     "fidget.nvim >= 1.1.0",
     "fzy",
     "nvim-nio",
@@ -16,7 +16,7 @@ dependencies = {
 
 test_dependencies = {
     "lua >= 5.1",
-    "toml-edit >= 0.3.4",
+    "toml-edit >= 0.3.6",
     "fidget.nvim >= 1.1.0",
     "fzy",
     "nvim-nio",

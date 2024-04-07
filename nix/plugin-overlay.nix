@@ -15,25 +15,25 @@
       }:
         buildLuarocksPackage {
           pname = "toml-edit";
-          version = "0.3.4-1";
+          version = "0.3.6-1";
           knownRockspec =
             (fetchurl {
-              url = "mirror://luarocks/toml-edit-0.3.4-1.rockspec";
-              sha256 = "10f621d1lv137i6qcqr0rhk9lbmgsmnbq6lpyqrhi9sxab85d90s";
+              url = "mirror://luarocks/toml-edit-0.3.6-1.rockspec";
+              sha256 = "18fw256vzvfavfwrnzm507k4h3x2lx9l93ghr1ggsi4mhsnjki46";
             })
             .outPath;
           src = fetchzip {
-            url = "https://github.com/vhyrro/toml-edit.lua/archive/v0.3.4.zip";
-            sha256 = "0j0f0c6wfw5fh9i1ybrbi517yvcaa4qxlm2lymhahj6ydv6ar5i5";
+            url = "https://github.com/vhyrro/toml-edit.lua/archive/v0.3.6.zip";
+            sha256 = "19v6axraj2n22lmilfr4x9nr40kcjb6wnpsfhf1mh2zy9nsd6ji6";
           };
 
           disabled = luaOlder "5.1";
-          propagatedBuildInputs = [lua];
+          propagatedBuildInputs = [lua luarocks-build-rust-mlua];
         }) {})
       .overrideAttrs (oa: {
         cargoDeps = final.rustPlatform.fetchCargoTarball {
           src = oa.src;
-          hash = "sha256-aqs9Rt4nTSsHVlpX7dMgOEL09V2tUjCzQf9dnDD30nU=";
+          hash = "sha256-2P+mokkjdj2PccQG/kAGnIoUPVnK2FqNfYpHPhsp8kw=";
         };
         nativeBuildInputs = with final; [cargo rustPlatform.cargoSetupHook] ++ oa.nativeBuildInputs;
       });
