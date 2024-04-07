@@ -12,7 +12,7 @@ package.path = package.path .. ";" .. table.concat(luarocks_path, ";")
 local luarocks_cpath = {
     vim.fs.joinpath(vim.g.rocks_nvim.rocks_path, "lib", "lua", "5.1", "?.dll"),
     vim.fs.joinpath(vim.g.rocks_nvim.rocks_path, "lib64", "lua", "5.1", "?.dll"),
-    vim.fs.joinpath(vim.g.rocks_nvim.rocks_path, "lib", "lua", "5.1", "?.so"),
-    vim.fs.joinpath(vim.g.rocks_nvim.rocks_path, "lib64", "lua", "5.1", "?.so"),
 }
 package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
+
+error(vim.inspect(require("rocks.config.internal").get_rocks_toml()))
