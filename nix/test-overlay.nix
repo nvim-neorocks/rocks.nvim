@@ -1,8 +1,12 @@
 {self}: final: prev: let
+  buildproxy = final.lib.mkBuildproxy ./proxy_content.nix;
   mkNeorocksTest = name: nvim:
     with final;
       neorocksTest {
         inherit name;
+        prePatch = ''
+          source ${buildproxy}
+        '';
         pname = "rocks.nvim";
         src = self;
         neovim = nvim;

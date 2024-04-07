@@ -11,6 +11,8 @@
 
     neorocks.url = "github:nvim-neorocks/neorocks";
 
+    nix-buildproxy.url = "github:polygon/nix-buildproxy";
+
     gen-luarc.url = "github:mrcjkb/nix-gen-luarc-json";
 
     rocks-git = {
@@ -29,6 +31,7 @@
     self,
     nixpkgs,
     neorocks,
+    nix-buildproxy,
     gen-luarc,
     rocks-git,
     flake-parts,
@@ -61,6 +64,7 @@
           inherit system;
           overlays = [
             neorocks.overlays.default
+            nix-buildproxy.overlays.default
             gen-luarc.overlays.default
             rocks-git.overlays.default
             plugin-overlay

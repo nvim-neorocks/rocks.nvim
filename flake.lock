@@ -646,7 +646,7 @@
     "gen-luarc_2": {
       "inputs": {
         "flake-parts": "flake-parts_4",
-        "nixpkgs": "nixpkgs_4"
+        "nixpkgs": "nixpkgs_5"
       },
       "locked": {
         "lastModified": 1708688915,
@@ -665,7 +665,7 @@
     "gen-luarc_3": {
       "inputs": {
         "flake-parts": "flake-parts_6",
-        "nixpkgs": "nixpkgs_7"
+        "nixpkgs": "nixpkgs_8"
       },
       "locked": {
         "lastModified": 1708688915,
@@ -684,7 +684,7 @@
     "gen-luarc_4": {
       "inputs": {
         "flake-parts": "flake-parts_8",
-        "nixpkgs": "nixpkgs_10"
+        "nixpkgs": "nixpkgs_11"
       },
       "locked": {
         "lastModified": 1708688915,
@@ -911,7 +911,7 @@
         "flake-compat": "flake-compat_4",
         "flake-utils": "flake-utils_5",
         "neovim-nightly": "neovim-nightly_2",
-        "nixpkgs": "nixpkgs_5",
+        "nixpkgs": "nixpkgs_6",
         "pre-commit-hooks": "pre-commit-hooks_3"
       },
       "locked": {
@@ -933,7 +933,7 @@
         "flake-compat": "flake-compat_7",
         "flake-utils": "flake-utils_9",
         "neovim-nightly": "neovim-nightly_3",
-        "nixpkgs": "nixpkgs_8",
+        "nixpkgs": "nixpkgs_9",
         "pre-commit-hooks": "pre-commit-hooks_5"
       },
       "locked": {
@@ -955,7 +955,7 @@
         "flake-compat": "flake-compat_10",
         "flake-utils": "flake-utils_13",
         "neovim-nightly": "neovim-nightly_4",
-        "nixpkgs": "nixpkgs_11",
+        "nixpkgs": "nixpkgs_12",
         "pre-commit-hooks": "pre-commit-hooks_7"
       },
       "locked": {
@@ -1071,6 +1071,24 @@
         "dir": "contrib",
         "owner": "neovim",
         "repo": "neovim",
+        "type": "github"
+      }
+    },
+    "nix-buildproxy": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_3"
+      },
+      "locked": {
+        "lastModified": 1709212359,
+        "narHash": "sha256-La70ax79Hrp/Vz2G3gzI4fLgRd2z3lJrYLvCf+xcTj4=",
+        "owner": "polygon",
+        "repo": "nix-buildproxy",
+        "rev": "c26d73992ddae96812501b5ae1cc45037d8b10be",
+        "type": "github"
+      },
+      "original": {
+        "owner": "polygon",
+        "repo": "nix-buildproxy",
         "type": "github"
       }
     },
@@ -1364,6 +1382,21 @@
     },
     "nixpkgs_10": {
       "locked": {
+        "lastModified": 1708823241,
+        "narHash": "sha256-o6ixH5teON44SkS/FvBdhPQfK916/v9zqpuit8m/0LQ=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "f603e5d7fa27f28356e1b3e435a6278308243a4e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_11": {
+      "locked": {
         "lastModified": 1708475490,
         "narHash": "sha256-g1v0TsWBQPX97ziznfJdWhgMyMGtoBFs102xSYO4syU=",
         "owner": "nixos",
@@ -1378,7 +1411,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_11": {
+    "nixpkgs_12": {
       "locked": {
         "lastModified": 1708847675,
         "narHash": "sha256-RUZ7KEs/a4EzRELYDGnRB6i7M1Izii3JD/LyzH0c6Tg=",
@@ -1394,7 +1427,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_12": {
+    "nixpkgs_13": {
       "locked": {
         "lastModified": 1708984012,
         "narHash": "sha256-LX1RmWe4im1zja3A3dQLR71ErerySLemuBlnHqtu8Sg=",
@@ -1427,6 +1460,22 @@
     },
     "nixpkgs_3": {
       "locked": {
+        "lastModified": 1708118438,
+        "narHash": "sha256-kk9/0nuVgA220FcqH/D2xaN6uGyHp/zoxPNUmPCMmEE=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "5863c27340ba4de8f83e7e3c023b9599c3cb3c80",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_4": {
+      "locked": {
         "lastModified": 1712449641,
         "narHash": "sha256-U9DDWMexN6o5Td2DznEgguh8TRIUnIl9levmit43GcI=",
         "owner": "nixos",
@@ -1440,7 +1489,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_4": {
+    "nixpkgs_5": {
       "locked": {
         "lastModified": 1708475490,
         "narHash": "sha256-g1v0TsWBQPX97ziznfJdWhgMyMGtoBFs102xSYO4syU=",
@@ -1456,7 +1505,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_5": {
+    "nixpkgs_6": {
       "locked": {
         "lastModified": 1708847675,
         "narHash": "sha256-RUZ7KEs/a4EzRELYDGnRB6i7M1Izii3JD/LyzH0c6Tg=",
@@ -1472,7 +1521,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_6": {
+    "nixpkgs_7": {
       "locked": {
         "lastModified": 1708984012,
         "narHash": "sha256-LX1RmWe4im1zja3A3dQLR71ErerySLemuBlnHqtu8Sg=",
@@ -1487,7 +1536,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_7": {
+    "nixpkgs_8": {
       "locked": {
         "lastModified": 1708475490,
         "narHash": "sha256-g1v0TsWBQPX97ziznfJdWhgMyMGtoBFs102xSYO4syU=",
@@ -1503,7 +1552,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_8": {
+    "nixpkgs_9": {
       "locked": {
         "lastModified": 1708692673,
         "narHash": "sha256-qIQMXkkp3/Lo2Zu41BK/oN3Dt3b5rUJELvt+CbAXPXw=",
@@ -1515,21 +1564,6 @@
       "original": {
         "owner": "nixos",
         "ref": "nixpkgs-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_9": {
-      "locked": {
-        "lastModified": 1708823241,
-        "narHash": "sha256-o6ixH5teON44SkS/FvBdhPQfK916/v9zqpuit8m/0LQ=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "f603e5d7fa27f28356e1b3e435a6278308243a4e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -1747,7 +1781,7 @@
         "flake-parts": "flake-parts_3",
         "gen-luarc": "gen-luarc_2",
         "neorocks": "neorocks_2",
-        "nixpkgs": "nixpkgs_6",
+        "nixpkgs": "nixpkgs_7",
         "pre-commit-hooks": "pre-commit-hooks_4",
         "rocks-nvim-input": "rocks-nvim-input"
       },
@@ -1770,7 +1804,7 @@
         "flake-parts": "flake-parts_7",
         "gen-luarc": "gen-luarc_4",
         "neorocks": "neorocks_4",
-        "nixpkgs": "nixpkgs_12",
+        "nixpkgs": "nixpkgs_13",
         "pre-commit-hooks": "pre-commit-hooks_8"
       },
       "locked": {
@@ -1792,7 +1826,7 @@
         "flake-parts": "flake-parts_5",
         "gen-luarc": "gen-luarc_3",
         "neorocks": "neorocks_3",
-        "nixpkgs": "nixpkgs_9",
+        "nixpkgs": "nixpkgs_10",
         "pre-commit-hooks": "pre-commit-hooks_6",
         "rocks-git": "rocks-git_2"
       },
@@ -1815,7 +1849,8 @@
         "flake-parts": "flake-parts",
         "gen-luarc": "gen-luarc",
         "neorocks": "neorocks",
-        "nixpkgs": "nixpkgs_3",
+        "nix-buildproxy": "nix-buildproxy",
+        "nixpkgs": "nixpkgs_4",
         "pre-commit-hooks": "pre-commit-hooks_2",
         "rocks-git": "rocks-git"
       }
