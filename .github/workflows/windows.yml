@@ -34,7 +34,7 @@ jobs:
       - name: Install rocks.nvim
         run: |
           mkdir rocks
-          luarocks --tree rocks --lua-version 5.1 --server='https://nvim-neorocks.github.io/rocks-binaries/' install rocks.nvim
+          luarocks --tree rocks --lua-version 5.1 --server='https://nvim-neorocks.github.io/rocks-binaries/' install ./rocks.nvim-scm-1.rockspec
       - name: Run neovim with rocks.nvim
         shell: bash
         run: |
