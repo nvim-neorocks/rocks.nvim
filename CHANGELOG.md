@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.20.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.20.0...v2.20.1) (2024-04-07)
+
+
+### Bug Fixes
+
+* **loader:** add entire luarocks lua path ([#248](https://github.com/nvim-neorocks/rocks.nvim/issues/248)) ([0d041ec](https://github.com/nvim-neorocks/rocks.nvim/commit/0d041ecb255b13480fa921214a29f7aecb210331))
+
 ## [2.20.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.19.1...v2.20.0) (2024-04-03)
 
 
