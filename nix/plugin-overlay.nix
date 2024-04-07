@@ -170,7 +170,7 @@ in {
             -- Copied from installer.lua
             local rocks_config = {
                 rocks_path = vim.fn.stdpath("data") .. "/rocks",
-                luarocks_binary = "${final.luarocks}/bin/luarocks",
+                luarocks_binary = "${final.lua51Packages.luarocks}/bin/luarocks",
             }
 
             vim.g.rocks_nvim = rocks_config
