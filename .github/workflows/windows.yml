@@ -39,5 +39,5 @@ jobs:
         shell: bash
         run: |
           nvim -u .github/resources/init-windows.lua -c "lua print(vim.uv.os_uname().sysname:lower())" +q
-          ls rocks
+          # Will fail if rocks.log does not exist
           cat rocks/rocks.log
