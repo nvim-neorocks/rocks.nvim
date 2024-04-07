@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.20.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.20.1...v2.20.2) (2024-04-07)
+
+
+### Bug Fixes
+
+* **dependencies:** bump toml-edit to a working version ([#251](https://github.com/nvim-neorocks/rocks.nvim/issues/251)) ([8ca5cfe](https://github.com/nvim-neorocks/rocks.nvim/commit/8ca5cfe8f4415ffe9a27b021fb48fd67fc3e57b3))
+
 ## [2.20.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.20.0...v2.20.1) (2024-04-07)
 
 
