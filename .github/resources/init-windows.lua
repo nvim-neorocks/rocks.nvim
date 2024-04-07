@@ -15,4 +15,6 @@ local luarocks_cpath = {
 }
 package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
 
-error(vim.inspect(require("rocks.config.internal").get_rocks_toml()))
+vim.opt.runtimepath:append(
+    vim.fs.joinpath(vim.g.rocks_nvim.rocks_path, "lib", "luarocks", "rocks-5.1", "rocks.nvim", "*")
+)
