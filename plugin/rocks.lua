@@ -29,7 +29,7 @@ if config.enable_luarocks_loader then
         local ok, err = pcall(require, "luarocks.loader")
         -- TODO: log errors
         if not ok then
-            vim.notify("Failed to initialize luarocks loader: " .. err, vim.log.levels.ERROR, {
+            vim.notify("Failed to initialize luarocks loader: " .. err, vim.log.levels.WARN, {
                 title = "rocks.nvim",
             })
         end
