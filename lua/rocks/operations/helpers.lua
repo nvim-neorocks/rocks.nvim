@@ -30,7 +30,7 @@ local helpers = {}
 
 ---@param rock_spec RockSpec
 ---@param progress_handle? ProgressHandle
----@return Future
+---@return nio.control.Future
 helpers.install = function(rock_spec, progress_handle)
     cache.invalidate_removable_rocks()
     local name = rock_spec.name:lower()
@@ -62,7 +62,7 @@ helpers.install = function(rock_spec, progress_handle)
             table.insert(install_cmd, version)
         end
     end
-    local systemObj = luarocks.cli(install_cmd, function(sc)
+    luarocks.cli(install_cmd, function(sc)
         ---@cast sc vim.SystemCompleted
         if sc.code ~= 0 then
             message = ("Failed to install %s"):format(name)
@@ -96,18 +96,13 @@ helpers.install = function(rock_spec, progress_handle)
     end, {
         servers = servers,
     })
-    return {
-        wait = future.wait,
-        wait_sync = function()
-            systemObj:wait()
-        end,
-    }
+    return future
 end
 
 ---Removes a rock
 ---@param name string
 ---@param progress_handle? ProgressHandle
----@return Future
+---@return nio.control.Future
 helpers.remove = function(name, progress_handle)
     cache.invalidate_removable_rocks()
     local message = ("Uninstalling: %s"):format(name)
@@ -116,7 +111,7 @@ helpers.remove = function(name, progress_handle)
         progress_handle:report({ message = message })
     end
     local future = nio.control.future()
-    local systemObj = luarocks.cli({
+    luarocks.cli({
         "remove",
         name,
     }, function(sc)
@@ -133,12 +128,7 @@ helpers.remove = function(name, progress_handle)
         end
         adapter.validate_tree_sitter_parser_symlink()
     end)
-    return {
-        wait = future.wait,
-        wait_sync = function()
-            systemObj:wait()
-        end,
-    }
+    return future
 end
 
 ---Removes a rock, and recursively removes its dependencies
