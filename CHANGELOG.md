@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.21.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.20.2...v2.21.0) (2024-04-07)
+
+
+### Features
+
+* keep log file in rocks_path ([8b5e584](https://github.com/nvim-neorocks/rocks.nvim/commit/8b5e5849f3ff49c7707fd5b1bd5e3836967b13ab))
+
 ## [2.20.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.20.1...v2.20.2) (2024-04-07)
 
 
