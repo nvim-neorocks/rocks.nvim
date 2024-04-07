@@ -2,7 +2,6 @@
 name: Windows test
 # An impure test case to help debug issues with rocks.nvim on windows
 on:
-  # TODO: remove
   pull_request:
   # We only want to manually trigger this as needed
   workflow_dispatch:
