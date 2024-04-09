@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.21.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.21.0...v2.21.1) (2024-04-09)
+
+
+### Bug Fixes
+
+* **loader:** only enable luarocks loader for luarocks with lua 5.1 ([772e828](https://github.com/nvim-neorocks/rocks.nvim/commit/772e8289e76750847d8732ddcc63f12a0de28c5f))
+
 ## [2.21.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.20.2...v2.21.0) (2024-04-07)
 
 
