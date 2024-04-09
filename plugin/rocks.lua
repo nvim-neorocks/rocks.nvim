@@ -12,7 +12,7 @@ local config = require("rocks.config.internal")
 
 local function get_luarocks_lua_dir_from_luarocks()
     local sc = vim.system({ config.luarocks_binary, "--lua-version=5.1", "which", "luarocks.loader" }):wait()
-    local result = sc.stdout and sc.stdout:match(vim.fs.joinpath("(%S+)", "luarocks", "loader.lua"))
+    local result = sc.stdout and sc.stdout:match(vim.fs.joinpath("(%S+)", "5.1", "luarocks", "loader.lua"))
     return result
 end
 
@@ -20,19 +20,19 @@ end
 if config.enable_luarocks_loader then
     local default_luarocks_binary = vim.fs.joinpath(config.rocks_path, "bin", "luarocks")
     local luarocks_lua_dir = config.luarocks_binary == default_luarocks_binary
-            and vim.fs.joinpath(default_luarocks_binary, "share", "lua", "5.1")
+            and vim.fs.joinpath(default_luarocks_binary, "share", "lua")
         or get_luarocks_lua_dir_from_luarocks()
     if luarocks_lua_dir then
         package.path = package.path
             .. ";"
             .. table.concat({
-                vim.fs.joinpath(luarocks_lua_dir, "?.lua"),
-                vim.fs.joinpath(luarocks_lua_dir, "init.lua"),
+                vim.fs.joinpath(luarocks_lua_dir, "5.1", "?.lua"),
+                vim.fs.joinpath(luarocks_lua_dir, "5.1", "init.lua"),
             }, ";")
         vim.env.LUAROCKS_CONFIG = config.luarocks_config
         local ok, err = pcall(require, "luarocks.loader")
-        -- TODO: log errors
         if not ok then
+            log.error(err)
             vim.notify("Failed to initialize luarocks loader: " .. err, vim.log.levels.WARN, {
                 title = "rocks.nvim",
             })
