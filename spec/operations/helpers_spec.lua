@@ -1,4 +1,4 @@
-local tempdir = vim.fs.dirname(vim.fn.tempname())
+local tempdir = vim.fn.tempname()
 vim.fn.mkdir(tempdir, "p")
 vim.g.rocks_nvim = {
     rocks_path = tempdir,
