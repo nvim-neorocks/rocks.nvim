@@ -284,7 +284,8 @@ Intended for use by modules that extend this plugin.
 
  |preload|
  By providing a module with the pattern, `rocks-<extension>.rocks.hooks.preload`,
- rocks.nvim modules can execute code before rocks.nvim loads any plugins.
+ rocks.nvim modules can execute code before rocks.nvim loads any plugins
+ (but after they have been added to the runtimepath).
 
  To be able to use this feature, a rocks.nvim extension *must* be named with a 'rocks-'
  prefix.
