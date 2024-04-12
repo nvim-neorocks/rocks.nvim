@@ -385,6 +385,9 @@ local function install()
             local sysname = vim.uv.os_uname().sysname:lower()
             local lib_extension = (sysname:find("windows") and "dll") or (sysname:find("darwin") and "dylib") or "so"
             acquire_buffer_lock(buffer, function()
+                local install_path_rel = install_path:gsub(vim.env.HOME, "")
+                local luarocks_binary_rel = luarocks_binary:gsub(vim.env.HOME, "")
+
                 vim.api.nvim_buf_set_lines(buffer, 0, -1, true, {
                     "INSTALLATION COMPLETE",
                     "",
@@ -392,8 +395,8 @@ local function install()
                     "The code has already been copied to your clipboard:",
                     ">lua",
                     " local rocks_config = {",
-                    '     rocks_path = "' .. install_path .. '",',
-                    '     luarocks_binary = "' .. luarocks_binary .. '",',
+                    '     rocks_path = vim.env.HOME .. "' .. install_path_rel .. '",',
+                    '     luarocks_binary = vim.env.HOME .. "' .. luarocks_binary_rel .. '",',
                     " }",
                     " ",
                     " vim.g.rocks_nvim = rocks_config",
@@ -429,8 +432,8 @@ local function install()
 
                 vim.fn.setreg('"', {
                     "local rocks_config = {",
-                    '    rocks_path = "' .. install_path .. '",',
-                    '    luarocks_binary = "' .. luarocks_binary .. '",',
+                    '    rocks_path = vim.env.HOME .. "' .. install_path_rel .. '",',
+                    '    luarocks_binary = vim.env.HOME .. "' .. luarocks_binary_rel .. '",',
                     "}",
                     "",
                     "vim.g.rocks_nvim = rocks_config",
