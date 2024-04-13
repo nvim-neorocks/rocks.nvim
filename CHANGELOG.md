@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.21.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.21.1...v2.21.2) (2024-04-13)
+
+
+### Bug Fixes
+
+* **runtime:** append start plugins to rtp before calling preload hooks ([#267](https://github.com/nvim-neorocks/rocks.nvim/issues/267)) ([f86ffe6](https://github.com/nvim-neorocks/rocks.nvim/commit/f86ffe65e4617a48c0c3da9efa92fdac998d44eb))
+
 ## [2.21.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.21.0...v2.21.1) (2024-04-09)
 
 
