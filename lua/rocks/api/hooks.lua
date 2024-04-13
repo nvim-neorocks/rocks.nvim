@@ -11,7 +11,7 @@
 --
 -- License:    GPLv3
 -- Created:    19 Mar 2024
--- Updated:    19 Mar 2024
+-- Updated:    11 Apr 2024
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 
@@ -46,7 +46,8 @@ end
 ---
 --- |preload|
 --- By providing a module with the pattern, `rocks-<extension>.rocks.hooks.preload`,
---- rocks.nvim modules can execute code before rocks.nvim loads any plugins.
+--- rocks.nvim modules can execute code before rocks.nvim loads any plugins
+--- (but after they have been added to the runtimepath).
 ---
 --- To be able to use this feature, a rocks.nvim extension *must* be named with a 'rocks-'
 --- prefix.

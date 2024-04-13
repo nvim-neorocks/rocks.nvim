@@ -6,12 +6,11 @@
 ---
 ---@brief ]]
 
--- Copyright (C) 2023 Neorocks Org.
+-- Copyright (C) 2024 Neorocks Org.
 --
--- Version:    0.1.0
 -- License:    GPLv3
 -- Created:    25 Dec 2023
--- Updated:    25 Dec 2023
+-- Updated:    11 Apr 2024
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 
@@ -158,6 +157,26 @@ function runtime.source_rtp_dir(dir)
     source_ftdetect(dir)
 end
 
+---@param rock_spec RockSpec
+---@return boolean?
+local function is_start_plugin(rock_spec)
+    return not rock_spec.opt and rock_spec.version and rock_spec.name ~= constants.ROCKS_NVIM
+end
+
+---Add all plugins with `opt ~= true` to the rtp
+function runtime.rtp_append_start_plugins(user_rocks)
+    log.trace("Adding start plugins to the runtimepath")
+    -- TODO: (?) Do this recursively for each rocks dependencies?
+    -- I'm saying YAGNI for now, because it means querying luarocks,
+    -- which isn't ideal for performance.
+    -- `autoload` doesn't seem very common among lua plugins.
+    for _, rock_spec in pairs(user_rocks) do
+        if is_start_plugin(rock_spec) then
+            rtp_append(rock_spec.name)
+        end
+    end
+end
+
 ---Source all plugins with `opt ~= true`
 ---NOTE: We don't want this to be async,
 ---to ensure Neovim sources `after/plugin` scripts
@@ -166,13 +185,7 @@ end
 function runtime.source_start_plugins(user_rocks)
     log.trace("Sourcing start plugins")
     for _, rock_spec in pairs(user_rocks) do
-        if not rock_spec.opt and rock_spec.version and rock_spec.name ~= constants.ROCKS_NVIM then
-            -- Append to rtp first in case a plugin needs another plugin's `autoload`
-            -- TODO: (?) Do this recursively for each rocks dependencies?
-            -- I'm saying YAGNI for now, because it means querying luarocks,
-            -- which isn't ideal for performance.
-            -- `autoload` doesn't seem very common among lua plugins.
-            rtp_append(rock_spec.name)
+        if is_start_plugin(rock_spec) then
             runtime.packadd(rock_spec.name, { error_on_not_found = false })
         end
     end

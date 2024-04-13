@@ -1,3 +1,11 @@
+-- Copyright (C) 2024 Neorocks Org.
+--
+-- License:    GPLv3
+-- Created:    05 Jul 2023
+-- Updated:    11 Apr 2024
+-- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
+-- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
+
 if vim.g.rocks_nvim_loaded then
     return
 end
@@ -39,6 +47,7 @@ adapter.init()
 
 --- We don't want to run this async, to ensure proper initialisation order
 local user_rocks = config.get_user_rocks()
+require("rocks.runtime").rtp_append_start_plugins(user_rocks)
 require("rocks.api.hooks").run_preload_hooks(user_rocks)
 require("rocks.runtime").source_start_plugins(user_rocks)
 
