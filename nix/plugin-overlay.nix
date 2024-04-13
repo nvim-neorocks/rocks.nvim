@@ -132,11 +132,11 @@
   lua5_1 = prev.lua5_1.override {
     packageOverrides = rocks-nvim-luaPackage-override;
   };
-  lua51Packages = final.lua5_1.pkgs;
+  lua51Packages = prev.lua51Packages // final.lua5_1.pkgs;
   luajit = prev.luajit.override {
     packageOverrides = rocks-nvim-luaPackage-override;
   };
-  luajitPackages = final.luajit.pkgs;
+  luajitPackages = prev.luajitPackages // final.luajit.pkgs;
 in {
   inherit
     lua5_1
