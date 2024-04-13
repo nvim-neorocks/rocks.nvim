@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.21.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.21.2...v2.21.3) (2024-04-13)
+
+
+### Bug Fixes
+
+* **installer:** update `package.cpath` for all platforms ([#271](https://github.com/nvim-neorocks/rocks.nvim/issues/271)) ([9cc0203](https://github.com/nvim-neorocks/rocks.nvim/commit/9cc0203571dfe8e8b63bbed0a68ef9b2f5ed8ba0))
+
 ## [2.21.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.21.1...v2.21.2) (2024-04-13)
 
 
