@@ -382,8 +382,6 @@ local function install()
                 pcall(vim.api.nvim_win_close, data.window, true)
             end
 
-            local sysname = vim.uv.os_uname().sysname:lower()
-            local lib_extension = (sysname:find("windows") and "dll") or (sysname:find("darwin") and "dylib") or "so"
             acquire_buffer_lock(buffer, function()
                 local install_path_rel = install_path:gsub(vim.env.HOME, "")
                 local luarocks_binary_rel = luarocks_binary:gsub(vim.env.HOME, "")
@@ -408,12 +406,13 @@ local function install()
                     ' package.path = package.path .. ";" .. table.concat(luarocks_path, ";")',
                     " ",
                     " local luarocks_cpath = {",
-                    ('     vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.%s"),'):format(
-                        lib_extension
-                    ),
-                    ('     vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.%s"),'):format(
-                        lib_extension
-                    ),
+                    '     vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.so"),',
+                    '     vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.so"),',
+                    "     -- Remove the dylib and dll paths if you do not need macos or windows support",
+                    '     vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.dylib"),',
+                    '     vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.dylib"),',
+                    '     vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.dll"),',
+                    '     vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.dll"),',
                     " }",
                     ' package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")',
                     " ",
@@ -445,12 +444,13 @@ local function install()
                     'package.path = package.path .. ";" .. table.concat(luarocks_path, ";")',
                     "",
                     "local luarocks_cpath = {",
-                    ('    vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.%s"),'):format(
-                        lib_extension
-                    ),
-                    ('    vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.%s"),'):format(
-                        lib_extension
-                    ),
+                    '    vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.so"),',
+                    '    vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.so"),',
+                    "    -- Remove the dylib and dll paths if you do not need macos or windows support",
+                    '    vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.dylib"),',
+                    '    vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.dylib"),',
+                    '    vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.dll"),',
+                    '    vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.dll"),',
                     "}",
                     'package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")',
                     "",
