@@ -328,6 +328,25 @@ Or, before rocks.nvim is initialised, with `require("rocks").packadd("<rock_name
 > (if it has `ftdetect` or `plugin` scripts), so you may or may
 > not benefit from loading them lazily.
 
+> [!TIP]
+>
+> **Should I lazy load plugins?**
+>
+> Making sure a plugin doesn't unnecessarily impact startup time
+> should be the responsibility of plugin authors, not users.
+> As is the case with dependencies, a plugin's functionality may evolve over
+> time, potentially leading to breakage if it's the user who has
+> to worry about lazy loading.
+>
+> A plugin that implements its own lazy initialization properly
+> will likely have less overhead than the mechanisms used by a
+> plugin manager or user to load that plugin lazily.
+>
+> If you find a plugin that takes too long to load,
+> or worse, forces you to load it manually at startup with a
+> call to a heavy `setup` function,
+> consider opening an issue on the plugin's issue tracker.
+
 ## :package: Extending `rocks.nvim`
 
 This plugin provides a Lua API for extensibility.
