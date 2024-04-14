@@ -43,7 +43,9 @@ if not config.lazy then
     end)
 end
 
-adapter.init()
+nio.run(function()
+    adapter.init()
+end)
 
 --- We don't want to run this async, to ensure proper initialisation order
 local user_rocks = config.get_user_rocks()

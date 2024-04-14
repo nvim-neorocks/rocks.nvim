@@ -22,6 +22,8 @@ local log = require("rocks.log")
 local config = require("rocks.config.internal")
 
 local rtp_link_dir = vim.fs.joinpath(config.rocks_path, "rocks_rtp")
+vim.opt.runtimepath:append(rtp_link_dir)
+
 local rocks_parser_dir = vim.fs.joinpath(config.rocks_path, "lib", "lua", "5.1", "parser")
 
 --- Initialise the rocks_rtp directory
@@ -72,16 +74,13 @@ function adapter.validate_tree_sitter_parser_symlink()
 end
 
 function adapter.init()
-    vim.opt.runtimepath:append(rtp_link_dir)
-    nio.run(function()
-        local ok = init_rocks_rtp_dir()
-        if not ok then
-            return
-        end
-        init_checkhealth_symlink()
-        adapter.validate_tree_sitter_parser_symlink()
-        adapter.init_tree_sitter_parser_symlink()
-    end)
+    local ok = init_rocks_rtp_dir()
+    if not ok then
+        return
+    end
+    init_checkhealth_symlink()
+    adapter.validate_tree_sitter_parser_symlink()
+    adapter.init_tree_sitter_parser_symlink()
 end
 
 return adapter
