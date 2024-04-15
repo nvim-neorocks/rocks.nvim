@@ -347,7 +347,8 @@ end
 
 --- Attempts to update every available rock if it is not pinned.
 --- This function invokes a UI.
-operations.update = function()
+---@param on_complete? function
+operations.update = function(on_complete)
     local progress_handle = progress.handle.create({
         title = "Updating",
         message = "Checking for updates...",
@@ -385,7 +386,7 @@ operations.update = function()
         local ct = 0
         for name, rock in pairs(outdated_rocks) do
             local user_rock = user_rocks.plugins[rock.name] or user_rocks.rocks[rock.name]
-            if user_rock.pin then
+            if user_rock and user_rock.pin then
                 goto skip_update
             end
             nio.scheduler()
@@ -463,6 +464,9 @@ operations.update = function()
         -- Re-generate help tags
         if config.generate_help_pages then
             vim.cmd("helptags ALL")
+        end
+        if on_complete then
+            on_complete()
         end
     end)
 end

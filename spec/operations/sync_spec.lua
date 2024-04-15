@@ -1,4 +1,4 @@
-local tempdir = vim.fs.dirname(vim.fn.tempname())
+local tempdir = vim.fn.tempname()
 vim.system({ "rm", "-r", tempdir }):wait()
 vim.system({ "mkdir", "-p", tempdir }):wait()
 vim.g.rocks_nvim = {
