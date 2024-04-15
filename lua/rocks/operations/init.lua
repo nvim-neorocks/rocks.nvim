@@ -384,6 +384,10 @@ operations.update = function()
 
         local ct = 0
         for name, rock in pairs(outdated_rocks) do
+            local user_rock = user_rocks.plugins[rock.name] or user_rocks.rocks[rock.name]
+            if user_rock.pin then
+                goto skip_update
+            end
             nio.scheduler()
             progress_handle:report({
                 message = name,
@@ -398,7 +402,6 @@ operations.update = function()
             if success then
                 ---@type rock_name
                 local rock_name = ret.name
-                local user_rock = user_rocks.plugins[rock_name]
                 if user_rock and user_rock.version then
                     -- Rock is configured as a table -> Update version.
                     user_rocks.plugins[rock_name].version = ret.version
@@ -417,6 +420,7 @@ operations.update = function()
                     percentage = get_percentage(ct, total_update_count),
                 })
             end
+            ::skip_update::
         end
         for _, handler in pairs(external_update_handlers) do
             local function report_progress(message)
@@ -588,17 +592,20 @@ operations.add = function(arg_list, callback)
             if user_rock and user_rock.version then
                 -- Rock already exists in rock.toml and is configured as a table -> Update version.
                 user_rocks.plugins[rock_name].version = installed_rock.version
-                if install_spec.opt then
-                    user_rocks.plugins[rock_name].opt = true
-                elseif user_rocks.plugins[rock_name].opt then
-                    user_rocks.plugins[rock_name].opt = nil
+                for _, field in ipairs({ "opt", "pin" }) do
+                    if install_spec[field] then
+                        user_rocks.plugins[rock_name][field] = true
+                    elseif user_rocks.plugins[rock_name][field] then
+                        user_rocks.plugins[rock_name][field] = nil
+                    end
                 end
-            elseif install_spec.opt then
+            elseif install_spec.opt or install_spec.pin then
                 -- toml-edit's metatable can't set a table directly.
                 -- Each field has to be set individually.
                 user_rocks.plugins[rock_name] = {}
                 user_rocks.plugins[rock_name].version = installed_rock.version
-                user_rocks.plugins[rock_name].opt = true
+                user_rocks.plugins[rock_name].opt = install_spec.opt
+                user_rocks.plugins[rock_name].pin = install_spec.pin
             else
                 user_rocks.plugins[rock_name] = installed_rock.version
             end
