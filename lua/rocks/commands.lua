@@ -15,6 +15,9 @@
 ---                                     It may take more than one sync to prune all rocks that can be pruned.
 --- update                              Search for updated rocks and install them.
 --- edit                                Edit the rocks.toml file.
+--- pin {rock}                          Pin {rock} to the installed version.
+---                                     Pinned rocks are ignored by ':Rocks update'.
+--- unpin {rock}                        Unpin {rock}.
 --- packadd {rock}                      Search for an optional rock and source any plugin files found.
 ---                                     The rock must be installed by luarocks.
 ---                                     It is added to the 'runtimepath' if it wasn't there yet.
@@ -29,12 +32,11 @@
 ---@brief ]]
 ---
 
--- Copyright (C) 2023 Neorocks Org.
+-- Copyright (C) 2024 Neorocks Org.
 --
--- Version:    0.1.0
 -- License:    GPLv3
 -- Created:    24 Oct 2023
--- Updated:    24 Oct 2023
+-- Updated:    17 Apr 2024
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 
@@ -44,6 +46,7 @@ local fzy = require("rocks.fzy")
 local cache = require("rocks.cache")
 local fs = require("rocks.fs")
 local constants = require("rocks.constants")
+local config = require("rocks.config.internal")
 local log = require("rocks.log")
 
 ---@param name string
@@ -81,6 +84,25 @@ local function complete_names(query)
         return {}
     end
     local rock_names = vim.tbl_keys(rocks)
+    return fzy.fuzzy_filter(query, rock_names)
+end
+
+---@param predicate fun(spec: RockSpec):boolean
+---@param query string
+---@return rock_name[]
+local function fuzzy_filter_user_rocks(predicate, query)
+    local user_rocks = config.get_user_rocks()
+    if vim.tbl_isempty(user_rocks) then
+        return {}
+    end
+    ---@type rock_name[]
+    local rock_names = vim.iter(vim.fn.values(user_rocks))
+        :filter(predicate)
+        :map(function(spec)
+            ---@cast spec RockSpec
+            return spec.name
+        end)
+        :totable()
     return fzy.fuzzy_filter(query, rock_names)
 end
 
@@ -151,6 +173,38 @@ local rocks_command_tbl = {
                 fs.write_file(config_path, "w+", vim.trim(constants.DEFAULT_CONFIG))
             end
             vim.cmd.e(config_path)
+        end,
+    },
+    pin = {
+        impl = function(args)
+            local rock_name = args[1]
+            if not rock_name then
+                vim.notify("'pin {rock}: Missing argument {rock}", vim.log.levels.ERROR)
+                return
+            end
+            require("rocks.operations").pin(rock_name)
+        end,
+        complete = function(query)
+            return fuzzy_filter_user_rocks(function(spec)
+                ---@cast spec RockSpec
+                return not spec.pin
+            end, query)
+        end,
+    },
+    unpin = {
+        impl = function(args)
+            local rock_name = args[1]
+            if not rock_name then
+                vim.notify("'pin {rock}: Missing argument {rock}", vim.log.levels.ERROR)
+                return
+            end
+            require("rocks.operations").unpin(rock_name)
+        end,
+        complete = function(query)
+            return fuzzy_filter_user_rocks(function(spec)
+                ---@cast spec RockSpec
+                return spec.pin
+            end, query)
         end,
     },
     packadd = {

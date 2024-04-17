@@ -366,6 +366,12 @@ Or
 :Rocks install neorg 7.0.0 pin=true
 ```
 
+You can also pin/unpin installed plugins with:
+
+```vim
+:Rocks [pin|unpin] {rock}
+```
+
 ## :package: Extending `rocks.nvim`
 
 This plugin provides a Lua API for extensibility.

@@ -51,6 +51,9 @@ rocks.nvim commands                                             *rocks.commands*
                                      It may take more than one sync to prune all rocks that can be pruned.
  update                              Search for updated rocks and install them.
  edit                                Edit the rocks.toml file.
+ pin {rock}                          Pin {rock} to the installed version.
+                                     Pinned rocks are ignored by ':Rocks update'.
+ unpin {rock}                        Unpin {rock}.
  packadd {rock}                      Search for an optional rock and source any plugin files found.
                                      The rock must be installed by luarocks.
                                      It is added to the 'runtimepath' if it wasn't there yet.
@@ -167,7 +170,7 @@ api.get_rocks_toml_path()                              *api.get_rocks_toml_path*
 RockSpec                                                              *RockSpec*
 
 
-        { name: rock_name, version?: string, opt?: boolean, [string]: V }
+        { name: rock_name, version?: string, opt?: boolean, pin?: boolean, [string]: V }
 
 Specification for a rock in rocks.toml. May be extended by external modules.
 

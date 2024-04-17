@@ -98,9 +98,9 @@ function api.get_rocks_toml_path()
     return config.config_path
 end
 
----@class RockSpec: { name: rock_name, version?: string, opt?: boolean, [string]: unknown }
+---@class RockSpec: { name: rock_name, version?: string, opt?: boolean, pin?: boolean, [string]: unknown }
 ---@brief [[
----        { name: rock_name, version?: string, opt?: boolean, [string]: V }
+---        { name: rock_name, version?: string, opt?: boolean, pin?: boolean, [string]: V }
 ---
 ---Specification for a rock in rocks.toml. May be extended by external modules.
 ---@brief ]]

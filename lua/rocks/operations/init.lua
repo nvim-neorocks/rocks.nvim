@@ -669,4 +669,56 @@ operations.prune = function(rock_name)
     end)
 end
 
+---@param rock_name rock_name
+operations.pin = function(rock_name)
+    nio.run(function()
+        local user_config = parse_rocks_toml()
+        local rocks_key = (user_config.plugins and user_config.plugins[rock_name] and "plugins")
+            or (user_config.rocks and user_config.rocks[rock_name] and "rocks")
+        if not rocks_key then
+            vim.schedule(function()
+                vim.notify(rock_name .. " not found in rocks.toml", vim.log.levels.ERROR)
+            end)
+            return
+        end
+        if type(user_config[rocks_key][rock_name]) == "string" then
+            local version = user_config[rocks_key][rock_name]
+            user_config[rocks_key][rock_name] = {}
+            user_config[rocks_key][rock_name].version = version
+        end
+        user_config[rocks_key][rock_name].pin = true
+        vim.schedule(function()
+            local version = user_config[rocks_key][rock_name].version
+            fs.write_file(config.config_path, "w", tostring(user_config))
+            vim.notify(("%s pinned to version %s"):format(rock_name, version), vim.log.levels.INFO)
+        end)
+    end)
+end
+
+---@param rock_name rock_name
+operations.unpin = function(rock_name)
+    nio.run(function()
+        local user_config = parse_rocks_toml()
+        local rocks_key = (user_config.plugins[rock_name] and "plugins") or (user_config.rocks[rock_name] and "rocks")
+        if not rocks_key then
+            vim.schedule(function()
+                vim.notify(rock_name .. " not found in rocks.toml", vim.log.levels.ERROR)
+            end)
+            return
+        end
+        if type(user_config[rocks_key][rock_name]) == "string" then
+            return
+        end
+        if not user_config[rocks_key][rock_name].opt then
+            user_config[rocks_key][rock_name] = user_config[rocks_key][rock_name].version
+        else
+            user_config[rocks_key][rock_name].pin = nil
+        end
+        vim.schedule(function()
+            fs.write_file(config.config_path, "w", tostring(user_config))
+            vim.notify(("%s unpinned"):format(rock_name), vim.log.levels.INFO)
+        end)
+    end)
+end
+
 return operations
