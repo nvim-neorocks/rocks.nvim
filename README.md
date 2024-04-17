@@ -347,6 +347,25 @@ Or, before rocks.nvim is initialised, with `require("rocks").packadd("<rock_name
 > call to a heavy `setup` function,
 > consider opening an issue on the plugin's issue tracker.
 
+### Pinning installed plugins
+
+You can pin plugins with the `pin` field, so that they are skipped
+by `:Rocks update`.
+
+For example:
+
+```toml
+[plugins.neorg]
+version = "7.0.0"
+pin = true
+```
+
+Or
+
+```vim
+:Rocks install neorg 7.0.0 pin=true
+```
+
 ## :package: Extending `rocks.nvim`
 
 This plugin provides a Lua API for extensibility.

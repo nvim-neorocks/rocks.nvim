@@ -30,12 +30,14 @@ end
 
 ---@class rocks.InstallSpec
 ---@field opt? boolean If 'true', will not be loaded on startup. Can be loaded manually with `:Rocks[!] packadd`.
+---@field pin? boolean If 'true', will not be updated.
 ---@field version? string version to install.
 
 ---@enum rocks.InstallSpecField
 local InstallSpecField = {
     version = tostring,
     opt = str_to_bool,
+    pin = str_to_bool,
 }
 
 ---@class rocks.ParseInstallArgsResult
