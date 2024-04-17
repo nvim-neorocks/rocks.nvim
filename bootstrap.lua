@@ -7,6 +7,8 @@
 -- The rocks.nvim plugin is already loaded via the vim.opt.runtimepath:append()
 -- call in the `init.lua` bootstrapping script.
 
+math.randomseed(os.time())
+
 local config_data = vim.g.rocks_nvim or {}
 local install_path = config_data.rocks_path or vim.fs.joinpath(vim.fn.stdpath("data"), "rocks")
 local luarocks_binary = config_data.luarocks_binary or vim.fs.joinpath(install_location, "bin", "luarocks")
@@ -64,7 +66,7 @@ local function set_up_luarocks(install_path)
     }):wait()
 
     if sc.code ~= 0 then
-        notify_output("Cloning luarocks failed.", sc, vim.log.levels.ERROR)
+        notify_output("Cloning luarocks failed: ", sc, vim.log.levels.ERROR)
         return false
     end
 
