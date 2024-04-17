@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.22.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.21.3...v2.22.0) (2024-04-17)
+
+
+### Features
+
+* add version check to installer and plugin script ([#277](https://github.com/nvim-neorocks/rocks.nvim/issues/277)) ([c54d6e2](https://github.com/nvim-neorocks/rocks.nvim/commit/c54d6e2fff0e387874a804dc08b754bf9234d6a8))
+* pin rocks to prevent updates ([#278](https://github.com/nvim-neorocks/rocks.nvim/issues/278)) ([832c400](https://github.com/nvim-neorocks/rocks.nvim/commit/832c4003b8238d67061d11d0c774b884dfdbdd34))
+
 ## [2.21.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.21.2...v2.21.3) (2024-04-13)
 
 
