@@ -7,7 +7,7 @@
 -- The rocks.nvim plugin is already loaded via the vim.opt.runtimepath:append()
 -- call in the `init.lua` bootstrapping script.
 
-local config_data = vim.g.rocks_config
+local config_data = vim.g.rocks_nvim or {}
 local install_path = config_data.rocks_path or vim.fs.joinpath(vim.fn.stdpath("data"), "rocks")
 local luarocks_binary = config_data.luarocks_binary or vim.fs.joinpath(install_location, "bin", "luarocks")
 
