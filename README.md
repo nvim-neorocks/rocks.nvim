@@ -284,7 +284,7 @@ if not pcall(require, "rocks") then
 end
 ```
 
-</summary>
+</details>
 
 Upon running `nvim` the bootstrapping script should engage!
 
