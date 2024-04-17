@@ -311,7 +311,7 @@ Or, before rocks.nvim is initialised, with `require("rocks").packadd("<rock_name
 
 > [!NOTE]
 >
-> A note on loading rocks:
+> #### A note on loading rocks
 >
 > Luarocks packages are installed differently than you are used to
 > from Git repositories.
@@ -330,7 +330,7 @@ Or, before rocks.nvim is initialised, with `require("rocks").packadd("<rock_name
 
 > [!TIP]
 >
-> **Should I lazy load plugins?**
+> #### Should I lazy load plugins?
 >
 > Making sure a plugin doesn't unnecessarily impact startup time
 > should be the responsibility of plugin authors, not users.

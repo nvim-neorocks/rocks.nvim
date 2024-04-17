@@ -10,6 +10,12 @@ if vim.g.rocks_nvim_loaded then
     return
 end
 
+local min_version = "0.10.0"
+if vim.fn.has("nvim-" .. min_version) ~= 1 then
+    vim.notify_once(("rocks.nvim requires Neovim %s (nightly)"):format(min_version), vim.log.levels.ERROR)
+    return
+end
+
 local log = require("rocks.log")
 log.trace("loading nio")
 local nio = require("nio")
