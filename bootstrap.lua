@@ -103,3 +103,21 @@ local function set_up_luarocks(install_path)
 end
 
 assert(set_up_luarocks(install_path), "failed to install luarocks! Please try again :)")
+
+vim.notify("Installing rocks.nvim...")
+
+local sc = vim.system({
+    luarocks_binary,
+    "--lua-version=5.1",
+    "--tree=" .. install_path,
+    "--server='https://nvim-neorocks.github.io/rocks-binaries/'",
+    "install",
+    "rocks.nvim",
+}):wait()
+
+if sc.code ~= 0 then
+    notify_output("Installing rocks.nvim failed:", sc, vim.log.levels.ERROR)
+    return
+end
+
+vim.print("rocks.nvim installed successfully!")
