@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.24.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.23.0...v2.24.0) (2024-04-18)
+
+
+### Features
+
+* add bootstrap.lua script ([e25027e](https://github.com/nvim-neorocks/rocks.nvim/commit/e25027e8b082eb9730f39f1daed930cb476647cb))
+* add rest of installer code ([8508e5a](https://github.com/nvim-neorocks/rocks.nvim/commit/8508e5ad66051ddb8d364574bc8c26faccc081eb))
+* initial bootstrap.lua script ([cd213f4](https://github.com/nvim-neorocks/rocks.nvim/commit/cd213f413761b186b83f946eb68806d95d9df9fd))
+
+
+### Bug Fixes
+
+* access rocks_nvim instead of rocks_config ([4fd4599](https://github.com/nvim-neorocks/rocks.nvim/commit/4fd4599bf027b87568e01af0b0b04c9f4a087a93))
+* broken/cut-off README ([4acbe96](https://github.com/nvim-neorocks/rocks.nvim/commit/4acbe96e4980dd836afa6c401924b96aab0a5b35))
+* duplicate variable names, proper fallback for `luarocks_binary` ([e92c768](https://github.com/nvim-neorocks/rocks.nvim/commit/e92c7687174f305d7ad06cf9b332384469b1df6a))
+* set random seed to system time for reproducible clones ([c4fadfb](https://github.com/nvim-neorocks/rocks.nvim/commit/c4fadfb63e71cd88dff9269bc85ba292cf2168dc))
+
 ## [2.23.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.22.0...v2.23.0) (2024-04-18)
 
 
