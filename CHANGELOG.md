@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.23.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.22.0...v2.23.0) (2024-04-18)
+
+
+### Features
+
+* `Rocks [pin|unpin] {rock}` command ([#280](https://github.com/nvim-neorocks/rocks.nvim/issues/280)) ([210bf6a](https://github.com/nvim-neorocks/rocks.nvim/commit/210bf6a73bbef87bfed8cfa00f491b8befadbe56))
+
 ## [2.22.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.21.3...v2.22.0) (2024-04-17)
 
 
