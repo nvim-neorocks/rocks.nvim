@@ -269,7 +269,6 @@ if not pcall(require, "rocks") then
             "git",
             "clone",
             "--filter=blob:none",
-            "--branch=push-ywryrlmvomts",
             "https://github.com/nvim-neorocks/rocks.nvim",
             rocks_location,
         })
