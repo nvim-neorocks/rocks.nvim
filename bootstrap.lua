@@ -10,8 +10,8 @@
 math.randomseed(os.time())
 
 local config_data = vim.g.rocks_nvim or {}
-local install_path = config_data.rocks_path or vim.fs.joinpath(vim.fn.stdpath("data"), "rocks")
-local luarocks_binary = config_data.luarocks_binary or vim.fs.joinpath(install_location, "bin", "luarocks")
+local install_path = config_data.rocks_path or vim.fs.joinpath(vim.fn.stdpath("data") --[[@as string]], "rocks")
+local luarocks_binary = config_data.luarocks_binary or vim.fs.joinpath(install_path, "bin", "luarocks")
 
 ---@param dep string
 ---@return boolean is_missing
@@ -42,9 +42,9 @@ local function notify_output(msg, sc, level)
 end
 
 --- Sets up luarocks for use with rocks.nvim
----@param install_path string
+---@param path string
 ---@return boolean success
-local function set_up_luarocks(install_path)
+local function set_up_luarocks(path)
     if guard_set_up_luarocks_dependency_missing("git") then
         return false
     end
@@ -75,7 +75,7 @@ local function set_up_luarocks(install_path)
     sc = vim.system({
         "sh",
         "configure",
-        "--prefix=" .. install_path,
+        "--prefix=" .. path,
         "--lua-version=5.1",
         "--force-config",
     }, {
