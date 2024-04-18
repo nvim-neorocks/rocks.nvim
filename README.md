@@ -287,6 +287,12 @@ end
 
 Upon running `nvim` the bootstrapping script should engage!
 
+> [!NOTE]
+> If you would like to break down this snippet into separate files, *make sure*
+> that the runtimepath and configuration snippet (the `do .. end` block) executes
+> *before* the actual bootstrapping logic. You will get errors if you do it the other
+> way around!
+
 ### :hammer: Manual installation
 
 For manual installation, see [this tutorial](https://github.com/nvim-neorocks/rocks.nvim/wiki/Installing-rocks.nvim-manually,-without-the-installation-script).
