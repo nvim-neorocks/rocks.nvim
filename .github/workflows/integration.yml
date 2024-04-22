@@ -1,14 +1,20 @@
 ---
-name: Windows test
-# An impure test case to help debug issues with rocks.nvim on windows
+name: Integration tests
+# Impure, cross platform integration tests
 on:
   pull_request:
-  # We only want to manually trigger this as needed
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: windows-2019
+  test:
+    runs-on: ${{ matrix.os.host }}
+    strategy:
+      matrix:
+        os:
+          - host: ubuntu-20.04
+          - host: windows-2019
+          - host: macos-11 # x86_64
+          - host: macos-14 # aarch64
     steps:
       - uses: actions/checkout@v4
       - name: Install C/C++ Compiler
@@ -38,7 +44,7 @@ jobs:
         shell: bash
         run: |
           ls rocks/lib/lua/5.1
-          nvim -u .github/resources/init-windows.lua -c "lua print('OK')" +q
+          nvim -u .github/resources/init-integration.lua -l .github/resources/install-colorscheme.lua +q
           ls rocks
           # Will fail if rocks.log does not exist
           cat rocks/rocks.log
