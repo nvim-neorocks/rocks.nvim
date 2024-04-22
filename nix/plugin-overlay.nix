@@ -186,7 +186,6 @@ in {
                 vim.fs.joinpath("${rocks}", "share", "lua", "5.1", "?", "init.lua"),
                 vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?.lua"),
                 vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?", "init.lua"),
-                vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?", "init.lua"),
             }
             package.path = package.path .. ";" .. table.concat(luarocks_path, ";")
 
@@ -199,7 +198,6 @@ in {
             package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
 
             vim.opt.runtimepath:append(vim.fs.joinpath("${rocks}", "rocks.nvim-scm-1-rocks", "rocks.nvim", "*"))
-            vim.cmd.colorscheme("sweetie")
           '';
         wrapRc = true;
         wrapperArgs =
