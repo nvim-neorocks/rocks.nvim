@@ -49,5 +49,9 @@ jobs:
           # Will fail if rocks.log does not exist
           cat rocks/rocks.log
           echo "vim.cmd.colorscheme('sweetie')" >> .github/resources/init-integration.lua
-          nvim -u .github/resources/init-integration.lua -c "!touch success" +q
-          cat success # Will fail if it does not exist
+          echo "vim.cmd.e('success')" >> .github/resources/init-integration.lua
+          nvim -u .github/resources/init-integration.lua -c +wq
+          if [ ! -f success ]; then
+            echo "Integration test failed!"
+            exit 1
+          fi
