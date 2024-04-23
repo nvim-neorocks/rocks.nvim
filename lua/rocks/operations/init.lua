@@ -113,7 +113,8 @@ operations.sync = function(user_rocks, on_complete)
         end
         if user_rocks == nil then
             -- Read or create a new config file and decode it
-            -- NOTE: This does not use parse_user_rocks because we decode with toml, not toml-edit
+            -- NOTE: This does not use parse_user_rocks
+            -- because we decode with toml-edit.parse_as_tbl, not toml-edit.parse
             user_rocks = config.get_user_rocks()
         end
 
@@ -174,16 +175,29 @@ operations.sync = function(user_rocks, on_complete)
             return get_percentage(ct, action_count)
         end
 
-        ---@type RockSpec[]
+        ---@class SyncSkippedRock
+        ---@field spec RockSpec
+        ---@field reason string
+
+        ---@type SyncSkippedRock[]
         local skipped_rocks = {}
 
         for _, key in ipairs(to_install) do
-            nio.scheduler()
+            -- Save skipped rocks for later, when an external handler may have been bootstrapped
             if not user_rocks[key].version then
-                -- Save it for later, when an external handler may have been bootstrapped
-                table.insert(skipped_rocks, user_rocks[key])
+                table.insert(skipped_rocks, {
+                    spec = user_rocks[key],
+                    reason = "No version specified",
+                })
+                goto skip_install
+            elseif key:lower() ~= key then
+                table.insert(skipped_rocks, {
+                    spec = user_rocks[key],
+                    reason = "Name is not lowercase",
+                })
                 goto skip_install
             end
+            nio.scheduler()
             progress_handle:report({
                 message = ("Installing: %s"):format(key),
             })
@@ -218,13 +232,14 @@ operations.sync = function(user_rocks, on_complete)
 
         -- rocks.nvim sync handlers should be installed now.
         -- try installing any rocks that rocks.nvim could not handle itself
-        for _, spec in ipairs(skipped_rocks) do
+        for _, skipped_rock in ipairs(skipped_rocks) do
+            local spec = skipped_rock.spec
             ct = ct + 1
             local callback = handlers.get_sync_handler_callback(spec)
             if callback then
                 callback(report_progress, report_error)
             else
-                report_error(("Failed to install %s."):format(spec.name))
+                report_error(("Failed to install %s: %s"):format(spec.name, skipped_rock.reason))
             end
         end
 
@@ -529,7 +544,7 @@ operations.add = function(arg_list, callback)
             return
         end
         ---@type rock_name
-        local rock_name = arg_list[1]
+        local rock_name = arg_list[1]:lower()
         -- We can't mutate the arg_list, because we may need it for a recursive add
         ---@type string[]
         local args = #arg_list == 1 and {} or { unpack(arg_list, 2, #arg_list) }

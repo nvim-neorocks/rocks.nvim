@@ -119,7 +119,7 @@ local function check_external_dependency(dep)
 end
 
 local function check_config()
-    start("Checking config")
+    start("Checking rocks.nvim config")
     if vim.g.rocks_nvim and not config.debug_info.was_g_rocks_nvim_sourced then
         warn("unrecognized configs in vim.g.rocks_nvim: " .. vim.inspect(config.debug_info.unrecognized_configs))
     end
@@ -131,12 +131,29 @@ local function check_config()
     end
 end
 
+local function check_rocks_toml()
+    start("Checking rocks.toml")
+    local success, user_rocks_or_err = xpcall(require("rocks.config.internal").get_user_rocks, function(err)
+        error(err)
+    end)
+    if not success then
+        return
+    end
+    for rock_name, _ in pairs(user_rocks_or_err) do
+        if rock_name:lower() ~= rock_name then
+            error(("Plugin name is not lowercase: %s"):format(rock_name))
+        end
+        ok("No errors found in rocks.toml.")
+    end
+end
+
 function health.check()
     start("Checking external dependencies")
     for _, dep in ipairs(external_dependencies) do
         check_external_dependency(dep)
     end
     check_config()
+    check_rocks_toml()
 end
 
 return health

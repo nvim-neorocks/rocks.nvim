@@ -12,7 +12,7 @@ describe("install/update", function()
     local state = require("rocks.state")
     nio.tests.it("install and update rocks", function()
         local future = nio.control.future()
-        operations.add({ "neorg", "7.0.0" }, function()
+        operations.add({ "Neorg", "7.0.0" }, function() -- ensure lower case
             future.set(true)
         end)
         future.wait()
@@ -21,6 +21,12 @@ describe("install/update", function()
             name = "neorg",
             version = "7.0.0",
         }, installed_rocks.neorg)
+        nio.sleep(1000) -- Time to write to rocks.toml
+        local user_rocks = require("rocks.config.internal").get_user_rocks()
+        assert.same({
+            name = "neorg",
+            version = "7.0.0",
+        }, user_rocks.neorg)
         future = nio.control.future()
         operations.update(function()
             future.set(true)
