@@ -386,7 +386,7 @@ operations.update = function(on_complete)
         local ct = 0
         for name, rock in pairs(outdated_rocks) do
             local user_rock = user_rocks.plugins[rock.name] or user_rocks.rocks[rock.name]
-            if user_rock and user_rock.pin then
+            if not user_rock or user_rock.pin then
                 goto skip_update
             end
             nio.scheduler()
