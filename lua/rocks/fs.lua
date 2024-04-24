@@ -41,7 +41,7 @@ end
 ---@param contents string file contents
 function fs.write_file(location, mode, contents)
     local dir = vim.fn.fnamemodify(location, ":h")
-    vim.fn.mkdir(dir, "p")
+    fs.mkdir_p(dir)
     -- 644 sets read and write permissions for the owner, and it sets read-only
     -- mode for the group and others
     uv.fs_open(location, mode, tonumber("644", 8), function(err, file)
@@ -79,6 +79,29 @@ function fs.read_or_create(location, default)
     end
     ---@cast content string
     return content
+end
+
+---Create directory, including parents
+---@param dir string
+---@return boolean success
+function fs.mkdir_p(dir)
+    local mode = 493
+    local mod = ""
+    local path = dir
+    while vim.fn.isdirectory(path) == 0 do
+        mod = mod .. ":h"
+        path = vim.fn.fnamemodify(dir, mod)
+    end
+    while mod ~= "" do
+        mod = string.sub(mod, 3)
+        path = vim.fn.fnamemodify(dir, mod)
+        vim.uv.fs_mkdir(path, mode)
+    end
+    if not vim.uv.fs_stat(dir) then
+        log.error("Failed to create directory: " .. dir)
+        return false
+    end
+    return true
 end
 
 return fs
