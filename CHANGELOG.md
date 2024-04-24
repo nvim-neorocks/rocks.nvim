@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.25.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.24.0...v2.25.0) (2024-04-24)
+
+
+### Features
+
+* ensure plugin runtime paths are available before rocks initialises ([#285](https://github.com/nvim-neorocks/rocks.nvim/issues/285)) ([462379d](https://github.com/nvim-neorocks/rocks.nvim/commit/462379ddb8021b558dcceb1c3f005516140a2650))
+
+
+### Bug Fixes
+
+* ensure lowercase rock names ([#288](https://github.com/nvim-neorocks/rocks.nvim/issues/288)) ([4d4b0a7](https://github.com/nvim-neorocks/rocks.nvim/commit/4d4b0a729743b594050a24f6f3e3053045564da3))
+* **update:** don't update rocks that aren't in rocks.toml ([c969b61](https://github.com/nvim-neorocks/rocks.nvim/commit/c969b611ed4bd45ee5c0788a96c8d7b1bf40a421))
+
 ## [2.24.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.23.0...v2.24.0) (2024-04-18)
 
 
