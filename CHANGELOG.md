@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.25.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.25.0...v2.25.1) (2024-04-24)
+
+
+### Bug Fixes
+
+* **sync:** error when rocks.toml has no rocks or plugins entries ([#295](https://github.com/nvim-neorocks/rocks.nvim/issues/295)) ([e74ffdd](https://github.com/nvim-neorocks/rocks.nvim/commit/e74ffdd49b7f8758ca282e812daf00fc774b9439))
+
 ## [2.25.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.24.0...v2.25.0) (2024-04-24)
 
 
