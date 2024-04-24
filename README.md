@@ -118,10 +118,10 @@ ensures you're covered even when a plugin isn't directly available on LuaRocks.
 We're revolutionizing the way Neovim users and plugin developers
 interact with tree-sitter parsers.
 With the introduction of the [Neovim User Rocks Repository (NURR)](https://github.com/nvim-neorocks/nurr),
-we have automated the packaging and publishing of many plugins and curated[^1] tree-sitter parsers
+we have automated the packaging and publishing of many plugins and curated[^2] tree-sitter parsers
 for luarocks, ensuring a seamless and efficient user experience.
 
-[^1]: We only upload parsers which we can install in the NURR CI
+[^2]: We only upload parsers which we can install in the NURR CI
       (tested on Linux).
 
 When installing, rocks.nvim will also search our [rocks-binaries (dev)](https://nvim-neorocks.github.io/rocks-binaries-dev/)
@@ -134,12 +134,12 @@ If you need a tree-sitter parser for syntax highlighting or other features,
 you can easily install them with rocks.nvim: `:Rocks install tree-sitter-<lang>`.
 
 They come bundled with queries, so once installed,
-all you need to do is run `vim.treesitter.start()` to enable syntax highlighting[^2].
+all you need to do is run `vim.treesitter.start()` to enable syntax highlighting[^3].
 
 Or, you can use our [`rocks-treesitter.nvim`](https://github.com/nvim-neorocks/rocks-treesitter.nvim)
 module, which can automatically install parsers and enable syntax highlighting for you.
 
-[^2]: You can put this in a `ftplugin/<filetype>.lua`, for example.
+[^3]: You can put this in a `ftplugin/<filetype>.lua`, for example.
       [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) is
       still required for tree-sitter based folding, indentation, etc.,
       but you don't need to configure it to install any parsers.
@@ -161,11 +161,11 @@ module, which can automatically install parsers and enable syntax highlighting f
 #### Simplifying dependencies
 
 For plugin developers, specifying a tree-sitter parser as a dependency
-is now as straightforward as including it in their project's rockspec[^3].
+is now as straightforward as including it in their project's rockspec[^4].
 This eliminates the need for manual parser management and ensures that
 dependencies are automatically resolved and installed.
 
-[^3]: [example](https://luarocks.org/modules/MrcJkb/neotest-haskell).
+[^4]: [example](https://luarocks.org/modules/MrcJkb/neotest-haskell).
 
 Example rockspec dependency specification:
 
@@ -380,8 +380,12 @@ version = "1.0.0"
 opt = true
 ```
 
-You can then load the plugin with the `:Rocks[!] packadd {rock}` command.
-Or, before rocks.nvim is initialised, with `require("rocks").packadd("<rock_name>")`.
+You can then load the plugin with Neovim's built-in `:packadd {rock}` command[^1].
+
+[^1]: `rocks.nvim` maintains symlinks to installed rocks' plugin directories in
+      a `site/pack/luarocks/opt/{rock}` directory, so colorschemes, etc., are available
+      before `rocks.nvim` initializes.
+      See also [`:h packadd`](https://neovim.io/doc/user/repeat.html#%3Apackadd).
 
 > [!NOTE]
 >
@@ -391,9 +395,9 @@ Or, before rocks.nvim is initialised, with `require("rocks").packadd("<rock_name
 > from Git repositories.
 >
 > Specifically, `luarocks` installs a rock's Lua API to the [`package.path`](https://neovim.io/doc/user/luaref.html#package.path)
-> and the [`package.cpath`](https://neovim.io/doc/user/luaref.html#package.cpath).
+> and the [`package.cpath`](https://neovim.io/doc/user/luaref.html#package.cpath)
 > It does not have to be added to Neovim's runtime path
-> (e.g. using `:Rocks packadd`), for it to become available.
+> (e.g. using `:packadd`), for it to become available.
 > This does not impact Neovim's startup time.
 >
 > Runtime directories ([`:h runtimepath`](https://neovim.io/doc/user/options.html#'runtimepath')),

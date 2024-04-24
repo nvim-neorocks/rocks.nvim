@@ -85,13 +85,15 @@ helpers.install = function(rock_spec, progress_handle)
                 progress_handle:report({ message = message })
             end
 
-            adapter.init_tree_sitter_parser_symlink()
-            adapter.init_site_symlinks()
-            if config.dynamic_rtp and not rock_spec.opt then
-                runtime.packadd(name)
-            end
-
-            future.set(installed_rock)
+            nio.run(function()
+                adapter.init_tree_sitter_parser_symlink()
+                adapter.init_site_symlinks()
+                if config.dynamic_rtp and not rock_spec.opt then
+                    nio.scheduler()
+                    runtime.packadd(name)
+                end
+                future.set(installed_rock)
+            end)
         end
     end, {
         servers = servers,
@@ -115,19 +117,21 @@ helpers.remove = function(name, progress_handle)
         "remove",
         name,
     }, function(sc)
-        ---@cast sc vim.SystemCompleted
-        if sc.code ~= 0 then
-            message = ("Failed to remove %s."):format(name)
-            if progress_handle then
-                progress_handle:report({ message = message })
+        nio.run(function()
+            adapter.validate_tree_sitter_parser_symlink()
+            adapter.validate_site_symlinks()
+            ---@cast sc vim.SystemCompleted
+            if sc.code ~= 0 then
+                message = ("Failed to remove %s."):format(name)
+                if progress_handle then
+                    progress_handle:report({ message = message })
+                end
+                future.set_error(sc.stderr)
+            else
+                log.info(("Uninstalled: %s"):format(name))
+                future.set(sc)
             end
-            future.set_error(sc.stderr)
-        else
-            log.info(("Uninstalled: %s"):format(name))
-            future.set(sc)
-        end
-        adapter.validate_tree_sitter_parser_symlink()
-        adapter.validate_site_symlinks()
+        end)
     end)
     return future
 end

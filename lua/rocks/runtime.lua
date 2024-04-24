@@ -16,16 +16,10 @@
 
 local runtime = {}
 
-local config = require("rocks.config.internal")
 local constants = require("rocks.constants")
 local log = require("rocks.log")
-local fzy = require("rocks.fzy")
 
 ---@alias rock_pattern "*" | rock_name
-
----paths should only be appended to the rtp once
----@type table<string, boolean|nil>
-local _appended_rtp = {}
 
 ---`ftdetect` scripts should only be sourced once.
 ---@type table<string, boolean|nil>
@@ -90,64 +84,26 @@ local function source_ftdetect(dir)
     end
 end
 
----@param rock_pattern rock_pattern
----@return string rtp_path The runtime path, with a glob star for the version
-local function mk_rtp_glob(rock_pattern)
-    return vim.fs.joinpath(config.rocks_path, "lib", "luarocks", "rocks-5.1", rock_pattern:lower(), "*")
-end
-
----Append a glob to the runtimepath, if not already appended.
----@param rtp_glob string
-local function rtp_append(rtp_glob)
-    if _appended_rtp[rtp_glob] then
-        return
-    end
-    vim.opt.runtimepath:append(rtp_glob)
-    _appended_rtp[rtp_glob] = true
-end
-
----@class PackaddOpts: rocks.PackaddOpts
----@field error_on_not_found? boolean Notify with an error message if no plugin could be found. Ignored if `packadd_fallback` is set to `true`.
+---@class rocks.PackaddOpts
+---@field bang? boolean
 
 ---@param rock_name rock_name
 ---@param opts? rocks.PackaddOpts
+---@return boolean found
 function runtime.packadd(rock_name, opts)
     ---@cast rock_name rock_name
     opts = vim.tbl_deep_extend("force", {
         bang = false,
-        packadd_fallback = true,
-        error_on_not_found = false,
     }, opts or {})
-    ---@cast opts PackaddOpts
-    local rtp_glob = mk_rtp_glob(rock_name)
-    rtp_append(rtp_glob)
-    if opts.bang then
-        return
+    local ok, err = pcall(vim.cmd.packadd, { rock_name, bang = opts.bang })
+    if not ok and err and err:find("Directory not found in 'packpath'") == nil then
+        vim.schedule(function()
+            vim.notify(err, vim.log.levels.ERROR)
+        end)
+    elseif not ok then
+        return false
     end
-    local paths = vim.fn.glob(rtp_glob, nil, true)
-    if #paths == 0 then
-        local ok, packadd_err = false, nil
-        if opts.packadd_fallback then
-            ok, packadd_err = pcall(vim.cmd.packadd, { rock_name, bang = opts.bang })
-        end
-        if not ok and opts.error_on_not_found then
-            vim.notify(("No path found for %s"):format(rock_name), vim.log.levels.ERROR)
-            if packadd_err then
-                vim.notify(packadd_err, vim.log.levels.ERROR)
-            end
-        end
-        return
-    end
-    local path = paths[1]
-    if #paths > 1 then
-        local dir = vim.fn.fnamemodify(path, ":t")
-        vim.notify(
-            ("More than one version found for rock %s. Sourcing %s."):format(rock_name, dir),
-            vim.log.levels.WARN
-        )
-    end
-    source_plugin(path)
-    source_ftdetect(path)
+    return true
 end
 
 ---Source the `plugin` and `ftdetect` directories
@@ -163,20 +119,6 @@ local function is_start_plugin(rock_spec)
     return not rock_spec.opt and rock_spec.version and rock_spec.name ~= constants.ROCKS_NVIM
 end
 
----Add all plugins with `opt ~= true` to the rtp
-function runtime.rtp_append_start_plugins(user_rocks)
-    log.trace("Adding start plugins to the runtimepath")
-    -- TODO: (?) Do this recursively for each rocks dependencies?
-    -- I'm saying YAGNI for now, because it means querying luarocks,
-    -- which isn't ideal for performance.
-    -- `autoload` doesn't seem very common among lua plugins.
-    for _, rock_spec in pairs(user_rocks) do
-        if is_start_plugin(rock_spec) then
-            rtp_append(rock_spec.name)
-        end
-    end
-end
-
 ---Source all plugins with `opt ~= true`
 ---NOTE: We don't want this to be async,
 ---to ensure Neovim sources `after/plugin` scripts
@@ -184,25 +126,22 @@ end
 ---@param user_rocks RockSpec[]
 function runtime.source_start_plugins(user_rocks)
     log.trace("Sourcing start plugins")
+    local not_found = {}
     for _, rock_spec in pairs(user_rocks) do
-        if is_start_plugin(rock_spec) then
-            runtime.packadd(rock_spec.name, { error_on_not_found = false })
+        if is_start_plugin(rock_spec) and not runtime.packadd(rock_spec.name) then
+            table.insert(not_found, rock_spec.name)
         end
     end
-end
-
----Get completions from rocks.toml for the `:Rocks packadd` command
----@param query string
-function runtime.complete_packadd(query)
-    local opt_rocks = vim.iter(vim.tbl_values(config.get_user_rocks()))
-        :filter(function(rock_spec)
-            return rock_spec.opt and rock_spec.version
+    if #not_found > 0 then
+        vim.schedule(function()
+            vim.notify(
+                ("rocks.nvim: You may need to run 'Rocks sync'.\nThe following plugins were not found:\n%s."):format(
+                    vim.inspect(not_found)
+                ),
+                vim.log.levels.WARN
+            )
         end)
-        :map(function(rock_spec)
-            return rock_spec.name
-        end)
-        :totable()
-    return fzy.fuzzy_filter(query, opt_rocks)
+    end
 end
 
 return runtime
