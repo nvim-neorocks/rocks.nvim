@@ -34,32 +34,41 @@ local rocks_parser_dir = vim.fs.joinpath(config.rocks_path, "lib", "lua", "5.1",
 ---@type async fun(symlink_location: string, symlink_dir_name: string, dest_dir_path: string)
 local create_symlink = nio.create(function(symlink_location, symlink_dir_name, dest_dir_path)
     local symlink_dir_path = vim.fs.joinpath(symlink_location, symlink_dir_name)
-    -- NOTE: nio.uv.fs_stat behaves differently than vim.uv.fs_stat
-    if not vim.uv.fs_stat(symlink_dir_path) then
+    local _, stat = nio.uv.fs_stat(symlink_dir_path)
+    if not stat then
         log.info("Creating symlink directory: " .. symlink_dir_name)
-        nio.uv.fs_symlink(dest_dir_path, symlink_dir_path)
+        local err, success = nio.uv.fs_symlink(dest_dir_path, symlink_dir_path)
+        if not success then
+            log.error(("Error creating symlink directory: %s (%s)"):format(symlink_dir_name, err or "unknown error"))
+        end
     end
 end, 3)
 
 ---@param symlink_dir string
 local function validate_symlink_dir(symlink_dir)
-    if not vim.uv.fs_stat(symlink_dir) and not vim.uv.fs_unlink(symlink_dir) then
-        log.error("Failed to remove symlink: " .. symlink_dir)
+    local _, stat = nio.uv.fs_stat(symlink_dir)
+    if not stat then
+        local err, success = nio.uv.fs_unlink(symlink_dir)
+        if not success then
+            log.error(("Failed to remove symlink: %s (%s)"):format(symlink_dir, err or "unknown error"))
+        end
     end
 end
 
+--- @type async function
 --- Check if the tree-sitter parser symlink is valid,
 --- and remove it if it isn't
-function adapter.validate_tree_sitter_parser_symlink()
+adapter.validate_tree_sitter_parser_symlink = nio.create(function()
     validate_symlink_dir(vim.fs.joinpath(rtp_link_dir, "parser"))
-end
+end)
 
 --- Neovim doesn't support `:checkhealth` for luarocks plugins.
 --- To work around this, we create a symlink in the `rocks_path` that
 --- we add to the runtimepath, so that Neovim can find health files.
 local function init_checkhealth_symlink()
     local rocks_lua_dir = vim.fs.joinpath(config.rocks_path, "share", "lua", "5.1")
-    if vim.uv.fs_stat(rocks_lua_dir) then
+    local _, stat = nio.uv.fs_stat(rocks_lua_dir)
+    if stat then
         create_symlink(rtp_link_dir, "lua", rocks_lua_dir)
     end
 end
@@ -67,7 +76,8 @@ end
 --- If any tree-sitter parsers are installed,
 -- initialise a symlink so that Neovim can find them.
 function adapter.init_tree_sitter_parser_symlink()
-    if vim.uv.fs_stat(rocks_parser_dir) then
+    local _, stat = nio.uv.fs_stat(rocks_parser_dir)
+    if stat then
         create_symlink(rtp_link_dir, "parser", rocks_parser_dir)
     end
 end
@@ -75,7 +85,7 @@ end
 --- Check if the site symlinks are valid,
 --- and remove them if they aren't
 function adapter.validate_site_symlinks()
-    local handle = vim.uv.fs_scandir(site_link_dir)
+    local _, handle = nio.uv.fs_scandir(site_link_dir)
     while handle do
         local name, ty = vim.uv.fs_scandir_next(handle)
         if not name then
@@ -90,7 +100,7 @@ end
 --- @param rock Rock
 local function init_site_symlink(rock)
     local rock_dir = vim.fs.joinpath(config.rocks_path, "lib", "luarocks", "rocks-5.1", rock.name)
-    local handle = vim.uv.fs_scandir(rock_dir)
+    local _, handle = nio.uv.fs_scandir(rock_dir)
     while handle do
         local name, ty = vim.uv.fs_scandir_next(handle)
         if not name then
@@ -136,9 +146,9 @@ local function init_site_links()
     adapter.init_site_symlinks()
 end
 
-function adapter.init()
+adapter.init = nio.create(function()
     init_rtp_links()
     init_site_links()
-end
+end)
 
 return adapter

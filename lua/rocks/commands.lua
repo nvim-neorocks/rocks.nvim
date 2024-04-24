@@ -1,3 +1,13 @@
+---@toc rocks.contents
+
+---@mod rocks.nvim rocks.nvim
+---
+---@brief [[
+---
+---A luarocks plugin manager for Neovim.
+---
+---@brief ]]
+
 ---@mod rocks.commands rocks.nvim commands
 ---
 ---@brief [[
@@ -9,6 +19,13 @@
 ---
 --- install {rock} {version?} {args[]?} Install {rock} with optional {version} and optional {args[]}.
 ---                                     Example: ':Rocks install neorg 8.0.0 opt=true'
+---                                     args (optional):
+---                                       - opt={true|false}
+---                                         Rocks that have been installed with 'opt=true'
+---                                         can be sourced with |packadd|.
+---                                       - pin={true|false}
+---                                         Rocks that have been installed with 'pim=true'
+---                                         will be ignored by ':Rocks update'.
 --- prune {rock}                        Uninstall {rock} and its stale dependencies,
 ---                                     and remove it from rocks.toml.
 --- sync                                Synchronize installed rocks with rocks.toml.
@@ -18,15 +35,6 @@
 --- pin {rock}                          Pin {rock} to the installed version.
 ---                                     Pinned rocks are ignored by ':Rocks update'.
 --- unpin {rock}                        Unpin {rock}.
---- packadd {rock}                      Search for an optional rock and source any plugin files found.
----                                     The rock must be installed by luarocks.
----                                     It is added to the 'runtimepath' if it wasn't there yet.
----                                     If `Rocks` is called with the optional `!`, the rock is added
----                                     to the |runtimepath| and no |plugin| or |ftdetect| scripts are
----                                     sourced.
----                                     This command aims to behave similarly to the builtin |packadd|,
----                                     and will fall back to it if no rock is found.
----                                     To make a rock optional, set `opt = true` in `rocks.toml`.
 --- log                                 Open the log file.
 ---
 ---@brief ]]
@@ -214,10 +222,7 @@ local rocks_command_tbl = {
                 return
             end
             local rock_name = args[1]
-            require("rocks.runtime").packadd(rock_name, { bang = opts.bang })
-        end,
-        complete = function(query)
-            return require("rocks.runtime").complete_packadd(query)
+            require("rocks").packadd(rock_name, { bang = opts.bang })
         end,
     },
     log = {
@@ -246,7 +251,11 @@ function commands.create_commands()
         nargs = "+",
         desc = "Interacts with currently installed rocks",
         complete = function(arg_lead, cmdline, _)
-            local rocks_commands = vim.tbl_keys(rocks_command_tbl)
+            local rocks_commands = vim.iter(vim.tbl_keys(rocks_command_tbl))
+                :filter(function(subcmd)
+                    return subcmd ~= "packadd"
+                end)
+                :totable()
             local subcmd, subcmd_arg_lead = cmdline:match("^Rocks[!]*%s(%S+)%s(.*)$")
             if subcmd and subcmd_arg_lead and rocks_command_tbl[subcmd] and rocks_command_tbl[subcmd].complete then
                 return rocks_command_tbl[subcmd].complete(subcmd_arg_lead)

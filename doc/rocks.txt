@@ -2,7 +2,6 @@
 Table of Contents                                               *rocks.contents*
 
 rocks.nvim ························································ |rocks.nvim|
-rocks.nvim Lua API ················································· |rocks.lua|
 rocks.nvim commands ··········································· |rocks.commands|
 rocks.nvim configuration ········································ |rocks.config|
 Lua API for rocks.nvim extensions ·································· |rocks.api|
@@ -17,24 +16,6 @@ A luarocks plugin manager for Neovim.
 
 
 ==============================================================================
-rocks.nvim Lua API                                                   *rocks.lua*
-
-rocks.packadd({rock_name}, {opts})                               *rocks.packadd*
-    Search for a rock with `opt = true`, add it to the runtimepath and source any plugin files found.
-
-    Parameters: ~
-        {rock_name}  (string)
-        {opts}       (rocks.PackaddOpts)
-
-
-rocks.PackaddOpts                                            *rocks.PackaddOpts*
-
-    Fields: ~
-        {bang?}              (boolean)  If `true`, rocks.nvim will only add the rock to the runtimepath, but not source any plugin or ftdetect scripts. Default: `false`.
-        {packadd_fallback?}  (boolean)  Fall back to the builtin |packadd|? Default `true`.
-
-
-==============================================================================
 rocks.nvim commands                                             *rocks.commands*
 
 
@@ -45,6 +26,13 @@ rocks.nvim commands                                             *rocks.commands*
 
  install {rock} {version?} {args[]?} Install {rock} with optional {version} and optional {args[]}.
                                      Example: ':Rocks install neorg 8.0.0 opt=true'
+                                     args (optional):
+                                       - opt={true|false}
+                                         Rocks that have been installed with 'opt=true'
+                                         can be sourced with |packadd|.
+                                       - pin={true|false}
+                                         Rocks that have been installed with 'pim=true'
+                                         will be ignored by ':Rocks update'.
  prune {rock}                        Uninstall {rock} and its stale dependencies,
                                      and remove it from rocks.toml.
  sync                                Synchronize installed rocks with rocks.toml.
@@ -54,15 +42,6 @@ rocks.nvim commands                                             *rocks.commands*
  pin {rock}                          Pin {rock} to the installed version.
                                      Pinned rocks are ignored by ':Rocks update'.
  unpin {rock}                        Unpin {rock}.
- packadd {rock}                      Search for an optional rock and source any plugin files found.
-                                     The rock must be installed by luarocks.
-                                     It is added to the 'runtimepath' if it wasn't there yet.
-                                     If `Rocks` is called with the optional `!`, the rock is added
-                                     to the |runtimepath| and no |plugin| or |ftdetect| scripts are
-                                     sourced.
-                                     This command aims to behave similarly to the builtin |packadd|,
-                                     and will fall back to it if no rock is found.
-                                     To make a rock optional, set `opt = true` in `rocks.toml`.
  log                                 Open the log file.
 
 

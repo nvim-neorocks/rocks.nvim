@@ -55,7 +55,6 @@ end)
 
 --- We don't want to run this async, to ensure proper initialisation order
 local user_rocks = config.get_user_rocks()
-require("rocks.runtime").rtp_append_start_plugins(user_rocks)
 require("rocks.api.hooks").run_preload_hooks(user_rocks)
 require("rocks.runtime").source_start_plugins(user_rocks)
 
