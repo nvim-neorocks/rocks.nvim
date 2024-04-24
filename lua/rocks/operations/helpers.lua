@@ -1,11 +1,10 @@
 ---@mod rocks.operations.helpers
 --
--- Copyright (C) 2023 Neorocks Org.
+-- Copyright (C) 2024 Neorocks Org.
 --
--- Version:    0.1.0
 -- License:    GPLv3
 -- Created:    07 Mar 2024
--- Updated:    07 Mar 2024
+-- Updated:    19 Apr 2024
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 --
@@ -86,9 +85,10 @@ helpers.install = function(rock_spec, progress_handle)
                 progress_handle:report({ message = message })
             end
 
+            adapter.init_tree_sitter_parser_symlink()
+            adapter.init_site_symlinks()
             if config.dynamic_rtp and not rock_spec.opt then
                 runtime.packadd(name)
-                adapter.init_tree_sitter_parser_symlink()
             end
 
             future.set(installed_rock)
@@ -127,6 +127,7 @@ helpers.remove = function(name, progress_handle)
             future.set(sc)
         end
         adapter.validate_tree_sitter_parser_symlink()
+        adapter.validate_site_symlinks()
     end)
     return future
 end
