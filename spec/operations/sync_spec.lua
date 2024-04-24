@@ -13,7 +13,22 @@ describe("operations", function()
     local state = require("rocks.state")
     local config = require("rocks.config.internal")
     vim.system({ "mkdir", "-p", config.rocks_path }):wait()
-    local config_content = [[
+    nio.tests.it("sync", function()
+        -- Test sync without any rocks
+        local config_content = [[
+[rocks]
+
+[plugins]
+]]
+        local fh = assert(io.open(config.config_path, "w"), "Could not open rocks.toml for writing")
+        fh:write(config_content)
+        fh:close()
+        local future = nio.control.future()
+        operations.sync(config.get_user_rocks(), function()
+            future.set(true)
+        end)
+        future.wait()
+        config_content = [[
 [rocks]
 nlua = "0.1.0"
 
@@ -21,10 +36,9 @@ nlua = "0.1.0"
 "haskell-tools.nvim" = "2.4.0"
 "sweetie.nvim" = "2.4.0"
 ]]
-    local fh = assert(io.open(config.config_path, "w"), "Could not open rocks.toml for writing")
-    fh:write(config_content)
-    fh:close()
-    nio.tests.it("sync", function()
+        fh = assert(io.open(config.config_path, "w"), "Could not open rocks.toml for writing")
+        fh:write(config_content)
+        fh:close()
         -- One package with a dependency to remove
         helpers.install({ name = "telescope.nvim", version = "0.1.6" }).wait() -- remove
         -- One to update
@@ -44,7 +58,7 @@ nlua = "0.1.0"
             name = "haskell-tools.nvim",
             version = "3.0.0",
         }, installed_rocks["haskell-tools.nvim"])
-        local future = nio.control.future()
+        future = nio.control.future()
         operations.sync(config.get_user_rocks(), function()
             future.set(true)
         end)

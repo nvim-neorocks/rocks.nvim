@@ -73,7 +73,7 @@ local default_config = {
     ---@type fun():table<rock_name, RockSpec>
     get_user_rocks = function()
         local rocks_toml = config.get_rocks_toml()
-        return vim.tbl_deep_extend("force", rocks_toml.rocks or {}, rocks_toml.plugins or {})
+        return vim.tbl_deep_extend("force", vim.empty_dict(), rocks_toml.rocks or {}, rocks_toml.plugins or {})
     end,
     ---@type string
     luarocks_config = nil,
