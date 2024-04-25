@@ -12,6 +12,7 @@ dependencies = {
     "fidget.nvim >= 1.1.0",
     "fzy",
     "nvim-nio",
+    "rtp.nvim",
 }
 
 test_dependencies = {
@@ -20,6 +21,7 @@ test_dependencies = {
     "fidget.nvim >= 1.1.0",
     "fzy",
     "nvim-nio",
+    "rtp.nvim",
 }
 
 source = {

@@ -38,6 +38,31 @@
         nativeBuildInputs = with final; [cargo rustPlatform.cargoSetupHook] ++ oa.nativeBuildInputs;
       });
 
+    rtp-nvim = luaself.callPackage ({
+      buildLuarocksPackage,
+      fetchzip,
+      fetchurl,
+      lua,
+      luaOlder,
+    }:
+      buildLuarocksPackage {
+        pname = "rtp.nvim";
+        version = "1.0.0-1";
+        knownRockspec =
+          (fetchurl {
+            url = "mirror://luarocks/rtp.nvim-1.0.0-1.rockspec";
+            sha256 = "0ddlwhk62g3yx1ysddsmlggfqv0hj7dljgczfwij1ijbz7qyp3hy";
+          })
+          .outPath;
+        src = fetchzip {
+          url = "https://github.com/nvim-neorocks/rtp.nvim/archive/v1.0.0.zip";
+          sha256 = "1kx7qzdz8rpwsjcp63wwn619nrkxn6xd0nr5pfm3g0z4072nnpzn";
+        };
+
+        disabled = luaOlder "5.1";
+        propagatedBuildInputs = [lua];
+      }) {};
+
     nvim-nio =
       # TODO: Replace with nixpkgs package when available
       luaself.callPackage ({
@@ -113,6 +138,7 @@
       fidget-nvim,
       nvim-nio,
       fzy,
+      rtp-nvim,
     }:
       buildLuarocksPackage {
         pname = name;
@@ -126,6 +152,7 @@
           fidget-nvim
           nvim-nio
           fzy
+          rtp-nvim
         ];
       }) {};
   };

@@ -238,11 +238,8 @@ api.register_rock_handler({handler})                 *api.register_rock_handler*
         {handler}  (RockHandler)
 
 
-api.source_runtime_dir({dir})                           *api.source_runtime_dir*
-    Source the `plugin` and `ftdetect` directories.
-
-    Parameters: ~
-        {dir}  (string)  The runtime directory to source
+api.source_runtime_dir()                                *api.source_runtime_dir*
+    @deprecated Use the rtp.nvim luarock
 
 
                                                                    *api.install*
