@@ -13,6 +13,7 @@
             fidget-nvim
             fzy
             nvim-nio
+            rtp-nvim
           ];
 
         extraPackages = [

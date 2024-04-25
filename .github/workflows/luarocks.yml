@@ -35,6 +35,7 @@ jobs:
             fidget.nvim >= 1.1.0
             fzy
             nvim-nio
+            rtp.nvim
           labels: |
             neovim
           detailed_description: |
