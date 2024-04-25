@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.26.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.25.1...v2.26.0) (2024-04-25)
+
+
+### Features
+
+* deprecate `rocks.api.source_runtime_dir` ([#297](https://github.com/nvim-neorocks/rocks.nvim/issues/297)) ([b93c313](https://github.com/nvim-neorocks/rocks.nvim/commit/b93c3137bf1b5e32e14ab7c2ea45fcf48e8024db))
+* **runtime:** use built-in `packadd` and deprecate `Rocks packadd` ([047b8f7](https://github.com/nvim-neorocks/rocks.nvim/commit/047b8f7079188a6b7e17817b9cfa0dcc09b94dcc))
+
 ## [2.25.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.25.0...v2.25.1) (2024-04-24)
 
 
