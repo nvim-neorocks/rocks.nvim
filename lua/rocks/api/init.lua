@@ -7,12 +7,11 @@
 ---
 ---@brief ]]
 
--- Copyright (C) 2023 Neorocks Org.
+-- Copyright (C) 2024 Neorocks Org.
 --
--- Version:    0.1.0
 -- License:    GPLv3
 -- Created:    07 Dec 2023
--- Updated:    07 Dec 2023
+-- Updated:    25 Apr 2024
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 
@@ -32,7 +31,6 @@ local luarocks = require("rocks.luarocks")
 local nio = require("nio")
 local state = require("rocks.state")
 local operations = require("rocks.operations")
-local runtime = require("rocks.runtime")
 
 ---Tries to get the cached rocks.
 ---Returns an empty list if the cache has not been populated
@@ -167,10 +165,10 @@ function api.register_rock_handler(handler)
     operations.register_handler(handler)
 end
 
----Source the `plugin` and `ftdetect` directories.
----@param dir string The runtime directory to source
+---@deprecated Use the rtp.nvim luarock
 function api.source_runtime_dir(dir)
-    runtime.source_rtp_dir(dir)
+    vim.deprecate("rocks.api.source_rtp_dir", "the rtp.nvim luarock", "3.0.0", "rocks.nvim")
+    require("rtp_nvim").source_rtp_dir(dir)
 end
 
 ---Invoke ':Rocks install' with a callback
