@@ -90,7 +90,6 @@ operations.sync = function(user_rocks, on_complete)
             local progress_handle = progress.handle.create({
                 title = "Syncing",
                 lsp_client = { name = constants.ROCKS_NVIM },
-                percentage = 0,
             })
 
             ---@type ProgressHandle[]
@@ -168,12 +167,6 @@ operations.sync = function(user_rocks, on_complete)
             end
 
             local ct = 1
-            ---@diagnostic disable-next-line: invisible
-            local action_count = #to_install + #to_updowngrade + #to_prune + #external_actions
-
-            local function get_progress_percentage()
-                return get_percentage(ct, action_count)
-            end
 
             ---@class SyncSkippedRock
             ---@field spec RockSpec
@@ -212,17 +205,13 @@ operations.sync = function(user_rocks, on_complete)
                 ct = ct + 1
                 nio.scheduler()
                 if not success then
-                    progress_handle:report({ percentage = get_progress_percentage() })
                     report_error(("Failed to install %s."):format(key))
                 end
                 progress_handle:report({
                     message = ("Installed: %s"):format(key),
-                    percentage = get_progress_percentage(),
                 })
                 ::skip_install::
             end
-
-            action_count = action_count + #skipped_rocks
 
             -- Sync actions handled by external modules that have registered handlers
             for _, callback in ipairs(external_actions) do
@@ -261,44 +250,50 @@ operations.sync = function(user_rocks, on_complete)
                 ct = ct + 1
                 nio.scheduler()
                 if not success then
-                    progress_handle:report({
-                        percentage = get_progress_percentage(),
-                    })
                     report_error(
                         is_downgrading and ("Failed to downgrade %s"):format(key)
                             or ("Failed to upgrade %s"):format(key)
                     )
                 end
                 progress_handle:report({
-                    percentage = get_progress_percentage(),
                     message = is_downgrading and ("Downgraded: %s"):format(key) or ("Upgraded: %s"):format(key),
                 })
             end
 
+            ---@type string[]
+            local prunable_rocks
+
             -- Determine dependencies of installed user rocks, so they can be excluded from rocks to prune
             -- NOTE(mrcjkb): This has to be done after installation,
             -- so that we don't prune dependencies of newly installed rocks.
-            -- TODO: This doesn't guarantee that all rocks that can be pruned will be pruned.
-            -- Typically, another sync will fix this. Maybe we should do some sort of repeat... until?
-            installed_rocks = state.installed_rocks()
-            local dependencies = vim.empty_dict()
-            ---@cast dependencies {[string]: RockDependency}
-            for _, installed_rock in pairs(installed_rocks) do
-                for k, v in pairs(state.rock_dependencies(installed_rock)) do
-                    dependencies[k] = v
+            local function refresh_rocks_state()
+                to_prune = vim.empty_dict()
+                installed_rocks = state.installed_rocks()
+                key_list = nio.fn.keys(vim.tbl_deep_extend("force", installed_rocks, user_rocks))
+                ---@cast to_prune string[]
+                for _, key in ipairs(key_list) do
+                    if not user_rocks[key] and installed_rocks[key] then
+                        table.insert(to_prune, key)
+                    end
                 end
+                local dependencies = vim.empty_dict()
+                ---@cast dependencies {[string]: RockDependency}
+                for _, installed_rock in pairs(installed_rocks) do
+                    for k, v in pairs(state.rock_dependencies(installed_rock)) do
+                        dependencies[k] = v
+                    end
+                end
+
+                prunable_rocks = vim.iter(to_prune)
+                    :filter(function(key)
+                        return dependencies[key] == nil
+                    end)
+                    :totable()
             end
 
+            refresh_rocks_state()
+
             handlers.prune_user_rocks(user_rocks, report_progress, report_error)
-
-            ---@type string[]
-            local prunable_rocks = vim.iter(to_prune)
-                :filter(function(key)
-                    return dependencies[key] == nil
-                end)
-                :totable()
-
-            action_count = #to_install + #to_updowngrade + #prunable_rocks
 
             if ct == 0 and vim.tbl_isempty(prunable_rocks) then
                 local message = "Everything is in-sync!"
@@ -311,45 +306,27 @@ operations.sync = function(user_rocks, on_complete)
 
             ---@diagnostic disable-next-line: invisible
             local user_rock_names = nio.fn.keys(user_rocks)
-            -- Prune rocks sequentially, to prevent conflicts
-            for _, key in ipairs(prunable_rocks) do
-                nio.scheduler()
-                progress_handle:report({ message = ("Removing: %s"):format(key) })
 
-                local success = helpers.remove_recursive(installed_rocks[key].name, user_rock_names)
+            repeat
+                -- Prune rocks sequentially, to prevent conflicts
+                for _, key in ipairs(prunable_rocks) do
+                    nio.scheduler()
+                    progress_handle:report({ message = ("Removing: %s"):format(key) })
 
-                ct = ct + 1
-                nio.scheduler()
-                if not success then
-                    -- TODO: Keep track of failures: #55
-                    progress_handle:report({
-                        percentage = get_progress_percentage(),
-                    })
-                    report_error(("Failed to remove %s."):format(key))
-                else
-                    progress_handle:report({
-                        message = ("Removed: %s"):format(key),
-                        percentage = get_progress_percentage(),
-                    })
+                    local success = helpers.remove_recursive(installed_rocks[key].name, user_rock_names)
+
+                    ct = ct + 1
+                    nio.scheduler()
+                    if not success then
+                        report_error(("Failed to remove %s."):format(key))
+                    else
+                        progress_handle:report({
+                            message = ("Removed: %s"):format(key),
+                        })
+                    end
                 end
-            end
-
-            if not vim.tbl_isempty(error_handles) then
-                local message = "Sync completed with errors! Run ':Rocks log' for details."
-                log.error(message)
-                progress_handle:report({
-                    title = "Error",
-                    message = message,
-                    percentage = 100,
-                })
-                progress_handle:cancel()
-                for _, error_handle in pairs(error_handles) do
-                    error_handle:cancel()
-                end
-            else
-                progress_handle:finish()
-            end
-            cache.populate_removable_rock_cache()
+                refresh_rocks_state()
+            until vim.tbl_isempty(prunable_rocks)
 
             -- Re-generate help tags
             if config.generate_help_pages then

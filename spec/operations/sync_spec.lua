@@ -33,18 +33,18 @@ describe("operations", function()
 nlua = "0.1.0"
 
 [plugins]
-"haskell-tools.nvim" = "2.4.0"
-"sweetie.nvim" = "2.4.0"
+"haskell-tools.nvim" = "3.0.0"
+"sweetie.nvim" = "1.2.1"
 ]]
         fh = assert(io.open(config.config_path, "w"), "Could not open rocks.toml for writing")
         fh:write(config_content)
         fh:close()
-        -- One package with a dependency to remove
-        helpers.install({ name = "telescope.nvim", version = "0.1.6" }).wait() -- remove
-        -- One to update
-        helpers.install({ name = "sweetie.nvim", version = "1.2.1" }).wait() -- update
+        -- One package with a plenary.nvim dependency to remove
+        helpers.install({ name = "telescope.nvim", version = "0.1.6" }).wait()
         -- One to downgrade
-        helpers.install({ name = "haskell-tools.nvim", version = "3.0.0" }).wait()
+        helpers.install({ name = "sweetie.nvim", version = "3.0.0" }).wait()
+        -- One to update (removing the dependency on plenary.nvim)
+        helpers.install({ name = "haskell-tools.nvim", version = "2.4.0" }).wait()
         local installed_rocks = state.installed_rocks()
         local installed_rock_names = vim.tbl_keys(installed_rocks)
         assert.False(vim.tbl_contains(installed_rock_names, "nlua"))
@@ -52,11 +52,11 @@ nlua = "0.1.0"
         assert.True(vim.tbl_contains(installed_rock_names, "plenary.nvim"))
         assert.same({
             name = "sweetie.nvim",
-            version = "1.2.1",
+            version = "3.0.0",
         }, installed_rocks["sweetie.nvim"])
         assert.same({
             name = "haskell-tools.nvim",
-            version = "3.0.0",
+            version = "2.4.0",
         }, installed_rocks["haskell-tools.nvim"])
         future = nio.control.future()
         operations.sync(config.get_user_rocks(), function()
@@ -66,15 +66,14 @@ nlua = "0.1.0"
         installed_rocks = state.installed_rocks()
         installed_rock_names = vim.tbl_keys(installed_rocks)
         assert.False(vim.tbl_contains(installed_rock_names, "telescope.nvim"))
-        -- FIXME: #77
-        -- assert.False(vim.tbl_contains(installed_rock_names, "plenary.nvim"))
+        assert.False(vim.tbl_contains(installed_rock_names, "plenary.nvim"))
         assert.same({
             name = "sweetie.nvim",
-            version = "2.4.0",
+            version = "1.2.1",
         }, installed_rocks["sweetie.nvim"])
         assert.same({
             name = "haskell-tools.nvim",
-            version = "2.4.0",
+            version = "3.0.0",
         }, installed_rocks["haskell-tools.nvim"])
         assert.same({
             name = "nlua",
