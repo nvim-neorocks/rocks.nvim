@@ -53,7 +53,10 @@ end
 ---@see vim.system
 luarocks.cli = function(args, on_exit, opts)
     opts = opts or {}
+    ---@cast opts LuarocksCliOpts
     opts.synchronized = opts.synchronized ~= nil and opts.synchronized or false
+    -- Make sure no operations are aborted on nvim exit
+    opts.detach = true
     local on_exit_wrapped = vim.schedule_wrap(function(sc)
         if opts.synchronized then
             pcall(lock.set, true)
@@ -77,6 +80,7 @@ luarocks.cli = function(args, on_exit, opts)
     })
     local luarocks_cmd = {
         config.luarocks_binary,
+        "--force-lock",
         "--lua-version=" .. constants.LUA_VERSION,
         "--tree=" .. config.rocks_path,
     }
