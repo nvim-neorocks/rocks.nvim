@@ -81,6 +81,8 @@
           disabled-diagnostics = [
             # caused by a nio luaCATS bug
             "redundant-return-value"
+            # we use @package to prevent lemmy-help from generating vimdoc
+            "invisible"
           ];
         };
 
@@ -124,7 +126,7 @@
               # to be generated
               gcc
               tree-sitter
-              nodejs_21
+              nodejs_22
               # TODO: Package luarocks-build-treesitter-parser
             ])
             ++ oa.buildInputs;
