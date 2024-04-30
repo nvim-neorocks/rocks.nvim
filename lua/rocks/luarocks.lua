@@ -53,6 +53,7 @@ end
 ---@see vim.system
 luarocks.cli = function(args, on_exit, opts)
     opts = opts or {}
+    ---@cast opts LuarocksCliOpts
     opts.synchronized = opts.synchronized ~= nil and opts.synchronized or false
     local on_exit_wrapped = vim.schedule_wrap(function(sc)
         if opts.synchronized then
@@ -83,6 +84,7 @@ luarocks.cli = function(args, on_exit, opts)
     luarocks_cmd = vim.list_extend(luarocks_cmd, mk_server_args(opts.servers))
     luarocks_cmd = vim.list_extend(luarocks_cmd, args)
     log.info(luarocks_cmd)
+    opts.detach = true -- Prevent luarocks from exiting uncleanly
     return vim.system(luarocks_cmd, opts, on_exit_wrapped)
 end
 
