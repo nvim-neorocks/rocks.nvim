@@ -87,6 +87,7 @@ luarocks.cli = function(args, on_exit, opts)
     luarocks_cmd = vim.list_extend(luarocks_cmd, mk_server_args(opts.servers))
     luarocks_cmd = vim.list_extend(luarocks_cmd, args)
     log.info(luarocks_cmd)
+    opts.detach = true -- Prevent luarocks from exiting uncleanly
     return vim.system(luarocks_cmd, opts, on_exit_wrapped)
 end
 
