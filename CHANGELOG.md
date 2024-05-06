@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.27.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.26.0...v2.27.0) (2024-05-06)
+
+
+### Features
+
+* set log level to WARN ([71446ce](https://github.com/nvim-neorocks/rocks.nvim/commit/71446ce2988445216c6c1368c7f91123830c8839))
+* show "Run ':Rocks log' for details" tip when error occurs ([f345607](https://github.com/nvim-neorocks/rocks.nvim/commit/f345607d6daefd05f15b59e00b4f18c45f8a92a3))
+
+
+### Bug Fixes
+
+* **luarocks:** add `--force-lock` flag ([#306](https://github.com/nvim-neorocks/rocks.nvim/issues/306)) ([f37f42b](https://github.com/nvim-neorocks/rocks.nvim/commit/f37f42b954585181941f2c3715aa88bfa77f0dcd))
+
 ## [2.26.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.25.1...v2.26.0) (2024-04-25)
 
 
