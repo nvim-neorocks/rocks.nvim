@@ -13,8 +13,11 @@ local commands = require("rocks.commands")
 commands.create_commands()
 
 local function parse_config()
-    local config_file = fs.read_or_create(config.config_path, "")
-    return require("toml_edit").parse(config_file)
+    local config_file_content = fs.read_or_create(config.config_path, "")
+    if #config_file_content == 0 then
+        return {}
+    end
+    return require("toml_edit").parse(config_file_content)
 end
 
 vim.env.PLENARY_TEST_TIMEOUT = 60000 * 5
@@ -33,7 +36,7 @@ describe("Rocks pin/unpin", function()
         completion = vim.fn.getcompletion("Rocks unpin ", "cmdline")
         assert.same({}, completion)
         vim.cmd.Rocks({ "pin", "foo" })
-        nio.sleep(1000) -- wait for rocks.toml to be written
+        nio.sleep(2000) -- wait for rocks.toml to be written
         rocks_toml = parse_config()
         assert.same(
             [[
@@ -48,7 +51,7 @@ pin = true
         completion = vim.fn.getcompletion("Rocks unpin ", "cmdline")
         assert.same({ "foo" }, completion)
         vim.cmd.Rocks({ "unpin", "foo" })
-        nio.sleep(1000) -- wait for rocks.toml to be written
+        nio.sleep(2000) -- wait for rocks.toml to be written
         rocks_toml = parse_config()
         assert.same(
             [[
@@ -70,7 +73,7 @@ foo = "1.0.0"
         fh:write(tostring(rocks_toml))
         fh:close()
         vim.cmd.Rocks({ "pin", "foo" })
-        nio.sleep(1000) -- wait for rocks.toml to be written
+        nio.sleep(2000) -- wait for rocks.toml to be written
         rocks_toml = parse_config()
         assert.same(
             [[
@@ -84,7 +87,7 @@ pin = true
             tostring(rocks_toml)
         )
         vim.cmd.Rocks({ "unpin", "foo" })
-        nio.sleep(1000) -- wait for rocks.toml to be written
+        nio.sleep(2000) -- wait for rocks.toml to be written
         rocks_toml = parse_config()
         assert.same(
             [[
@@ -106,7 +109,7 @@ opt = true
         fh:write(tostring(rocks_toml))
         fh:close()
         vim.cmd.Rocks({ "pin", "foo" })
-        nio.sleep(1000) -- wait for rocks.toml to be written
+        nio.sleep(2000) -- wait for rocks.toml to be written
         rocks_toml = parse_config()
         assert.same(
             [[
@@ -119,7 +122,7 @@ pin = true
             tostring(rocks_toml)
         )
         vim.cmd.Rocks({ "unpin", "foo" })
-        nio.sleep(1000) -- wait for rocks.toml to be written
+        nio.sleep(2000) -- wait for rocks.toml to be written
         rocks_toml = parse_config()
         assert.same(
             [[
