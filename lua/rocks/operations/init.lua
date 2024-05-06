@@ -334,7 +334,7 @@ operations.sync = function(user_rocks, on_complete)
         end
 
         if not vim.tbl_isempty(error_handles) then
-            local message = "Sync completed with errors!"
+            local message = "Sync completed with errors! Run ':Rocks log' for details."
             log.error(message)
             progress_handle:report({
                 title = "Error",
@@ -460,7 +460,7 @@ operations.update = function(on_complete)
         end
         nio.scheduler()
         if not vim.tbl_isempty(error_handles) then
-            local message = "Update completed with errors!"
+            local message = "Update completed with errors! Run ':Rocks log' for details."
             log.error(message)
             progress_handle:report({
                 title = "Error",
@@ -573,12 +573,12 @@ operations.add = function(arg_list, callback)
                 local stderr = installed_rock
                 ---@cast stderr string
                 local not_found = stderr:match("No results matching query were found") ~= nil
-                local message = ("Installation of %s failed"):format(rock_name)
+                local message = ("Installation of %s failed. Run ':Rocks log' for details."):format(rock_name)
                 if not_found then
                     message = ("Could not find %s %s"):format(rock_name, version or "")
                 end
                 progress_handle:report({
-                    title = "Error",
+                    title = "Installation failed",
                     message = message,
                 })
                 if not_found then
@@ -671,7 +671,7 @@ operations.prune = function(rock_name)
             if success then
                 progress_handle:finish()
             else
-                local message = "Prune completed with errors!"
+                local message = "Prune completed with errors! Run ':Rocks log' for details."
                 log.error(message)
                 progress_handle:report({
                     title = "Error",
