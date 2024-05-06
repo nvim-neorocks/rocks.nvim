@@ -19,6 +19,4 @@ jobs:
       - uses: google-github-actions/release-please-action@v4
         with:
           release-type: simple
-          package-name: rocks.nvim
-          signoff: "Marc Jakobi<marc@jakobi.dev>"
           token: ${{ secrets.GH_TOKEN_FOR_UPDATES }}
