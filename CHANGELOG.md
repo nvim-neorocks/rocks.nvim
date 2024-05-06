@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.27.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.27.0...v2.27.1) (2024-05-06)
+
+
+### Bug Fixes
+
+* **operations:** error if 'rocks' or 'plugin' key missing in rocks.toml ([#318](https://github.com/nvim-neorocks/rocks.nvim/issues/318)) ([45570ab](https://github.com/nvim-neorocks/rocks.nvim/commit/45570abb2c1b605042e3a0cabc428e72167b59df))
+
 ## [2.27.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.26.0...v2.27.0) (2024-05-06)
 
 
