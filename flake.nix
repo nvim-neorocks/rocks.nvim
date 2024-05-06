@@ -13,10 +13,6 @@
 
     gen-luarc.url = "github:mrcjkb/nix-gen-luarc-json";
 
-    rocks-git = {
-      url = "github:nvim-neorocks/rocks-git.nvim";
-    };
-
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     pre-commit-hooks = {
@@ -30,7 +26,6 @@
     nixpkgs,
     neorocks,
     gen-luarc,
-    rocks-git,
     flake-parts,
     pre-commit-hooks,
     ...
@@ -62,7 +57,6 @@
           overlays = [
             neorocks.overlays.default
             gen-luarc.overlays.default
-            rocks-git.overlays.default
             plugin-overlay
             test-overlay
           ];
