@@ -138,6 +138,6 @@ for level, levelnr in pairs(vim.log.levels) do
 end
 
 --- NOTE: We can't use rocks.config here, as that would lead to a cyclic module dependency
-log.set_level(vim.tbl_get(vim.g, "rocks_nvim", "_log_level") or vim.log.levels.INFO)
+log.set_level(vim.tbl_get(vim.g, "rocks_nvim", "_log_level") or vim.log.levels.WARN)
 
 return log
