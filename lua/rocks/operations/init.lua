@@ -78,6 +78,16 @@ local function add_dev_rocks_for_update(outdated_rocks)
     end)
 end
 
+---@param rocks_toml MutRocksTomlRef
+---@param rock_name rock_name
+---@return "plugins"|"rocks"|nil rocks_key The key of the table containing the rock entry
+---@return rock_config_table|nil
+local function get_rock_and_key(rocks_toml, rock_name)
+    local rocks_key = (rocks_toml.plugins and rocks_toml.plugins[rock_name] and "plugins")
+        or (rocks_toml.rocks and rocks_toml.rocks[rock_name] and "rocks")
+    return rocks_key, rocks_key and rocks_toml[rocks_key][rock_name]
+end
+
 --- Synchronizes the user rocks with the physical state on the current machine.
 --- - Installs missing rocks
 --- - Ensures that the correct versions are installed
@@ -400,7 +410,7 @@ operations.update = function(on_complete)
 
         local ct = 0
         for name, rock in pairs(outdated_rocks) do
-            local user_rock = user_rocks.plugins[rock.name] or user_rocks.rocks[rock.name]
+            local rocks_key, user_rock = get_rock_and_key(user_rocks, rock.name)
             if not user_rock or user_rock.pin then
                 goto skip_update
             end
@@ -420,9 +430,9 @@ operations.update = function(on_complete)
                 local rock_name = ret.name
                 if user_rock and user_rock.version then
                     -- Rock is configured as a table -> Update version.
-                    user_rocks.plugins[rock_name].version = ret.version
+                    user_rocks[rocks_key][rock_name].version = ret.version
                 elseif user_rock then -- Only insert the version if there's an entry in rocks.toml
-                    user_rocks.plugins[rock_name] = ret.version
+                    user_rocks[rocks_key][rock_name] = ret.version
                 end
                 progress_handle:report({
                     message = rock.version == rock.target_version
@@ -688,15 +698,14 @@ end
 operations.pin = function(rock_name)
     nio.run(function()
         local user_config = parse_rocks_toml()
-        local rocks_key = (user_config.plugins and user_config.plugins[rock_name] and "plugins")
-            or (user_config.rocks and user_config.rocks[rock_name] and "rocks")
+        local rocks_key, user_rock = get_rock_and_key(user_config, rock_name)
         if not rocks_key then
             vim.schedule(function()
                 vim.notify(rock_name .. " not found in rocks.toml", vim.log.levels.ERROR)
             end)
             return
         end
-        if type(user_config[rocks_key][rock_name]) == "string" then
+        if type(user_rock) == "string" then
             local version = user_config[rocks_key][rock_name]
             user_config[rocks_key][rock_name] = {}
             user_config[rocks_key][rock_name].version = version
@@ -714,17 +723,17 @@ end
 operations.unpin = function(rock_name)
     nio.run(function()
         local user_config = parse_rocks_toml()
-        local rocks_key = (user_config.plugins[rock_name] and "plugins") or (user_config.rocks[rock_name] and "rocks")
-        if not rocks_key then
+        local rocks_key, user_rock = get_rock_and_key(user_config, rock_name)
+        if not rocks_key or not user_rock then
             vim.schedule(function()
                 vim.notify(rock_name .. " not found in rocks.toml", vim.log.levels.ERROR)
             end)
             return
         end
-        if type(user_config[rocks_key][rock_name]) == "string" then
+        if type(user_rock) == "string" then
             return
         end
-        if not user_config[rocks_key][rock_name].opt then
+        if not user_rock.opt then
             user_config[rocks_key][rock_name] = user_config[rocks_key][rock_name].version
         else
             user_config[rocks_key][rock_name].pin = nil
