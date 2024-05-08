@@ -32,19 +32,6 @@ local operations = {}
 
 operations.register_handler = handlers.register_handler
 
---- `vim.schedule` a callback in an async context,
---- waiting for it to be executed
----@type async fun(func: fun())
-local vim_schedule_nio_wait = nio.create(function(func)
-    ---@cast func fun()
-    local future = nio.control.future()
-    vim.schedule(function()
-        func()
-        future.set(true)
-    end)
-    future.wait()
-end, 1)
-
 ---@alias rock_table table<rock_name, Rock>
 
 ---Decode the user rocks from rocks.toml, creating a default config file if it does not exist
@@ -464,9 +451,7 @@ operations.update = function(on_complete)
         if vim.tbl_isempty(outdated_rocks) and vim.tbl_isempty(external_update_handlers) then
             progress_handle:report({ message = "Nothing to update!", percentage = 100 })
         else
-            vim_schedule_nio_wait(function()
-                fs.write_file(config.config_path, "w", tostring(user_rocks))
-            end)
+            fs.write_file_await(config.config_path, "w", tostring(user_rocks))
         end
         nio.scheduler()
         if not vim.tbl_isempty(error_handles) then
@@ -503,21 +488,23 @@ end
 ---@param version? string #The version of the rock to use
 local function prompt_retry_install_with_dev(arg_list, rock_name, version)
     if version ~= "dev" then
-        local yesno = vim.fn.input("Could not find " .. rock_name .. ". Search for 'dev' version? y/n: ")
-        print("\n ")
-        if string.match(yesno, "^y.*") then
-            arg_list = vim.iter(arg_list)
-                :filter(function(arg)
-                    -- remove rock_name and version from arg_list
-                    return arg:find("=") ~= nil and not vim.startswith(arg, "version=")
+        vim.schedule(function()
+            local yesno = vim.fn.input("Could not find " .. rock_name .. ". Search for 'dev' version? y/n: ")
+            print("\n ")
+            if string.match(yesno, "^y.*") then
+                arg_list = vim.iter(arg_list)
+                    :filter(function(arg)
+                        -- remove rock_name and version from arg_list
+                        return arg:find("=") ~= nil and not vim.startswith(arg, "version=")
+                    end)
+                    :totable()
+                table.insert(arg_list, 1, "dev")
+                table.insert(arg_list, 1, rock_name)
+                nio.run(function()
+                    operations.add(arg_list)
                 end)
-                :totable()
-            table.insert(arg_list, 1, "dev")
-            table.insert(arg_list, 1, rock_name)
-            nio.run(function()
-                operations.add(arg_list)
-            end)
-        end
+            end
+        end)
     end
 end
 
@@ -547,10 +534,9 @@ operations.add = function(arg_list, callback)
                 })
             end
             handler(report_progress, report_error)
-            vim_schedule_nio_wait(function()
-                fs.write_file(config.config_path, "w", tostring(user_rocks))
-                progress_handle:finish()
-            end)
+            fs.write_file_await(config.config_path, "w", tostring(user_rocks))
+            nio.scheduler()
+            progress_handle:finish()
             return
         end
         ---@type rock_name
@@ -569,6 +555,7 @@ operations.add = function(arg_list, callback)
         end
         local install_spec = parse_result.spec
         local version = install_spec.version
+        nio.scheduler()
         progress_handle:report({
             message = version and ("%s -> %s"):format(rock_name, version) or rock_name,
         })
@@ -578,67 +565,75 @@ operations.add = function(arg_list, callback)
         })
         ---@type boolean, Rock | string
         local success, installed_rock = pcall(future.wait)
-        vim_schedule_nio_wait(function()
-            if not success then
-                local stderr = installed_rock
-                ---@cast stderr string
-                local not_found = stderr:match("No results matching query were found") ~= nil
-                local message = ("Installation of %s failed. Run ':Rocks log' for details."):format(rock_name)
-                if not_found then
-                    message = ("Could not find %s %s"):format(rock_name, version or "")
-                end
-                progress_handle:report({
-                    title = "Installation failed",
-                    message = message,
-                })
-                if not_found then
-                    prompt_retry_install_with_dev(arg_list, rock_name, version)
-                end
-                progress_handle:cancel()
-                return
+        if not success then
+            local stderr = installed_rock
+            ---@cast stderr string
+            local not_found = stderr:match("No results matching query were found") ~= nil
+            local message = ("Installation of %s failed. Run ':Rocks log' for details."):format(rock_name)
+            if not_found then
+                message = ("Could not find %s %s"):format(rock_name, version or "")
             end
-            ---@cast installed_rock Rock
+            nio.scheduler()
             progress_handle:report({
-                title = "Installation successful",
-                message = ("%s -> %s"):format(installed_rock.name, installed_rock.version),
-                percentage = 100,
+                title = "Installation failed",
+                message = message,
             })
-            -- FIXME(vhyrro): This currently works in a half-baked way.
-            -- The `toml-edit` libary will create a new empty table here, but if you were to try
-            -- and populate the table upfront then none of the values will be registered by `toml-edit`.
-            -- This should be fixed ASAP.
-            if not user_rocks.plugins then
-                local plugins = vim.empty_dict()
-                ---@cast plugins rock_table
-                user_rocks.plugins = plugins
+            if not_found then
+                prompt_retry_install_with_dev(arg_list, rock_name, version)
             end
+            nio.scheduler()
+            progress_handle:cancel()
+            return
+        end
+        ---@cast installed_rock Rock
+        nio.scheduler()
+        progress_handle:report({
+            title = "Installation successful",
+            message = ("%s -> %s"):format(installed_rock.name, installed_rock.version),
+            percentage = 100,
+        })
+        -- FIXME(vhyrro): This currently works in a half-baked way.
+        -- The `toml-edit` libary will create a new empty table here, but if you were to try
+        -- and populate the table upfront then none of the values will be registered by `toml-edit`.
+        -- This should be fixed ASAP.
+        if not user_rocks.plugins then
+            local plugins = vim.empty_dict()
+            ---@cast plugins rock_table
+            user_rocks.plugins = plugins
+        end
 
-            -- Set installed version as `scm` if development version has been installed
-            if version == "dev" then
-                installed_rock.version = "scm"
-            end
-            local user_rock = user_rocks.plugins[rock_name]
-            if user_rock and user_rock.version then
-                -- Rock already exists in rock.toml and is configured as a table -> Update version.
-                user_rocks.plugins[rock_name].version = installed_rock.version
-                for _, field in ipairs({ "opt", "pin" }) do
-                    if install_spec[field] then
-                        user_rocks.plugins[rock_name][field] = true
-                    elseif user_rocks.plugins[rock_name][field] then
-                        user_rocks.plugins[rock_name][field] = nil
-                    end
+        -- Set installed version as `scm` if development version has been installed
+        if version == "dev" then
+            installed_rock.version = "scm"
+        end
+        local user_rock = user_rocks.plugins[rock_name]
+        if user_rock and user_rock.version then
+            -- Rock already exists in rock.toml and is configured as a table -> Update version.
+            user_rocks.plugins[rock_name].version = installed_rock.version
+            for _, field in ipairs({ "opt", "pin" }) do
+                if install_spec[field] then
+                    user_rocks.plugins[rock_name][field] = true
+                elseif user_rocks.plugins[rock_name][field] then
+                    user_rocks.plugins[rock_name][field] = nil
                 end
-            elseif install_spec.opt or install_spec.pin then
-                -- toml-edit's metatable can't set a table directly.
-                -- Each field has to be set individually.
-                user_rocks.plugins[rock_name] = {}
-                user_rocks.plugins[rock_name].version = installed_rock.version
-                user_rocks.plugins[rock_name].opt = install_spec.opt
-                user_rocks.plugins[rock_name].pin = install_spec.pin
-            else
-                user_rocks.plugins[rock_name] = installed_rock.version
             end
-            fs.write_file(config.config_path, "w", tostring(user_rocks))
+        elseif install_spec.opt or install_spec.pin then
+            -- toml-edit's metatable can't set a table directly.
+            -- Each field has to be set individually.
+            user_rocks.plugins[rock_name] = {}
+            user_rocks.plugins[rock_name].version = installed_rock.version
+            user_rocks.plugins[rock_name].opt = install_spec.opt
+            user_rocks.plugins[rock_name].pin = install_spec.pin
+        else
+            user_rocks.plugins[rock_name] = installed_rock.version
+        end
+        fs.write_file_await(config.config_path, "w", tostring(user_rocks))
+        cache.populate_removable_rock_cache()
+        -- Re-generate help tags
+        if config.generate_help_pages then
+            vim.cmd("helptags ALL")
+        end
+        vim.schedule(function()
             if success then
                 progress_handle:finish()
                 if callback then
@@ -648,12 +643,6 @@ operations.add = function(arg_list, callback)
                 progress_handle:cancel()
             end
         end)
-        cache.populate_removable_rock_cache()
-
-        -- Re-generate help tags
-        if config.generate_help_pages then
-            vim.cmd("helptags ALL")
-        end
     end)
 end
 
@@ -676,8 +665,9 @@ operations.prune = function(rock_name)
             ---@diagnostic disable-next-line: invisible
             nio.fn.keys(vim.tbl_deep_extend("force", user_config.rocks or {}, user_config.plugins or {}))
         local success = helpers.remove_recursive(rock_name, user_rock_names, progress_handle)
-        vim_schedule_nio_wait(function()
-            fs.write_file(config.config_path, "w", tostring(user_config))
+        fs.write_file_await(config.config_path, "w", tostring(user_config))
+        cache.populate_removable_rock_cache()
+        vim.schedule(function()
             if success then
                 progress_handle:finish()
             else
@@ -690,7 +680,6 @@ operations.prune = function(rock_name)
                 progress_handle:cancel()
             end
         end)
-        cache.populate_removable_rock_cache()
     end)
 end
 
@@ -711,9 +700,9 @@ operations.pin = function(rock_name)
             user_config[rocks_key][rock_name].version = version
         end
         user_config[rocks_key][rock_name].pin = true
+        local version = user_config[rocks_key][rock_name].version
+        fs.write_file_await(config.config_path, "w", tostring(user_config))
         vim.schedule(function()
-            local version = user_config[rocks_key][rock_name].version
-            fs.write_file(config.config_path, "w", tostring(user_config))
             vim.notify(("%s pinned to version %s"):format(rock_name, version), vim.log.levels.INFO)
         end)
     end)
@@ -738,8 +727,8 @@ operations.unpin = function(rock_name)
         else
             user_config[rocks_key][rock_name].pin = nil
         end
+        fs.write_file_await(config.config_path, "w", tostring(user_config))
         vim.schedule(function()
-            fs.write_file(config.config_path, "w", tostring(user_config))
             vim.notify(("%s unpinned"):format(rock_name), vim.log.levels.INFO)
         end)
     end)

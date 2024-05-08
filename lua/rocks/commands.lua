@@ -177,10 +177,13 @@ local rocks_command_tbl = {
     edit = {
         impl = function(_)
             local config_path = require("rocks.config.internal").config_path
-            if not fs.file_exists(config_path) then
-                fs.write_file(config_path, "w+", vim.trim(constants.DEFAULT_CONFIG))
+            if fs.file_exists(config_path) then
+                vim.cmd.e(config_path)
+            else
+                fs.write_file(config_path, "w+", vim.trim(constants.DEFAULT_CONFIG), function()
+                    vim.cmd.e(config_path)
+                end)
             end
-            vim.cmd.e(config_path)
         end,
     },
     pin = {
