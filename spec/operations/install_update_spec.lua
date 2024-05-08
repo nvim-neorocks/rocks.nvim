@@ -21,7 +21,6 @@ describe("install/update", function()
             name = "neorg",
             version = "7.0.0",
         }, installed_rocks.neorg)
-        nio.sleep(1000) -- Time to write to rocks.toml
         local user_rocks = require("rocks.config.internal").get_user_rocks()
         assert.same({
             name = "neorg",
