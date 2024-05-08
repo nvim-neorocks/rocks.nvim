@@ -26,8 +26,7 @@ local nio = require("nio")
 ---@field servers? server_url[] | only_server_url
 ---@field synchronized? boolean Whether to wait for and acquire a lock (recommended for file system IO, default: `true`)
 
-local lock = nio.control.future()
-lock.set(true) -- initialise as unlocked
+local semaphore = nio.control.semaphore(1)
 
 --- --only-server if `servers` is a `string`, otherwise --server for each element
 ---@param servers server_url[]|only_server_url|nil
@@ -59,7 +58,7 @@ luarocks.cli = function(args, on_exit, opts)
     opts.detach = true
     local on_exit_wrapped = vim.schedule_wrap(function(sc)
         if opts.synchronized then
-            pcall(lock.set, true)
+            semaphore.release()
         end
         ---@cast sc vim.SystemCompleted
         if sc.code ~= 0 then
@@ -71,8 +70,7 @@ luarocks.cli = function(args, on_exit, opts)
         end
     end)
     if opts.synchronized then
-        lock.wait()
-        lock = nio.control.future()
+        semaphore.acquire()
     end
     opts.env = vim.tbl_deep_extend("force", opts.env or {}, {
         LUAROCKS_CONFIG = config.luarocks_config,
