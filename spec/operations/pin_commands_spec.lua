@@ -14,9 +14,6 @@ commands.create_commands()
 
 local function parse_config()
     local config_file_content = fs.read_or_create(config.config_path, "")
-    if #config_file_content == 0 then
-        return {}
-    end
     return require("toml_edit").parse(config_file_content)
 end
 
