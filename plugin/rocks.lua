@@ -6,7 +6,7 @@
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 
-if vim.g.rocks_nvim_loaded then
+if _G.rocks_nvim_loaded then
     return
 end
 
@@ -58,4 +58,4 @@ local user_rocks = config.get_user_rocks()
 require("rocks.api.hooks").run_preload_hooks(user_rocks)
 require("rocks.runtime").source_start_plugins(user_rocks)
 
-vim.g.rocks_nvim_loaded = true
+_G.rocks_nvim_loaded = true
