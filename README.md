@@ -178,7 +178,7 @@ dependencies = {
 
 ## :pencil: Requirements
 
-- An up-to-date `Neovim` nightly (>= 0.10) installation.
+- An up-to-date `Neovim >= 0.10` installation.
 - The `git` command line utility.
 - `wget` or `curl` (if running on a UNIX system) - required for the remote `:source` command to work.
 - `netrw` enabled in your Neovim configuration - enabled by default but some configurations manually disable the plugin.
@@ -188,7 +188,7 @@ dependencies = {
 >
 > If you are running on an esoteric architecture (i.e. something different to
 > Linux, Windows or MacOS), `rocks.nvim` will attempt to compile its
-> dependencies instead of pulling a prebuilt binary. For the process to succeed
+> dependencies instead of pulling a pre-built binary. For the process to succeed
 > you must have a **C++17 parser** and **Rust toolchain** installed on your
 > system.
 
