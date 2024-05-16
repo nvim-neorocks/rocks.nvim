@@ -12,7 +12,7 @@
 
 local min_version = "0.10.0"
 if vim.fn.has("nvim-" .. min_version) ~= 1 then
-    error(("rocks.nvim requires Neovim %s (nightly)"):format(min_version))
+    error(("rocks.nvim requires Neovim >= %s"):format(min_version))
 end
 
 --- The buffer ID of the main UI
