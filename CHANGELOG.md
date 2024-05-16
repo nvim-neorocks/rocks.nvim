@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.28.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.27.1...v2.28.0) (2024-05-16)
+
+
+### Features
+
+* replace nightly requirement with Neovim &gt;= 0.10.0 ([db09871](https://github.com/nvim-neorocks/rocks.nvim/commit/db098713801a4d41d047618f4e4662e85e1dd4bf))
+
 ## [2.27.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.27.0...v2.27.1) (2024-05-06)
 
 
