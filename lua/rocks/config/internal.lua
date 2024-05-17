@@ -20,17 +20,30 @@ local config = {}
 local constants = require("rocks.constants")
 local fs = require("rocks.fs")
 
+---@diagnostic disable-next-line: param-type-mismatch
+local default_rocks_path = vim.fs.joinpath(vim.fn.stdpath("data"), "rocks")
+
+---@param rocks_path string
+---@return string
+local function get_default_luarocks_binary(rocks_path)
+    -- NOTE: On Windows, the binary installed with the luarocks rock is luarocks.bat,
+    -- but that doesn't seem to work with vim.system.
+    local default_luarocks_path = vim.fs.joinpath(rocks_path, "bin", "luarocks")
+    return vim.uv.fs_stat(default_luarocks_path) and default_luarocks_path or "luarocks"
+end
+
+local default_luarocks_binary = get_default_luarocks_binary(default_rocks_path)
+
 --- rocks.nvim default configuration
 ---@class RocksConfig
 local default_config = {
     ---@type string Local path in your filesystem to install rocks
-    ---@diagnostic disable-next-line: param-type-mismatch
-    rocks_path = vim.fs.joinpath(vim.fn.stdpath("data"), "rocks"),
+    rocks_path = default_rocks_path,
     ---@type string Rocks declaration file path
     ---@diagnostic disable-next-line: param-type-mismatch
     config_path = vim.fs.joinpath(vim.fn.stdpath("config"), "rocks.toml"),
     ---@type string Luarocks binary path
-    luarocks_binary = "luarocks",
+    luarocks_binary = get_default_luarocks_binary(default_rocks_path),
     ---@type boolean Whether to query luarocks.org lazily
     lazy = false,
     ---@type boolean Whether to automatically add freshly installed plugins to the 'runtimepath'
@@ -41,6 +54,10 @@ local default_config = {
     reinstall_dev_rocks_on_update = true,
     ---@type boolean Whether to use the luarocks loader to support multiple dependencies
     enable_luarocks_loader = true,
+
+    -- Internal configs
+    ---@type string
+    default_luarocks_binary = default_luarocks_binary,
     ---@class RocksConfigDebugInfo
     debug_info = {
         ---@type boolean
@@ -89,6 +106,14 @@ config = vim.tbl_deep_extend("force", {
     },
 }, default_config, opts)
 ---@cast config RocksConfig
+
+if not opts.luarocks_binary and opts.rocks_path and opts.rocks_path ~= default_rocks_path then
+    -- luarocks_binary has not been overridden, but rocks_path has
+    ---@diagnostic disable-next-line: inject-field
+    config.default_luarocks_binary = get_default_luarocks_binary(opts.rocks_path)
+    ---@diagnostic disable-next-line: inject-field
+    config.luarocks_binary = config.default_luarocks_binary
+end
 
 local ok, err = check.validate(config)
 if not ok then

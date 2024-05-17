@@ -349,15 +349,18 @@ local function install()
         if line == "< OK >" then
             local install_path = input_fields.install_path.content
             local setup_luarocks = input_fields.setup_luarocks.content == "true"
+            local temp_luarocks_path =
+                ---@diagnostic disable-next-line: param-type-mismatch
+                vim.fs.joinpath(vim.fn.stdpath("run"), ("luarocks-%X"):format(math.random(256 ^ 7)))
 
             local luarocks_binary = "luarocks"
 
             if setup_luarocks then
-                local success = set_up_luarocks(install_path)
+                local success = set_up_luarocks(temp_luarocks_path)
                 if not success then
                     return
                 end
-                luarocks_binary = vim.fs.joinpath(install_path, "bin", "luarocks")
+                luarocks_binary = vim.fs.joinpath(temp_luarocks_path, "bin", "luarocks")
             elseif vim.fn.executable(luarocks_binary) ~= 1 then
                 vim.notify(
                     luarocks_binary
@@ -389,7 +392,6 @@ local function install()
 
             acquire_buffer_lock(buffer, function()
                 local install_path_rel = install_path:gsub(vim.env.HOME, "")
-                local luarocks_binary_rel = luarocks_binary:gsub(vim.env.HOME, "")
 
                 vim.api.nvim_buf_set_lines(buffer, 0, -1, true, {
                     "INSTALLATION COMPLETE",
@@ -399,7 +401,6 @@ local function install()
                     ">lua",
                     " local rocks_config = {",
                     '     rocks_path = vim.env.HOME .. "' .. install_path_rel .. '",',
-                    '     luarocks_binary = vim.env.HOME .. "' .. luarocks_binary_rel .. '",',
                     " }",
                     " ",
                     " vim.g.rocks_nvim = rocks_config",
@@ -437,7 +438,6 @@ local function install()
                 vim.fn.setreg('"', {
                     "local rocks_config = {",
                     '    rocks_path = vim.env.HOME .. "' .. install_path_rel .. '",',
-                    '    luarocks_binary = vim.env.HOME .. "' .. luarocks_binary_rel .. '",',
                     "}",
                     "",
                     "vim.g.rocks_nvim = rocks_config",

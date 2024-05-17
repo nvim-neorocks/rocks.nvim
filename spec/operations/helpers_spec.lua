@@ -1,6 +1,7 @@
 local tempdir = vim.fn.tempname()
 vim.fn.mkdir(tempdir, "p")
 vim.g.rocks_nvim = {
+    luarocks_binary = "luarocks",
     rocks_path = tempdir,
 }
 local nio = require("nio")

@@ -45,10 +45,9 @@ local function mk_server_args(servers)
 end
 
 ---@param args string[] luarocks CLI arguments
----@param on_exit (function|nil) Called asynchronously when the luarocks command exits.
+---@param on_exit fun(sc: vim.SystemCompleted)|nil Called asynchronously when the luarocks command exits.
 ---   asynchronously. Receives SystemCompleted object, see return of SystemObj:wait().
 ---@param opts? LuarocksCliOpts
----@return vim.SystemObj
 ---@see vim.system
 luarocks.cli = function(args, on_exit, opts)
     opts = opts or {}
@@ -86,7 +85,16 @@ luarocks.cli = function(args, on_exit, opts)
     luarocks_cmd = vim.list_extend(luarocks_cmd, args)
     log.info(luarocks_cmd)
     opts.detach = true -- Prevent luarocks from exiting uncleanly
-    return vim.system(luarocks_cmd, opts, on_exit_wrapped)
+    local ok, err = pcall(vim.system, luarocks_cmd, opts, on_exit_wrapped)
+    if not ok then
+        ---@type vim.SystemCompleted
+        local sc = {
+            code = 1,
+            signal = 0,
+            stderr = ("Failed to invoke luarocks at %s: %s"):format(config.luarocks_binary, err),
+        }
+        on_exit_wrapped(sc)
+    end
 end
 
 ---@class LuarocksSearchOpts

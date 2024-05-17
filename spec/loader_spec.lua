@@ -1,3 +1,6 @@
+vim.g.rocks_nvim = {
+    luarocks_binary = "luarocks",
+}
 local loader = require("rocks.loader")
 
 describe("rocks.loader", function()
