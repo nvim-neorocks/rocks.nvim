@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.29.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.28.0...v2.29.0) (2024-05-21)
+
+
+### Features
+
+* allow overriding luarocks config ([#334](https://github.com/nvim-neorocks/rocks.nvim/issues/334)) ([02f77e8](https://github.com/nvim-neorocks/rocks.nvim/commit/02f77e8a56ded3fa4ae97c83530d97c0d3bb78ba))
+* **log:** include error messages reported in UI ([#322](https://github.com/nvim-neorocks/rocks.nvim/issues/322)) ([0a85746](https://github.com/nvim-neorocks/rocks.nvim/commit/0a85746f097e900ad39ca17e43fdb2c19dca1958))
+
+
+### Bug Fixes
+
+* **operations:** race conditions when running commands concurrently ([269bbf3](https://github.com/nvim-neorocks/rocks.nvim/commit/269bbf3dab19a9780e4fc920ae7b766ffa9c9ecc))
+* **sync:** prune all rocks that can be pruned in a single sweep ([#305](https://github.com/nvim-neorocks/rocks.nvim/issues/305)) ([e6c2080](https://github.com/nvim-neorocks/rocks.nvim/commit/e6c2080a515c5a74b3e4b6a03bcee8f6f1d603f6))
+* wait for writing rocks.toml to complete where possible ([37924fa](https://github.com/nvim-neorocks/rocks.nvim/commit/37924faf5df65514cb9aaf3a08c8025e3ee05220))
+
+
+### Performance Improvements
+
+* replace `vim.g` with `_G` in init check ([509e872](https://github.com/nvim-neorocks/rocks.nvim/commit/509e8720264426c6b18c0e21ca67aaaee0d2e5bc))
+
+
+### Reverts
+
+* replace `vim.g` with `_G` in init check ([27912ea](https://github.com/nvim-neorocks/rocks.nvim/commit/27912ea001b6cb69d20eaf4db763d670fa228b8d))
+
 ## [2.28.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.27.1...v2.28.0) (2024-05-16)
 
 
