@@ -96,6 +96,7 @@ operations.sync = function(user_rocks, on_complete)
             local error_handles = {}
             ---@param message string
             local function report_error(message)
+                log.error(("SYNC ERROR: %s"):format(message))
                 table.insert(
                     error_handles,
                     progress.handle.create({
@@ -356,6 +357,7 @@ operations.update = function(on_complete)
             local error_handles = {}
             ---@param message string
             local function report_error(message)
+                log.error(("UPDATE ERROR: %s"):format(message))
                 table.insert(
                     error_handles,
                     progress.handle.create({
@@ -501,6 +503,7 @@ operations.add = function(arg_list, callback)
         lsp_client = { name = constants.ROCKS_NVIM },
     })
     local function report_error(message)
+        log.error(("INSTALL ERROR: %s"):format(message))
         progress_handle:report({
             title = "Error",
             message = message,
