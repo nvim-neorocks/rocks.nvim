@@ -2,10 +2,9 @@
 --
 -- Copyright (C) 2023 Neorocks Org.
 --
--- Version:    0.1.0
 -- License:    GPLv3
 -- Created:    05 Jul 2023
--- Updated:    27 Aug 2023
+-- Updated:    15 May 2024
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 --
@@ -103,12 +102,23 @@ if #config.debug_info.unrecognized_configs > 0 then
     )
 end
 
-local luarocks_config_path = vim.fs.joinpath(config.rocks_path, "luarocks-config.lua")
-fs.write_file(
-    luarocks_config_path,
-    "w+",
-    ([==[
-lua_version = 5.1
+if opts.luarocks_config then
+    -- luarocks_config override
+    if vim.uv.fs_stat(opts.luarocks_config) then
+        ---@diagnostic disable-next-line: inject-field
+        config.luarocks_config = ("%s"):format(opts.luarocks_config)
+    else
+        vim.notify("rocks.nvim: luarocks_config does not exist!", vim.log.levels.ERROR)
+        opts.luarocks_config = nil
+    end
+end
+if not opts.luarocks_config then
+    local luarocks_config_path = vim.fs.joinpath(config.rocks_path, "luarocks-config.lua")
+    fs.write_file(
+        luarocks_config_path,
+        "w+",
+        ([==[
+lua_version = "5.1"
 rocks_trees = {
     {
       name = "rocks.nvim",
@@ -116,10 +126,11 @@ rocks_trees = {
     },
 }
 ]==]):format(config.rocks_path)
-)
+    )
 
----@diagnostic disable-next-line: inject-field
-config.luarocks_config = ('"%s"'):format(luarocks_config_path)
+    ---@diagnostic disable-next-line: inject-field
+    config.luarocks_config = ("%s"):format(luarocks_config_path)
+end
 
 return config
 
