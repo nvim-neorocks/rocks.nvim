@@ -61,6 +61,7 @@ helpers.install = function(rock_spec, progress_handle)
             table.insert(install_cmd, version)
         end
     end
+    table.insert(install_cmd, 2, "--force")
     luarocks.cli(install_cmd, function(sc)
         ---@cast sc vim.SystemCompleted
         if sc.code ~= 0 then
