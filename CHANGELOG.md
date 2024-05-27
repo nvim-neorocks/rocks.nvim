@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.29.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.29.0...v2.29.1) (2024-05-27)
+
+
+### Bug Fixes
+
+* **operations:** always force reinstalls if rocks are already installed ([#353](https://github.com/nvim-neorocks/rocks.nvim/issues/353)) ([8537f6a](https://github.com/nvim-neorocks/rocks.nvim/commit/8537f6a69213b42daaf2a5d25c8df38ee8bd41af))
+* **tree-sitter:** stop creating now redundant `rocks_rtp/parser` symlink ([4e4ab38](https://github.com/nvim-neorocks/rocks.nvim/commit/4e4ab380bdb910896dd00c7307d28f4cb3db99b7))
+
 ## [2.29.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.28.0...v2.29.0) (2024-05-21)
 
 
