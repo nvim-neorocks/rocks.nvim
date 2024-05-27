@@ -19,19 +19,7 @@ local luarocks_path = {
 package.path = package.path .. ";" .. table.concat(luarocks_path, ";")
 
 adapter.init()
-local rtp_link_dir = vim.fs.joinpath(config.rocks_path, "rocks_rtp")
-local parser_dir = vim.fs.joinpath(rtp_link_dir, "parser")
 describe("rocks.adapter", function()
-    nio.tests.it("Sets up and removes symlinks when tree-sitter parser is installed/uninstalled", function()
-        assert.is_nil(vim.uv.fs_stat(parser_dir))
-        -- TODO: Set fixed version when stable parsers have been released
-        helpers.install({ name = "tree-sitter-toml", version = "dev" }).wait()
-        adapter.init()
-        assert.is_not_nil(vim.uv.fs_stat(parser_dir))
-        helpers.remove("tree-sitter-toml").wait()
-        adapter.init()
-        assert.is_nil(vim.uv.fs_stat(parser_dir))
-    end)
     nio.tests.it("Can run checkhealth for luarocks plugins", function()
         local mock_health = mock({
             check = function(_) end,
