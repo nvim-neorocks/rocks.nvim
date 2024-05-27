@@ -86,7 +86,6 @@ helpers.install = function(rock_spec, progress_handle)
             end
 
             nio.run(function()
-                adapter.init_tree_sitter_parser_symlink()
                 adapter.init_site_symlinks()
                 if config.dynamic_rtp and not rock_spec.opt then
                     nio.scheduler()
@@ -118,7 +117,6 @@ helpers.remove = function(name, progress_handle)
         name,
     }, function(sc)
         nio.run(function()
-            adapter.validate_tree_sitter_parser_symlink()
             adapter.validate_site_symlinks()
             ---@cast sc vim.SystemCompleted
             if sc.code ~= 0 then
