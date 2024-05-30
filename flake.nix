@@ -106,22 +106,15 @@
             ${pre-commit-check.shellHook}
             ln -fs ${pkgs.luarc-to-json luarc} .luarc.json
           '';
-          buildInputs = with pre-commit-hooks.packages.${system};
-            [
-              alejandra
-              lua-language-server
-              stylua
-              luacheck
-              editorconfig-checker
-            ]
+          buildInputs =
+            self.checks.${system}.pre-commit-check.enabledPackages
             ++ (with pkgs; [
               busted-nightly
+              lua-language-server
               # For tree-sitter parsers that need sources
               # to be generated
               gcc
               tree-sitter
-              nodejs_22
-              # TODO: Package luarocks-build-treesitter-parser
             ])
             ++ oa.buildInputs;
           doCheck = false;
