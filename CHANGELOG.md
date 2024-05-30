@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.29.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.29.1...v2.29.2) (2024-05-30)
+
+
+### Bug Fixes
+
+* **sync/ui:** progess ui displayed forever ([#360](https://github.com/nvim-neorocks/rocks.nvim/issues/360)) ([629b37b](https://github.com/nvim-neorocks/rocks.nvim/commit/629b37b4e115eb502a18e2ced691e3f7340d4c51))
+
 ## [2.29.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.29.0...v2.29.1) (2024-05-27)
 
 
