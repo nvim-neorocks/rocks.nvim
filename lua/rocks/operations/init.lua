@@ -333,6 +333,20 @@ operations.sync = function(user_rocks, on_complete)
             if config.generate_help_pages then
                 vim.cmd("helptags ALL")
             end
+            if not vim.tbl_isempty(error_handles) then
+                local message = "Sync completed with errors! Run ':Rocks log' for details."
+                log.error(message)
+                progress_handle:report({
+                    title = "Error",
+                    message = message,
+                })
+                progress_handle:cancel()
+                for _, error_handle in pairs(error_handles) do
+                    error_handle:cancel()
+                end
+            else
+                progress_handle:finish()
+            end
             if on_complete then
                 on_complete()
             end
