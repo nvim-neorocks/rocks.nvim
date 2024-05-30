@@ -62,33 +62,41 @@
           ];
         };
 
-        luarc = pkgs.mk-luarc {
-          nvim = pkgs.neovim-nightly;
-          neodev-types = "nightly";
-          plugins = with pkgs.lua51Packages; [
-            toml-edit
-            toml
-            fidget-nvim
-            fzy
-            nvim-nio
-          ];
-          disabled-diagnostics = [
-            # caused by a nio luaCATS bug
-            "redundant-return-value"
-            # we use @package to prevent lemmy-help from generating vimdoc
-            "invisible"
-          ];
-        };
+        mk-luarc = nvim:
+          pkgs.mk-luarc {
+            inherit nvim;
+            neodev-types = "nightly";
+            plugins = with pkgs.lua51Packages; [
+              toml-edit
+              toml
+              fidget-nvim
+              fzy
+              nvim-nio
+            ];
+            disabled-diagnostics = [
+              # caused by a nio luaCATS bug
+              "redundant-return-value"
+              # we use @package to prevent lemmy-help from generating vimdoc
+              "invisible"
+            ];
+          };
 
-        type-check-nightly = pre-commit-hooks.lib.${system}.run {
-          src = self;
-          hooks = {
-            lua-ls.enable = true;
+        luarc-nightly = mk-luarc pkgs.neovim-nightly;
+        luarc-stable = mk-luarc pkgs.neovim-unwrapped;
+
+        mk-type-check = luarc:
+          pre-commit-hooks.lib.${system}.run {
+            src = self;
+            hooks = {
+              lua-ls = {
+                enable = true;
+                settings.configuration = luarc;
+              };
+            };
           };
-          settings = {
-            lua-ls.config = luarc;
-          };
-        };
+
+        type-check-nightly = mk-type-check luarc-nightly;
+        type-check-stable = mk-type-check luarc-stable;
 
         pre-commit-check = pre-commit-hooks.lib.${system}.run {
           src = self;
@@ -104,7 +112,7 @@
           name = "rocks.nvim devShell";
           shellHook = ''
             ${pre-commit-check.shellHook}
-            ln -fs ${pkgs.luarc-to-json luarc} .luarc.json
+            ln -fs ${pkgs.luarc-to-json luarc-nightly} .luarc.json
           '';
           buildInputs =
             self.checks.${system}.pre-commit-check.enabledPackages
@@ -139,6 +147,7 @@
         checks = {
           inherit
             pre-commit-check
+            type-check-stable
             type-check-nightly
             ;
           inherit
