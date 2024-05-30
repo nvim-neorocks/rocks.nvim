@@ -1,6 +1,5 @@
 result
-https___luarocks.org/
-https___nvim-neorocks.github.io_rocks-binaries/
+https___*
 .pre-commit-config.yaml
 .direnv
 .luarc.json
