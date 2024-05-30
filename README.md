@@ -44,7 +44,7 @@
 - Binary rocks pulled from [rocks-binaries](https://nvim-neorocks.github.io/rocks-binaries/)
   so you don't have to compile them.
 
-![demo](https://github.com/nvim-neorocks/rocks.nvim/assets/12857160/955c3ae7-c916-4a70-8fbd-4e28b7f0d77e)
+![demo](https://github.com/nvim-neorocks/rocks.nvim/assets/12857160/ce678546-76a7-4fdc-b822-e43d51652681)
 
 ## :moon: Introduction
 
