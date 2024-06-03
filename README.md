@@ -411,7 +411,7 @@ You can then load the plugin with Neovim's built-in `:packadd {rock}` command[^1
 > #### Should I lazy load plugins?
 >
 > Making sure a plugin doesn't unnecessarily impact startup time
-> should be the responsibility of plugin authors, not users.
+> [should be the responsibility of plugin authors, not users](https://github.com/nvim-neorocks/nvim-best-practices?tab=readme-ov-file#sleeping_bed-lazy-loading).
 > As is the case with dependencies, a plugin's functionality may evolve over
 > time, potentially leading to breakage if it's the user who has
 > to worry about lazy loading.
