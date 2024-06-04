@@ -98,6 +98,12 @@ rocks.nvim simplifies the above example to:
 
 Welcome to a new era of Neovim plugin management - where simplicity meets efficiency!
 
+> [!NOTE]
+>
+> #### What about `packspec`/`pkg.json`?
+>
+> We address `packspec` concerns [here](https://github.com/nvim-neorocks/rocks.nvim/wiki/What-about-packspec-(pkg.json)%3F).
+
 ### :milky_way: Philosophy
 
 rocks.nvim itself is designed based on the UNIX philosophy:
