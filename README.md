@@ -98,6 +98,12 @@ rocks.nvim simplifies the above example to:
 
 Welcome to a new era of Neovim plugin management - where simplicity meets efficiency!
 
+> [!NOTE]
+>
+> ##### What about `packspec`/`pkg.json`?
+>
+> We address `packspec` concerns [here](https://github.com/nvim-neorocks/rocks.nvim/wiki/What-about-packspec-(pkg.json)%3F).
+
 ### :milky_way: Philosophy
 
 rocks.nvim itself is designed based on the UNIX philosophy:
@@ -182,7 +188,7 @@ dependencies = {
 - The `git` command line utility.
 - `wget` or `curl` (if running on a UNIX system) - required for the remote `:source` command to work.
 - `netrw` enabled in your Neovim configuration - enabled by default but some configurations manually disable the plugin.
-- A `lua 5.1` installation (for luarocks).
+- A `lua 5.1` or `luajit` installation (for luarocks).
 
 > [!IMPORTANT]
 >
@@ -411,7 +417,7 @@ You can then load the plugin with Neovim's built-in `:packadd {rock}` command[^1
 > #### Should I lazy load plugins?
 >
 > Making sure a plugin doesn't unnecessarily impact startup time
-> should be the responsibility of plugin authors, not users.
+> [should be the responsibility of plugin authors, not users](https://github.com/nvim-neorocks/nvim-best-practices?tab=readme-ov-file#sleeping_bed-lazy-loading).
 > As is the case with dependencies, a plugin's functionality may evolve over
 > time, potentially leading to breakage if it's the user who has
 > to worry about lazy loading.
