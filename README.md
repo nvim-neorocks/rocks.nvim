@@ -100,7 +100,7 @@ Welcome to a new era of Neovim plugin management - where simplicity meets effici
 
 > [!NOTE]
 >
-> #### What about `packspec`/`pkg.json`?
+> ##### What about `packspec`/`pkg.json`?
 >
 > We address `packspec` concerns [here](https://github.com/nvim-neorocks/rocks.nvim/wiki/What-about-packspec-(pkg.json)%3F).
 
