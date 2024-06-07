@@ -8,6 +8,7 @@
         neovim = nvim;
         luaPackages = ps:
           with ps; [
+            luarocks-rock
             toml-edit
             toml
             fidget-nvim

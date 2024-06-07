@@ -62,7 +62,7 @@ RocksOpts                                                            *RocksOpts*
     Fields: ~
         {rocks_path?}                     (string)   Local path in your filesystem to install rocks. Defaults to a `rocks` directory in `vim.fn.stdpath("data")`.
         {config_path?}                    (string)   Rocks declaration file path. Defaults to `rocks.toml` in `vim.fn.stdpath("config")`.
-        {luarocks_binary?}                (string)   Luarocks binary path. Defaults to `luarocks`.
+        {luarocks_binary?}                (string)   Luarocks binary path. Defaults to `{rocks_path}/bin/luarocks`.
         {lazy?}                           (boolean)  Whether to query luarocks.org lazily. Defaults to `false`. Setting this to `true` may improve startup time, but features like auto-completion will lag initially.
         {dynamic_rtp?}                    (boolean)  Whether to automatically add freshly installed plugins to the 'runtimepath'. Defaults to `true` for the best default experience.
         {generate_help_pages?}            (boolean)  Whether to re-generate plugins help pages after installation/upgrade.

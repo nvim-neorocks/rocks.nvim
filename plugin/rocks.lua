@@ -17,6 +17,7 @@ if vim.fn.has("nvim-" .. min_version) ~= 1 then
 end
 
 local log = require("rocks.log")
+log.info(vim.uv.os_uname())
 log.trace("loading nio")
 local nio = require("nio")
 log.trace("loading rocks.adapter")

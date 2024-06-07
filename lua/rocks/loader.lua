@@ -3,8 +3,14 @@ local loader = {}
 local log = require("rocks.log")
 local config = require("rocks.config.internal")
 
+---@return string | nil
 local function get_luarocks_lua_dir_from_luarocks()
-    local sc = vim.system({ config.luarocks_binary, "--lua-version=5.1", "which", "luarocks.loader" }):wait()
+    local ok, so = pcall(vim.system, { config.luarocks_binary, "--lua-version=5.1", "which", "luarocks.loader" })
+    if not ok then
+        log.error(("Could not invoke luarocks at %s"):format(config.luarocks_binary))
+        return
+    end
+    local sc = so:wait()
     local result = sc.stdout and sc.stdout:match(vim.fs.joinpath("(%S+)", "5.1", "luarocks", "loader.lua"))
     return result
 end
@@ -12,9 +18,8 @@ end
 ---@return boolean
 function loader.enable()
     log.trace("Enabling luarocks loader")
-    local default_luarocks_binary = vim.fs.joinpath(config.rocks_path, "bin", "luarocks")
-    local luarocks_lua_dir = config.luarocks_binary == default_luarocks_binary
-            and vim.fs.joinpath(default_luarocks_binary, "share", "lua")
+    local luarocks_lua_dir = config.luarocks_binary == config.default_luarocks_binary
+            and vim.fs.joinpath(config.rocks_path, "share", "lua")
         or get_luarocks_lua_dir_from_luarocks()
     if luarocks_lua_dir then
         package.path = package.path
