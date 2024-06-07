@@ -489,9 +489,9 @@ end
 local function prompt_retry_install_with_dev(arg_list, rock_name, version)
     if version ~= "dev" then
         vim.schedule(function()
-            local yesno = vim.fn.input("Could not find " .. rock_name .. ". Search for 'dev' version? y/n: ")
-            print("\n ")
-            if string.match(yesno, "^y.*") then
+            local choice =
+                vim.fn.confirm("Could not find " .. rock_name .. ". Search for 'dev' version?", "y/n", "y", "Question")
+            if choice == 1 then
                 arg_list = vim.iter(arg_list)
                     :filter(function(arg)
                         -- remove rock_name and version from arg_list
