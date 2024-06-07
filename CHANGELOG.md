@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.30.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.29.2...v2.30.0) (2024-06-07)
+
+
+### Features
+
+* manage luarocks installation as rockspec dependency ([#340](https://github.com/nvim-neorocks/rocks.nvim/issues/340)) ([b74b36f](https://github.com/nvim-neorocks/rocks.nvim/commit/b74b36f0dc0653d19bd01a0162420397ed170feb))
+
 ## [2.29.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.29.1...v2.29.2) (2024-05-30)
 
 
