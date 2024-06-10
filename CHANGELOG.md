@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.30.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.30.0...v2.30.1) (2024-06-10)
+
+
+### Bug Fixes
+
+* **luarocks:** set `LUA_PATH` and `LUA_CPATH` ([#374](https://github.com/nvim-neorocks/rocks.nvim/issues/374)) ([a7de46b](https://github.com/nvim-neorocks/rocks.nvim/commit/a7de46bb93cc4b982629460544fc9b2c3c64a167))
+
 ## [2.30.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.29.2...v2.30.0) (2024-06-07)
 
 
