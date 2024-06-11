@@ -74,8 +74,8 @@ luarocks.cli = function(args, on_exit, opts)
     opts.env = vim.tbl_deep_extend("force", opts.env or {}, {
         LUAROCKS_CONFIG = config.luarocks_config,
         TREE_SITTER_LANGUAGE_VERSION = tostring(vim.treesitter.language_version),
-        LUA_PATH = package.path,
-        LUA_CPATH = package.cpath,
+        LUA_PATH = ('"%s"'):format(package.path),
+        LUA_CPATH = ('"%s"'):format(package.cpath),
     })
     local luarocks_cmd = {
         config.luarocks_binary,
