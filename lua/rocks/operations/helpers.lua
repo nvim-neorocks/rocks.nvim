@@ -4,7 +4,7 @@
 --
 -- License:    GPLv3
 -- Created:    07 Mar 2024
--- Updated:    19 Apr 2024
+-- Updated:    11 Jun 2024
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 --
@@ -16,6 +16,7 @@
 ---@brief ]]
 
 local luarocks = require("rocks.luarocks")
+local lock = require("rocks.operations.lock")
 local constants = require("rocks.constants")
 local config = require("rocks.config.internal")
 local runtime = require("rocks.runtime")
@@ -27,18 +28,18 @@ local nio = require("nio")
 
 local helpers = {}
 
+---@class InstallOpts
+---@field use_lockfile boolean
+
 ---@param rock_spec RockSpec
----@param progress_handle? ProgressHandle
+---@param opts? InstallOpts
 ---@return nio.control.Future
-helpers.install = function(rock_spec, progress_handle)
+helpers.install = function(rock_spec, opts)
     cache.invalidate_removable_rocks()
     local name = rock_spec.name:lower()
     local version = rock_spec.version
     local message = version and ("Installing: %s -> %s"):format(name, version) or ("Installing: %s"):format(name)
     log.info(message)
-    if progress_handle then
-        progress_handle:report({ message = message })
-    end
     -- TODO(vhyrro): Input checking on name and version
     local future = nio.control.future()
     local install_cmd = {
@@ -62,14 +63,24 @@ helpers.install = function(rock_spec, progress_handle)
         end
     end
     table.insert(install_cmd, 2, "--force")
+    local install_opts = {
+        servers = servers,
+    }
+    if opts and opts.use_lockfile then
+        -- luarocks locks dependencies when there is a lockfile in the cwd
+        local lockfile = lock.create_luarocks_lock(rock_spec.name)
+        if lockfile and vim.uv.fs_stat(lockfile) then
+            install_opts.cwd = vim.fs.dirname(lockfile)
+        end
+    end
+    -- We always want to insert --pin so that the luarocks.lock is created in the
+    -- install directory on the rtp
+    table.insert(install_cmd, "--pin")
     luarocks.cli(install_cmd, function(sc)
         ---@cast sc vim.SystemCompleted
         if sc.code ~= 0 then
             message = ("Failed to install %s"):format(name)
             log.error(message)
-            if progress_handle then
-                progress_handle:report({ message = message })
-            end
             future.set_error(sc.stderr)
         else
             ---@type Rock
@@ -82,22 +93,20 @@ helpers.install = function(rock_spec, progress_handle)
             }
             message = ("Installed: %s -> %s"):format(installed_rock.name, installed_rock.version)
             log.info(message)
-            if progress_handle then
-                progress_handle:report({ message = message })
-            end
 
             nio.run(function()
                 adapter.init_site_symlinks()
                 if config.dynamic_rtp and not rock_spec.opt then
                     nio.scheduler()
                     runtime.packadd(name)
+                else
+                    -- Add rock to the rtp, but don't source any scripts
+                    runtime.packadd(name, { bang = true })
                 end
                 future.set(installed_rock)
             end)
         end
-    end, {
-        servers = servers,
-    })
+    end, install_opts)
     return future
 end
 

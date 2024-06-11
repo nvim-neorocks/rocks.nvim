@@ -4,7 +4,7 @@
 --
 -- License:    GPLv3
 -- Created:    05 Jul 2023
--- Updated:    15 May 2024
+-- Updated:    11 Jun 2024
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 --
@@ -42,8 +42,9 @@ local default_config = {
     ---@type string Local path in your filesystem to install rocks
     rocks_path = default_rocks_path,
     ---@type string Rocks declaration file path
-    ---@diagnostic disable-next-line: param-type-mismatch
-    config_path = vim.fs.joinpath(vim.fn.stdpath("config"), "rocks.toml"),
+    config_path = vim.fs.joinpath(vim.fn.stdpath("config") --[[@as string]], "rocks.toml"),
+    ---@type string Rocks lockfile path
+    lockfile_path = vim.fs.joinpath(vim.fn.stdpath("config") --[[@as string]], "rocks.lock"),
     ---@type string Luarocks binary path
     luarocks_binary = get_default_luarocks_binary(default_rocks_path),
     ---@type boolean Whether to query luarocks.org lazily

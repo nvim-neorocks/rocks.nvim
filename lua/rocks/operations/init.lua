@@ -5,7 +5,7 @@
 -- Version:    0.1.0
 -- License:    GPLv3
 -- Created:    05 Jul 2023
--- Updated:    07 Mar 2024
+-- Updated:    11 Jun 2024
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 --
@@ -27,6 +27,7 @@ local handlers = require("rocks.operations.handlers")
 local parser = require("rocks.operations.parser")
 local nio = require("nio")
 local progress = require("fidget.progress")
+local lock = require("rocks.operations.lock")
 
 local operations = {}
 
@@ -200,7 +201,7 @@ operations.sync = function(user_rocks, on_complete)
                 if vim.startswith(user_rocks[key].version, "scm-") then
                     user_rocks[key].version = "dev"
                 end
-                local future = helpers.install(user_rocks[key])
+                local future = helpers.install(user_rocks[key], { use_lockfile = true })
                 local success = pcall(future.wait)
 
                 ct = ct + 1
@@ -245,7 +246,7 @@ operations.sync = function(user_rocks, on_complete)
                     message = is_downgrading and ("Downgrading: %s"):format(key) or ("Updating: %s"):format(key),
                 })
 
-                local future = helpers.install(user_rocks[key])
+                local future = helpers.install(user_rocks[key], { use_lockfile = true })
                 local success = pcall(future.wait)
 
                 ct = ct + 1
@@ -451,6 +452,7 @@ operations.update = function(on_complete)
                 progress_handle:report({ message = "Nothing to update!", percentage = 100 })
             else
                 fs.write_file_await(config.config_path, "w", tostring(user_rocks))
+                lock.update_lockfile()
             end
             nio.scheduler()
             if not vim.tbl_isempty(error_handles) then
@@ -630,6 +632,7 @@ operations.add = function(arg_list, callback)
                 user_rocks.plugins[rock_name] = installed_rock.version
             end
             fs.write_file_await(config.config_path, "w", tostring(user_rocks))
+            lock.update_lockfile(installed_rock.name)
             cache.populate_removable_rock_cache()
             vim.schedule(function()
                 -- Re-generate help tags
@@ -670,6 +673,7 @@ operations.prune = function(rock_name)
                 nio.fn.keys(vim.tbl_deep_extend("force", user_config.rocks or {}, user_config.plugins or {}))
             local success = helpers.remove_recursive(rock_name, user_rock_names, progress_handle)
             fs.write_file_await(config.config_path, "w", tostring(user_config))
+            lock.update_lockfile()
             cache.populate_removable_rock_cache()
             vim.schedule(function()
                 if success then
