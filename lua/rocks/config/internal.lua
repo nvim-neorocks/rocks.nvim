@@ -28,8 +28,9 @@ local default_rocks_path = vim.fs.joinpath(vim.fn.stdpath("data"), "rocks")
 local function get_default_luarocks_binary(rocks_path)
     -- NOTE: On Windows, the binary installed with the luarocks rock is luarocks.bat,
     -- but that doesn't seem to work with vim.system.
-    local default_luarocks_path =
-        vim.fs.joinpath(rocks_path, "lib", "luarocks", "rocks-5.1", "luarocks", "3.11.1-1", "bin", "luarocks")
+    local luarocks_glob =
+        vim.fs.joinpath(rocks_path, "lib", "luarocks", "rocks-5.1", "luarocks", "*", "bin", "luarocks")
+    local default_luarocks_path = vim.fn.glob(luarocks_glob)
     return vim.uv.fs_stat(default_luarocks_path) and default_luarocks_path or "luarocks"
 end
 
