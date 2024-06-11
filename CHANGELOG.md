@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.31.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.30.1...v2.31.0) (2024-06-11)
+
+
+### Features
+
+* **config:** add validation that luarocks binary is executable ([09c93f1](https://github.com/nvim-neorocks/rocks.nvim/commit/09c93f1b235dc07de18e63a5392bde17dddc29dd))
+
+
+### Bug Fixes
+
+* fail silently if populating the rocks cache fails at startup ([3fb4a06](https://github.com/nvim-neorocks/rocks.nvim/commit/3fb4a06b286bbcf020de843ce8e2c74d24195585))
+* luarocks.core.cfg not found when removing bootstrapped luarocks ([483c61a](https://github.com/nvim-neorocks/rocks.nvim/commit/483c61ade8c93c12e36cd93f712b0b56b90da3ed))
+
 ## [2.30.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.30.0...v2.30.1) (2024-06-10)
 
 
