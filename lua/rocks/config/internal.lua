@@ -31,7 +31,7 @@ local function get_default_luarocks_binary(rocks_path)
     local luarocks_glob =
         vim.fs.joinpath(rocks_path, "lib", "luarocks", "rocks-5.1", "luarocks", "*", "bin", "luarocks")
     local default_luarocks_path = vim.fn.glob(luarocks_glob)
-    return vim.uv.fs_stat(default_luarocks_path) and default_luarocks_path or "luarocks"
+    return vim.fn.executable(default_luarocks_path) == 1 and default_luarocks_path or "luarocks"
 end
 
 local default_luarocks_binary = get_default_luarocks_binary(default_rocks_path)
