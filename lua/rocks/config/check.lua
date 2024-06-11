@@ -42,6 +42,9 @@ function check.validate(cfg)
     if not ok then
         return false, err
     end
+    if vim.fn.executable(cfg.luarocks_binary) ~= 1 then
+        return false, ("Cannot execute %s"):format(cfg.luarocks_binary)
+    end
     return true
 end
 
