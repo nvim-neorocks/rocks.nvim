@@ -43,10 +43,12 @@ if not config.lazy then
     log.trace("Populating caches")
     nio.run(function()
         local cache = require("rocks.cache")
-        nio.gather({
-            cache.populate_cached_rocks,
-            cache.populate_removable_rock_cache,
-        })
+        pcall(function()
+            nio.gather({
+                cache.populate_cached_rocks,
+                cache.populate_removable_rock_cache,
+            })
+        end)
     end)
 end
 
