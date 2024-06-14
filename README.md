@@ -31,6 +31,7 @@
   (` "nvim-neorg/neorg" ` becomes `:Rocks install neorg` instead).
 - Automatic dependency and build script management.
 - Supports [multiple versions of the same dependency](https://github.com/luarocks/luarocks/wiki/Using-LuaRocks#multiple-versions-using-the-luarocks-package-loader).
+- Lockfile `rocks.lock` for dependencies.
 - True semver versioning!
 - Minimal, non-intrusive UI.
 - Async execution.
@@ -455,6 +456,12 @@ You can also pin/unpin installed plugins with:
 ```vim
 :Rocks [pin|unpin] {rock}
 ```
+
+### lockfile
+
+When installing or updating, `rocks.nvim` maintains a `rocks.lock` file,
+which pins all SemVer dependency versions for each plugin.
+You can check the lockfile into SCM.
 
 ## :package: Extending `rocks.nvim`
 
