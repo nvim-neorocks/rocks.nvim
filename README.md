@@ -39,6 +39,10 @@
     for installing from git repositories.
   - [`rocks-config.nvim`](https://github.com/nvim-neorocks/rocks-config.nvim)
     for plugin configuration.
+  - [`rocks-lazy.nvim`](https://github.com/nvim-neorocks/rocks-lazy.nvim)
+    for lazy-loading.
+  - [`rocks-treesitter.nvim`](https://github.com/nvim-neorocks/rocks-treesitter.nvim)
+    for automatic tree-sitter parser management.
   - And more...
 - Command completions for plugins and versions on luarocks.org.
 - Binary rocks pulled from [rocks-binaries](https://nvim-neorocks.github.io/rocks-binaries/)
@@ -392,6 +396,9 @@ You can then load the plugin with Neovim's built-in `:packadd {rock}` command[^1
       a `site/pack/luarocks/opt/{rock}` directory, so colorschemes, etc., are available
       before `rocks.nvim` initializes.
       See also [`:h packadd`](https://neovim.io/doc/user/repeat.html#%3Apackadd).
+
+Or, if you want more advanced lazy-loading capabilities,
+try out our [`rocks-lazy.nvim`](https://github.com/nvim-neorocks/rocks-lazy.nvim) module.
 
 > [!NOTE]
 >
