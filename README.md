@@ -371,6 +371,11 @@ Make sure to run `:Rocks sync` when you are done.
 
 ### Lazy loading plugins
 
+> [!TIP]
+>
+> If you want more advanced lazy-loading capabilities,
+> try out the [`rocks-lazy.nvim`](https://github.com/nvim-neorocks/rocks-lazy.nvim) module.
+
 By default, `rocks.nvim` will source all plugins at startup.
 To prevent it from sourcing a plugin, you can specify `opt = true`
 in the `rocks.toml` file.
@@ -396,9 +401,6 @@ You can then load the plugin with Neovim's built-in `:packadd {rock}` command[^1
       a `site/pack/luarocks/opt/{rock}` directory, so colorschemes, etc., are available
       before `rocks.nvim` initializes.
       See also [`:h packadd`](https://neovim.io/doc/user/repeat.html#%3Apackadd).
-
-Or, if you want more advanced lazy-loading capabilities,
-try out our [`rocks-lazy.nvim`](https://github.com/nvim-neorocks/rocks-lazy.nvim) module.
 
 > [!NOTE]
 >
