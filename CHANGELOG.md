@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.31.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.31.0...v2.31.1) (2024-06-17)
+
+
+### Bug Fixes
+
+* **api:** include `dev` rocks in `query_luarocks_rocks` ([#389](https://github.com/nvim-neorocks/rocks.nvim/issues/389)) ([06ea5e1](https://github.com/nvim-neorocks/rocks.nvim/commit/06ea5e1e36baa52590a03bdef91f7f893415a884))
+
 ## [2.31.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.30.1...v2.31.0) (2024-06-11)
 
 
