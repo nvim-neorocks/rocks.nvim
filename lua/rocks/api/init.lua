@@ -48,10 +48,10 @@ end
 ---@param callback fun(rocks: table<rock_name, Rock[]>)
 ---@async
 function api.query_luarocks_rocks(callback)
-    nio.run(luarocks.search_all, function(success, rocks)
-        if success then
+    nio.run(function()
+        luarocks.search_all(function(rocks)
             callback(rocks)
-        end
+        end, { dev = true })
     end)
 end
 

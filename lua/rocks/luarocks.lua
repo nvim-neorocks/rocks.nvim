@@ -135,7 +135,7 @@ luarocks.search_all = nio.create(function(callback, opts)
         end
     end
     callback(rocks_table)
-end, 1)
+end, 2)
 
 return luarocks
 
