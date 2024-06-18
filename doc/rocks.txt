@@ -260,15 +260,41 @@ rocks.nvim API hooks                                           *rocks.api.hooks*
 Hooks that rocks.nvim modules can inject behaviour into.
 Intended for use by modules that extend this plugin.
 
+ Preload hooks                                                *rocks.hooks.preload*
 
-
- |preload|
  By providing a module with the pattern, `rocks-<extension>.rocks.hooks.preload`,
  rocks.nvim modules can execute code before rocks.nvim loads any plugins
  (but after they have been added to the runtimepath).
+ The module should return a table of type |rocks.hooks.Preload|.
 
  To be able to use this feature, a rocks.nvim extension *must* be named with a 'rocks-'
  prefix.
+
+
+rocks.hooks.RockSpecModifier                      *rocks.hooks.RockSpecModifier*
+
+    Fields: ~
+        {hook}  (fun():rock_spec_modifier)
+        {type}  ("RockSpecModifier")
+
+
+rocks.hooks.Action                                          *rocks.hooks.Action*
+
+    Fields: ~
+        {hook}  (fun(user_rocks:table<rock_name,RockSpec>))
+        {type}  ("Action")
+
+
+rocks.hooks.Preload                                        *rocks.hooks.Preload*
+
+    Type: ~
+        rocks.hooks.RockSpecModifier|rocks.hooks.Action
+
+
+rock_spec_modifier                                          *rock_spec_modifier*
+
+    Type: ~
+        fun(rock:RockSpec):RockSpec
 
 
 ==============================================================================
