@@ -103,6 +103,13 @@ adapter.init_site_symlinks = nio.create(function()
     local state = require("rocks.state")
     for _, rock in pairs(state.installed_rocks()) do
         init_site_symlink(rock)
+        -- Since we're invoking this in the :h load-plugins phase of the startup sequence,
+        -- this packadd! call won't result in any scripts being sourced.
+        nio.scheduler()
+        local ok, err = pcall(vim.cmd.packadd, { rock.name, bang = true })
+        if not ok then
+            log.error(err)
+        end
     end
 end)
 
