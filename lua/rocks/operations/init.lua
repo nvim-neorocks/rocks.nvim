@@ -396,7 +396,7 @@ operations.update = function(on_complete)
 
             local ct = 0
             for name, rock in pairs(outdated_rocks) do
-                local rocks_key, user_rock = get_rock_and_key(user_rocks, rock.name)
+                local _, user_rock = get_rock_and_key(user_rocks, rock.name)
                 if not user_rock or user_rock.pin then
                     goto skip_update
                 end
@@ -408,18 +408,10 @@ operations.update = function(on_complete)
                     name = name,
                     version = rock.target_version,
                 })
-                local success, ret = pcall(future.wait)
+                local success = pcall(future.wait)
                 ct = ct + 1
                 nio.scheduler()
                 if success then
-                    ---@type rock_name
-                    local rock_name = ret.name
-                    if user_rock and user_rock.version then
-                        -- Rock is configured as a table -> Update version.
-                        user_rocks[rocks_key][rock_name].version = ret.version
-                    elseif user_rock then -- Only insert the version if there's an entry in rocks.toml
-                        user_rocks[rocks_key][rock_name] = ret.version
-                    end
                     progress_handle:report({
                         message = rock.version == rock.target_version
                                 and ("Updated rock %s: %s"):format(rock.name, rock.version)
@@ -449,9 +441,20 @@ operations.update = function(on_complete)
 
             if vim.tbl_isempty(outdated_rocks) and vim.tbl_isempty(external_update_handlers) then
                 progress_handle:report({ message = "Nothing to update!", percentage = 100 })
-            else
-                fs.write_file_await(config.config_path, "w", tostring(user_rocks))
             end
+            -- Update the version for all installed rocks in case rocks.toml is out of date [#380]
+            for _, installed_rock in pairs(state.installed_rocks()) do
+                ---@type rock_name
+                local rock_name = installed_rock.name
+                local rocks_key, user_rock = get_rock_and_key(user_rocks, installed_rock.name)
+                if user_rock and user_rock.version then
+                    -- Rock is configured as a table -> Update version.
+                    user_rocks[rocks_key][rock_name].version = installed_rock.version
+                elseif user_rock then -- Only insert the version if there's an entry in rocks.toml
+                    user_rocks[rocks_key][rock_name] = installed_rock.version
+                end
+            end
+            fs.write_file_await(config.config_path, "w", tostring(user_rocks))
             nio.scheduler()
             if not vim.tbl_isempty(error_handles) then
                 local message = "Update completed with errors! Run ':Rocks log' for details."
