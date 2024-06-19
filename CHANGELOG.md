@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.31.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.31.1...v2.31.2) (2024-06-19)
+
+
+### Bug Fixes
+
+* **runtime:** make sure dependencies' rtp directories can be used ([#394](https://github.com/nvim-neorocks/rocks.nvim/issues/394)) ([eba13e0](https://github.com/nvim-neorocks/rocks.nvim/commit/eba13e0cdb57352e8df0fb8c5c71f9a0aed00e8b))
+
 ## [2.31.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.31.0...v2.31.1) (2024-06-17)
 
 
