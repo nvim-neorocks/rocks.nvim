@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.31.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.31.2...v2.31.3) (2024-06-19)
+
+
+### Bug Fixes
+
+* **update:** set version of all installed rocks.toml entries ([#382](https://github.com/nvim-neorocks/rocks.nvim/issues/382)) ([56460c8](https://github.com/nvim-neorocks/rocks.nvim/commit/56460c8183e6f471ac1bf7ce8bf0fa1e02344421))
+
 ## [2.31.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.31.1...v2.31.2) (2024-06-19)
 
 
