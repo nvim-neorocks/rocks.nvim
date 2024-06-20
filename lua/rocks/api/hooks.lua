@@ -26,7 +26,7 @@
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 
 ---@class rocks.hooks.RockSpecModifier
----@field hook fun():rock_spec_modifier
+---@field hook rock_spec_modifier
 ---@field type 'RockSpecModifier'
 
 ---@class rocks.hooks.Action
