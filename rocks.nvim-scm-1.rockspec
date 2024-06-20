@@ -24,6 +24,7 @@ test_dependencies = {
     "fzy",
     "nvim-nio",
     "rtp.nvim",
+    "nlua",
 }
 
 source = {
