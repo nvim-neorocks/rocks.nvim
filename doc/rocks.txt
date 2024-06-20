@@ -274,7 +274,7 @@ Intended for use by modules that extend this plugin.
 rocks.hooks.RockSpecModifier                      *rocks.hooks.RockSpecModifier*
 
     Fields: ~
-        {hook}  (fun():rock_spec_modifier)
+        {hook}  (rock_spec_modifier)
         {type}  ("RockSpecModifier")
 
 
