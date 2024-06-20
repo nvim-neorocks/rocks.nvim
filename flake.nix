@@ -117,14 +117,14 @@
           buildInputs =
             self.checks.${system}.pre-commit-check.enabledPackages
             ++ (with pkgs; [
-              busted-nightly
               lua-language-server
               # For tree-sitter parsers that need sources
               # to be generated
               gcc
               tree-sitter
             ])
-            ++ oa.buildInputs;
+            ++ oa.buildInputs
+            ++ oa.propagatedBuildInputs;
           doCheck = false;
         });
       in {
