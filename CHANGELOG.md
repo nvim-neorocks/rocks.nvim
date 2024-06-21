@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.31.4](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.31.3...v2.31.4) (2024-06-21)
+
+
+### Bug Fixes
+
+* **prune:** delegate to extensions if no luarocks package is installed ([1740265](https://github.com/nvim-neorocks/rocks.nvim/commit/1740265b59ca8457a3b1ae85e770477b0f7a7c1f))
+
 ## [2.31.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.31.2...v2.31.3) (2024-06-19)
 
 
