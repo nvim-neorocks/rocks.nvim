@@ -668,10 +668,24 @@ operations.prune = function(rock_name)
             if user_config.rocks then
                 user_config.rocks[rock_name] = nil
             end
-            local user_rock_names =
-                ---@diagnostic disable-next-line: invisible
-                nio.fn.keys(vim.tbl_deep_extend("force", user_config.rocks or {}, user_config.plugins or {}))
-            local success = helpers.remove_recursive(rock_name, user_rock_names, progress_handle)
+            local success = true -- initialised for handlers
+            if helpers.is_installed(rock_name) then
+                local user_rock_names =
+                    ---@diagnostic disable-next-line: invisible
+                    nio.fn.keys(vim.tbl_deep_extend("force", user_config.rocks or {}, user_config.plugins or {}))
+                success = helpers.remove_recursive(rock_name, user_rock_names, progress_handle)
+            end
+            -- NOTE: We always delegate to handlers, even if the rock is installed,
+            -- so we can allow them to manage luarocks packages.
+            local function report_progress(message)
+                progress_handle:report({ message = message })
+            end
+            local function report_error(message)
+                progress_handle:report({ message = message, title = "Error" })
+                success = false
+            end
+            local user_rocks = config.get_user_rocks()
+            handlers.prune_user_rocks(user_rocks, report_progress, report_error)
             fs.write_file_await(config.config_path, "w", tostring(user_config))
             cache.populate_removable_rock_cache()
             vim.schedule(function()
