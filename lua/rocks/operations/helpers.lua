@@ -160,4 +160,16 @@ helpers.remove_recursive = nio.create(function(name, keep, progress_handle)
     return success
 end, 3)
 
+---@async
+---@param rock_name rock_name
+---@return boolean
+helpers.is_installed = nio.create(function(rock_name)
+    local future = nio.control.future()
+    ---@param sc vim.SystemCompleted
+    luarocks.cli({ "show", rock_name }, function(sc)
+        future.set(sc.code == 0)
+    end)
+    return future.wait()
+end, 1)
+
 return helpers
