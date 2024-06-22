@@ -146,13 +146,17 @@ you can easily install them with rocks.nvim: `:Rocks install tree-sitter-<lang>`
 They come bundled with queries, so once installed,
 all you need to do is run `vim.treesitter.start()` to enable syntax highlighting[^3].
 
+[^3]: You can put this in a `ftplugin/<filetype>.lua`, for example.
+
 Or, you can use our [`rocks-treesitter.nvim`](https://github.com/nvim-neorocks/rocks-treesitter.nvim)
 module, which can automatically install parsers and enable syntax highlighting for you.
 
-[^3]: You can put this in a `ftplugin/<filetype>.lua`, for example.
-      [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) is
-      still required for tree-sitter based folding, indentation, etc.,
-      but you don't need to configure it to install any parsers.
+> [!TIP]
+>
+> If you still need [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
+> for tree-sitter based folding, indentation, etc., but want to install parsers
+> from luarocks, we recommend using our [nvim-treesitter-legacy-api](https://luarocks.org/modules/neorocks/nvim-treesitter-legacy-api)
+> package. It does not include queries, which could conflict with the luarocks parsers.
 
 <!-- Or, if you want something that comes with lots of tree-sitter parsers and -->
 <!-- automatically configures nvim-treesitter for you, -->
