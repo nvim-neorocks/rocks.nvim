@@ -213,7 +213,7 @@ in {
     };
     rocks = lua51Packages.rocks-nvim;
   in
-    final.wrapNeovimUnstable final.neovim-nightly (neovimConfig
+    (final.wrapNeovimUnstable final.neovim-nightly (neovimConfig
       // {
         luaRcContent =
           /*
@@ -229,16 +229,12 @@ in {
             vim.g.rocks_nvim = rocks_config
 
             local luarocks_path = {
-                vim.fs.joinpath("${rocks}", "share", "lua", "5.1", "?.lua"),
-                vim.fs.joinpath("${rocks}", "share", "lua", "5.1", "?", "init.lua"),
                 vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?.lua"),
                 vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?", "init.lua"),
             }
             package.path = package.path .. ";" .. table.concat(luarocks_path, ";")
 
             local luarocks_cpath = {
-                vim.fs.joinpath("${rocks}", "lib", "lua", "5.1", "?.so"),
-                vim.fs.joinpath("${rocks}", "lib64", "lua", "5.1", "?.so"),
                 vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.so"),
                 vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.so"),
             }
@@ -251,5 +247,14 @@ in {
           lib.escapeShellArgs neovimConfig.wrapperArgs
           + " "
           + ''--set NVIM_APPNAME "nvimrocks"'';
-      });
+      }))
+    .overrideAttrs (oa: {
+      propagatedBuildInputs = [
+        final.lua5_1.pkgs.wrapLua
+        rocks
+      ];
+      postFixup = ''
+        wrapLuaPrograms
+      '';
+    });
 }
