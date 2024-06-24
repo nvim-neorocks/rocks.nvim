@@ -11,9 +11,15 @@
 
     neorocks.url = "github:nvim-neorocks/neorocks";
 
-    gen-luarc.url = "github:mrcjkb/nix-gen-luarc-json";
+    gen-luarc = {
+      url = "github:mrcjkb/nix-gen-luarc-json";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-    flake-parts.url = "github:hercules-ci/flake-parts";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     pre-commit-hooks = {
       url = "github:cachix/pre-commit-hooks.nix";
@@ -65,7 +71,6 @@
         mk-luarc = nvim:
           pkgs.mk-luarc {
             inherit nvim;
-            neodev-types = "nightly";
             plugins = with pkgs.lua51Packages; [
               toml-edit
               toml
