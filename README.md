@@ -194,6 +194,10 @@ dependencies = {
 - `netrw` enabled in your Neovim configuration - enabled by default but some configurations manually disable the plugin.
 - A `lua 5.1` or `luajit` installation (for luarocks).
 
+> [!NOTE]
+> rocks.nvim looks for a `lua` binary on your system, so if you are using `luajit` you must symlink
+> `lua` to `luajit` yourself.
+
 > [!IMPORTANT]
 >
 > If you are running on an esoteric architecture (i.e. something different to
