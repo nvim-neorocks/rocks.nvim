@@ -157,6 +157,7 @@
       buildLuarocksPackage,
       lua,
       luarocks-rock,
+      nlua,
       toml-edit,
       fidget-nvim,
       nvim-nio,
@@ -171,6 +172,7 @@
         disabled = luaOlder "5.1";
         propagatedBuildInputs = [
           luarocks-rock
+          nlua
           toml-edit
           fidget-nvim
           nvim-nio

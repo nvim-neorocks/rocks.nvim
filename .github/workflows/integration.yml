@@ -44,6 +44,10 @@ jobs:
         shell: bash
         if: startsWith(matrix.os.host, 'ubuntu') || startsWith(matrix.os.host, 'macos')
         run: rm -r .luarocks 
+      - name: Remove system lua
+        shell: bash
+        if: startsWith(matrix.os.host, 'ubuntu') || startsWith(matrix.os.host, 'macos')
+        run: rm -r .lua
       - name: Run neovim with rocks.nvim
         shell: bash
         run: |

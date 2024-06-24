@@ -56,9 +56,9 @@ local external_dependencies = {
         info = "LuaRocks is the package manager for Lua modules.",
     },
     {
-        name = "lua",
+        name = config.lua_binary(),
         get_binaries = function()
-            return { "lua" }
+            return { config.lua_binary() }
         end,
         version_flag = "-v",
         parse_version = function(stdout)

@@ -88,11 +88,17 @@ local default_config = {
         end
         return rocks_toml
     end,
-    ---@type fun():table<rock_name, RockSpec>
+    ---@return table<rock_name, RockSpec>
     get_user_rocks = function()
         local rocks_toml = config.get_rocks_toml()
         return vim.tbl_deep_extend("force", vim.empty_dict(), rocks_toml.rocks or {}, rocks_toml.plugins or {})
     end,
+    ---@return string
+    lua_binary = function()
+        local nlua_path = vim.fs.joinpath(config.rocks_path, "bin", "nlua")
+        return vim.fn.executable(nlua_path) == 1 and nlua_path or vim.fn.executable("luajit") == 1 and "luajit" or "lua"
+    end,
+
     ---@type string
     luarocks_config = nil,
 }
@@ -152,7 +158,8 @@ rocks_trees = {
       root = "%s",
     },
 }
-]==]):format(config.rocks_path)
+variables.LUA = "%s"
+]==]):format(config.rocks_path, config.lua_binary())
     )
 
     ---@diagnostic disable-next-line: inject-field

@@ -192,7 +192,7 @@ dependencies = {
 - The `git` command line utility.
 - `wget` or `curl` (if running on a UNIX system) - required for the remote `:source` command to work.
 - `netrw` enabled in your Neovim configuration - enabled by default but some configurations manually disable the plugin.
-- A `lua 5.1` or `luajit` installation (for luarocks).
+- If you need to compile binary rocks from source: `lua 5.1` or `luajit` headers.
 
 > [!IMPORTANT]
 >
