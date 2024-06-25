@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.32.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.31.3...v2.32.0) (2024-06-25)
+
+
+### Features
+
+* **api:** `RockSpecModifier` preload hooks ([#392](https://github.com/nvim-neorocks/rocks.nvim/issues/392)) ([04d63e2](https://github.com/nvim-neorocks/rocks.nvim/commit/04d63e204923daa301292f8012b553f875c17dc9))
+
+
+### Bug Fixes
+
+* **prune:** delegate to extensions' handlers ([#400](https://github.com/nvim-neorocks/rocks.nvim/issues/400)) ([5a01433](https://github.com/nvim-neorocks/rocks.nvim/commit/5a0143366432fd2151fa0476be796432446e604f))
+
 ## [2.31.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.31.2...v2.31.3) (2024-06-19)
 
 
