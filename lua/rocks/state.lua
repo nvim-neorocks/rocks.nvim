@@ -19,6 +19,7 @@ local state = {}
 
 local luarocks = require("rocks.luarocks")
 local constants = require("rocks.constants")
+local config = require("rocks.config.internal")
 local log = require("rocks.log")
 local nio = require("nio")
 
@@ -149,5 +150,50 @@ state.query_removable_rocks = nio.create(function()
         end)
         :totable()
 end)
+
+---@class rocks.state.SyncStatus
+---@field external_actions table<rock_name, rock_handler_callback>
+---@field to_install rock_name[]
+---@field to_updowngrade rock_name[]
+---@field to_prune rock_name[]
+
+---@type async fun(user_rocks?: table<rock_name, RockSpec>): rocks.state.SyncStatus
+state.out_of_sync_rocks = nio.create(function(user_rocks)
+    local handlers = require("rocks.operations.handlers")
+    user_rocks = user_rocks or config.get_user_rocks()
+    local installed_rocks = state.installed_rocks()
+    -- The following code uses `nio.fn.keys` instead of `vim.tbl_keys`
+    -- which invokes the scheduler and works in async contexts.
+    ---@type string[]
+    ---@diagnostic disable-next-line: invisible
+    local key_list = nio.fn.keys(vim.tbl_deep_extend("force", installed_rocks, user_rocks))
+    ---@type rocks.state.SyncStatus
+    local mempty = {
+        external_actions = vim.empty_dict(),
+        to_install = vim.empty_dict(),
+        to_updowngrade = vim.empty_dict(),
+        to_prune = vim.empty_dict(),
+    }
+    ---@param acc rocks.state.SyncStatus
+    return vim.iter(key_list):fold(mempty, function(acc, key)
+        local user_rock = user_rocks[key]
+        local callback = user_rock and handlers.get_sync_handler_callback(user_rock)
+        if callback then
+            acc.external_actions[key] = callback
+        elseif user_rocks and not installed_rocks[key] then
+            table.insert(acc.to_install, key)
+        elseif
+            user_rock
+            and user_rock.version
+            and installed_rocks[key]
+            and user_rock.version ~= installed_rocks[key].version
+        then
+            table.insert(acc.to_updowngrade, key)
+        elseif not user_rock and installed_rocks[key] then
+            table.insert(acc.to_prune, key)
+        end
+        return acc
+    end)
+end, 1)
 
 return state
