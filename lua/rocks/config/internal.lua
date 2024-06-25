@@ -4,7 +4,7 @@
 --
 -- License:    GPLv3
 -- Created:    05 Jul 2023
--- Updated:    15 May 2024
+-- Updated:    19 Jun 2024
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 --
@@ -16,6 +16,9 @@
 
 ---@type RocksConfig
 local config = {}
+
+---@type rock_spec_modifier[]
+local _rock_spec_modifiers = {}
 
 local constants = require("rocks.constants")
 local fs = require("rocks.fs")
@@ -88,10 +91,31 @@ local default_config = {
         end
         return rocks_toml
     end,
+    ---@param user_rocks table<rock_name, RockSpec>
+    ---@return table<rock_name, RockSpec>
+    apply_rock_spec_modifiers = function(user_rocks)
+        if vim.tbl_isempty(_rock_spec_modifiers) then
+            return user_rocks
+        end
+        return vim.iter(user_rocks):fold({}, function(acc, name, rock)
+            for _, modifier in pairs(_rock_spec_modifiers) do
+                acc[name] = modifier(acc[name] or rock)
+            end
+            return acc
+        end)
+    end,
+
+    ---@param modifier rock_spec_modifier
+    register_rock_spec_modifier = function(modifier)
+        table.insert(_rock_spec_modifiers, modifier)
+    end,
+
     ---@type fun():table<rock_name, RockSpec>
     get_user_rocks = function()
         local rocks_toml = config.get_rocks_toml()
-        return vim.tbl_deep_extend("force", vim.empty_dict(), rocks_toml.rocks or {}, rocks_toml.plugins or {})
+        local user_rocks =
+            vim.tbl_deep_extend("force", vim.empty_dict(), rocks_toml.rocks or {}, rocks_toml.plugins or {})
+        return config.apply_rock_spec_modifiers(user_rocks)
     end,
     ---@type string
     luarocks_config = nil,
