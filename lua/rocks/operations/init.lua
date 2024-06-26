@@ -134,38 +134,7 @@ operations.sync = function(user_rocks, on_complete)
 
             local installed_rocks = state.installed_rocks()
 
-            -- The following code uses `nio.fn.keys` instead of `vim.tbl_keys`
-            -- which invokes the scheduler and works in async contexts.
-            ---@type string[]
-            ---@diagnostic disable-next-line: invisible
-            local key_list = nio.fn.keys(vim.tbl_deep_extend("force", installed_rocks, user_rocks))
-
-            local external_actions = vim.empty_dict()
-            ---@cast external_actions rock_handler_callback[]
-            local to_install = vim.empty_dict()
-            ---@cast to_install string[]
-            local to_updowngrade = vim.empty_dict()
-            ---@cast to_updowngrade string[]
-            local to_prune = vim.empty_dict()
-            ---@cast to_prune string[]
-            for _, key in ipairs(key_list) do
-                local user_rock = user_rocks[key]
-                local callback = user_rock and handlers.get_sync_handler_callback(user_rock)
-                if callback then
-                    table.insert(external_actions, callback)
-                elseif user_rocks and not installed_rocks[key] then
-                    table.insert(to_install, key)
-                elseif
-                    user_rock
-                    and user_rock.version
-                    and installed_rocks[key]
-                    and user_rock.version ~= installed_rocks[key].version
-                then
-                    table.insert(to_updowngrade, key)
-                elseif not user_rock and installed_rocks[key] then
-                    table.insert(to_prune, key)
-                end
-            end
+            local sync_status = state.out_of_sync_rocks(user_rocks)
 
             local ct = 1
 
@@ -176,7 +145,7 @@ operations.sync = function(user_rocks, on_complete)
             ---@type SyncSkippedRock[]
             local skipped_rocks = {}
 
-            for _, key in ipairs(to_install) do
+            for _, key in ipairs(sync_status.to_install) do
                 -- Save skipped rocks for later, when an external handler may have been bootstrapped
                 if not user_rocks[key].version then
                     table.insert(skipped_rocks, {
@@ -215,7 +184,7 @@ operations.sync = function(user_rocks, on_complete)
             end
 
             -- Sync actions handled by external modules that have registered handlers
-            for _, callback in ipairs(external_actions) do
+            for _, callback in ipairs(sync_status.external_actions) do
                 ct = ct + 1
                 callback(report_progress, report_error)
             end
@@ -233,7 +202,7 @@ operations.sync = function(user_rocks, on_complete)
                 end
             end
 
-            for _, key in ipairs(to_updowngrade) do
+            for _, key in ipairs(sync_status.to_updowngrade) do
                 local is_installed_version_semver, installed_version =
                     pcall(vim.version.parse, installed_rocks[key].version)
                 local is_user_version_semver, user_version = pcall(vim.version.parse, user_rocks[key].version or "dev")
@@ -268,13 +237,12 @@ operations.sync = function(user_rocks, on_complete)
             -- NOTE(mrcjkb): This has to be done after installation,
             -- so that we don't prune dependencies of newly installed rocks.
             local function refresh_rocks_state()
-                to_prune = vim.empty_dict()
+                sync_status.to_prune = vim.empty_dict()
                 installed_rocks = state.installed_rocks()
-                key_list = nio.fn.keys(vim.tbl_deep_extend("force", installed_rocks, user_rocks))
-                ---@cast to_prune string[]
+                local key_list = nio.fn.keys(vim.tbl_deep_extend("force", installed_rocks, user_rocks))
                 for _, key in ipairs(key_list) do
                     if not user_rocks[key] and installed_rocks[key] then
-                        table.insert(to_prune, key)
+                        table.insert(sync_status.to_prune, key)
                     end
                 end
                 local dependencies = vim.empty_dict()
@@ -285,7 +253,7 @@ operations.sync = function(user_rocks, on_complete)
                     end
                 end
 
-                prunable_rocks = vim.iter(to_prune)
+                prunable_rocks = vim.iter(sync_status.to_prune)
                     :filter(function(key)
                         return dependencies[key] == nil
                     end)
