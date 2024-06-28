@@ -2,7 +2,7 @@
 ---
 ---@brief [[
 ---
---- rocks.nvim configuration options
+--- You can set rocks.nvim configuration options via `vim.g.rocks_nvim`.
 ---
 --->
 --- ---@type RocksOpts
@@ -13,6 +13,8 @@
 
 local config = {}
 
+---@tag vim.g.rocks_nvim
+---@tag g:rocks_nvim
 ---@class RocksOpts
 ---@field rocks_path? string Local path in your filesystem to install rocks. Defaults to a `rocks` directory in `vim.fn.stdpath("data")`.
 ---@field config_path? string Rocks declaration file path. Defaults to `rocks.toml` in `vim.fn.stdpath("config")`.
