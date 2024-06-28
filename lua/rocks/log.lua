@@ -94,7 +94,7 @@ end
 ---Set the log level
 ---@param level (string|integer) The log level
 ---@see vim.log.levels
----@package
+---@usage `log.set_level(vim.log.levels.DEBUG)`
 function log.set_level(level)
     if type(level) == "string" then
         log.level = assert(log_levels[string.upper(level)], string.format("rocks.nvim: Invalid log level: %q", level))
