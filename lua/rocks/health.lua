@@ -133,8 +133,10 @@ end
 
 local function check_rocks_toml()
     start("Checking rocks.toml")
+    local found_err = false
     local success, user_rocks_or_err = xpcall(require("rocks.config.internal").get_user_rocks, function(err)
         error(err)
+        found_err = true
     end)
     if not success then
         return
@@ -142,7 +144,10 @@ local function check_rocks_toml()
     for rock_name, _ in pairs(user_rocks_or_err) do
         if rock_name:lower() ~= rock_name then
             error(("Plugin name is not lowercase: %s"):format(rock_name))
+            found_err = true
         end
+    end
+    if not found_err then
         ok("No errors found in rocks.toml.")
     end
 end
