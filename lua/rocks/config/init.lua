@@ -27,4 +27,11 @@ local config = {}
 ---@type RocksOpts | fun():RocksOpts
 vim.g.rocks_nvim = vim.g.rocks_nvim
 
+---@tag rocks.troubleshooting
+---@brief [[
+---
+---What to do when an installation fails ?
+---1. fall back to https://github.com/nvim-neorocks/rocks-git.nvim (cons: doesn't list dependencies)
+---2. Add the plugin to luarocks.org <link on guide how to do that?
+---@brief ]]
 return config
