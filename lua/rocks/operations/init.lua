@@ -304,6 +304,7 @@ operations.sync = function(user_rocks, on_complete)
             if not vim.tbl_isempty(error_handles) then
                 local message = "Sync completed with errors! Run ':Rocks log' for details."
                 log.error(message)
+                vim.notify(message, vim.log.levels.ERROR)
                 progress_handle:report({
                     title = "Error",
                     message = message,
@@ -551,6 +552,7 @@ operations.add = function(arg_list, callback)
                     title = "Installation failed",
                     message = message,
                 })
+                vim.notify(message, vim.log.levels.ERROR)
                 if not_found then
                     prompt_retry_install_with_dev(arg_list, rock_name, version)
                 end
