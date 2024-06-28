@@ -11,5 +11,5 @@ spec/ @NTBBloodbath @vhyrro @mrcjkb
 plugin/ @NTBBloodbath @vhyrro @mrcjkb
 
 # Nix
-nix/ @mrcjkb @teto
-flake.* @mrcjkb @teto
+nix/ @mrcjkb
+flake.* @mrcjkb
