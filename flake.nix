@@ -127,6 +127,7 @@
               # to be generated
               gcc
               tree-sitter
+              docgen
             ])
             ++ oa.buildInputs
             ++ oa.propagatedBuildInputs;

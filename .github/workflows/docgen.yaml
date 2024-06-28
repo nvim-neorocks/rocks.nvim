@@ -19,7 +19,7 @@ jobs:
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
       - name: Generating docs
-        run: nix run ".#docgen"
+        run: nix develop --command make docgen
 
       - name: Update documentation
         env:
