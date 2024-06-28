@@ -85,6 +85,7 @@ end
 ---@param on_complete? function
 operations.sync = function(user_rocks, on_complete)
     log.info("syncing...")
+    local start_time = vim.uv.now()
     nio.run(function()
         semaphore.with(function()
             local progress_handle = progress.handle.create({
@@ -316,6 +317,9 @@ operations.sync = function(user_rocks, on_complete)
                 progress_handle:finish()
             end
             if on_complete then
+                local duration = vim.uv.now() - start_time
+                vim.notify("Sync completed in " .. tostring(duration) .. " ms")
+
                 on_complete()
             end
         end)
