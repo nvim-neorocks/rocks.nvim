@@ -3,3 +3,6 @@ format:
 
 check:
 	luacheck lua/rocks plugin/ installer.lua
+
+docgen:
+	docgen
