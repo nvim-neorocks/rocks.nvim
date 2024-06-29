@@ -57,8 +57,7 @@ nio.run(function()
 end)
 
 --- We don't want to run this async, to ensure proper initialisation order
-local user_rocks = config.get_user_rocks()
-require("rocks.api.hooks").run_preload_hooks(user_rocks)
+local user_rocks = require("rocks.api.hooks").run_preload_hooks(config.get_user_rocks())
 require("rocks.runtime").source_start_plugins(user_rocks)
 
 vim.g.loaded_rocks_nvim = true

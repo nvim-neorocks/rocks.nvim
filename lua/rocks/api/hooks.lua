@@ -67,6 +67,7 @@ end
 
 ---@package
 ---@param user_rocks table<rock_name, RockSpec>
+---@return table<rock_name, RockSpec> user_rocks
 function hooks.run_preload_hooks(user_rocks)
     log.trace("Running preload hooks")
     ---@type fun(user_rocks: RockSpec[])[]
@@ -92,6 +93,7 @@ function hooks.run_preload_hooks(user_rocks)
     for _, action in pairs(actions) do
         action(user_rocks)
     end
+    return user_rocks
 end
 
 return hooks
