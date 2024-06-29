@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.32.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.32.0...v2.32.1) (2024-06-29)
+
+
+### Bug Fixes
+
+* **api:** use user rocks with preload hook modifications applied ([#436](https://github.com/nvim-neorocks/rocks.nvim/issues/436)) ([4fb7896](https://github.com/nvim-neorocks/rocks.nvim/commit/4fb7896edc1273dfca36828f5b8200363c6e0c69))
+* **health:** do not produce duplicated messages when there are no errors in the `rocks.toml` file ([cf2fdee](https://github.com/nvim-neorocks/rocks.nvim/commit/cf2fdee9f2c22513752b0cf1bc7a6da417a3ce2b))
+
 ## [2.32.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.31.3...v2.32.0) (2024-06-25)
 
 
