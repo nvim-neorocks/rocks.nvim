@@ -18,7 +18,29 @@ jobs:
         with:
           script: |
             const body = context.payload.pull_request.body
-            if (body && (body.startsWith(":robot: I have created a release *beep* *boop*") || body.startsWith("Automated changes"))) { return; }
+            if (body && (body.startsWith(":robot: I have created a release *beep* *boop*") || body.startsWith("Automated changes"))) {
+               return; // PR created by bot
+            }
+
+            // Get a list of all issues created by the PR opener
+            // See: https://octokit.github.io/rest.js/#pagination
+            const creator = context.payload.sender.login
+            const opts = github.rest.issues.listForRepo.endpoint.merge({
+              ...context.issue,
+              creator,
+              state: 'all'
+            })
+            const issues = await github.paginate(opts)
+
+            for (const issue of issues) {
+              if (issue.number === context.issue.number) {
+                continue
+              }
+
+              if (issue.pull_request) {
+                return // Creator is already a contributor.
+              }
+            }
 
             const { data: comments } = await github.rest.issues.listComments({
               issue_number: context.issue.number,
