@@ -308,6 +308,8 @@ For manual installation, see [this tutorial](https://github.com/nvim-neorocks/ro
 
 ## :books: Usage
 
+See also [`:h rocks-nvim`](./doc/rocks.txt).
+
 ### Installing rocks
 
 You can install rocks with the `:Rocks install {rock} {version?} {args[]?}` command.

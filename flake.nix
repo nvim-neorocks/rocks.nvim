@@ -16,6 +16,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    cats-doc.url = "github:mrcjkb/cats-doc";
+
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     pre-commit-hooks = {
@@ -39,7 +41,7 @@
       inherit name self;
     };
     test-overlay = import ./nix/test-overlay.nix {
-      inherit self;
+      inherit self inputs;
     };
   in
     flake-parts.lib.mkFlake {inherit inputs;} {
@@ -115,6 +117,7 @@
           shellHook = ''
             ${pre-commit-check.shellHook}
             ln -fs ${pkgs.luarc-to-json luarc-nightly} .luarc.json
+            export GIT2_DIR=${pkgs.libgit2.lib}
           '';
           buildInputs =
             self.checks.${system}.pre-commit-check.enabledPackages

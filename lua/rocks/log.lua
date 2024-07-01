@@ -1,4 +1,4 @@
----@mod rocks.log rocks.nvim logging API
+---@mod rocks-log rocks.nvim logging API
 ---
 ---@brief [[
 ---
