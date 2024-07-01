@@ -210,6 +210,9 @@ in {
       withPython3 = true;
       viAlias = false;
       vimAlias = false;
+      plugins = [
+        final.vimPlugins.rocks-nvim
+      ];
     };
     rocks = lua51Packages.rocks-nvim;
   in

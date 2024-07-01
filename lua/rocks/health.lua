@@ -131,6 +131,7 @@ local function check_config()
     end
 end
 
+---@return boolean
 local function check_rocks_toml()
     start("Checking rocks.toml")
     local found_err = false
@@ -139,7 +140,7 @@ local function check_rocks_toml()
         found_err = true
     end)
     if not success then
-        return
+        return false
     end
     for rock_name, _ in pairs(user_rocks_or_err) do
         if rock_name:lower() ~= rock_name then
@@ -150,6 +151,31 @@ local function check_rocks_toml()
     if not found_err then
         ok("No errors found in rocks.toml.")
     end
+    return not found_err
+end
+
+local function check_tree_sitter()
+    start("Checking tree-sitter parsers")
+    local user_rocks = require("rocks.config.internal").get_user_rocks()
+    local has_tree_sitter_parser = false
+    local has_nvim_treesitter_master = false
+    for rock_name, _ in pairs(user_rocks) do
+        if rock_name:find("^tree%-sitter%-[^%s]+$") ~= nil then
+            has_tree_sitter_parser = true
+        end
+        if rock_name == "nvim-treesitter" and pcall(require, "nvim-treesitter.utils") then
+            has_nvim_treesitter_master = true
+        end
+    end
+    if has_tree_sitter_parser and has_nvim_treesitter_master then
+        error([[
+'nvim-treesitter' (master) conflicts with luarocks 'tree-sitter-<lang>' parsers.
+Either use 'nvim-treesitter' (main) or use the 'nvim-treesitter-legacy-api' rock,
+if you are using plugins that depend on the legacy nvim-treesitter API.
+]])
+    else
+        ok("No tree-sitter issues detected.")
+    end
 end
 
 function health.check()
@@ -158,7 +184,12 @@ function health.check()
         check_external_dependency(dep)
     end
     check_config()
-    check_rocks_toml()
+    local toml_ok = check_rocks_toml()
+    if toml_ok then
+        check_tree_sitter()
+    else
+        warn("Skipping tree-sitter parsers check due to errors in rocks.toml")
+    end
 end
 
 return health
