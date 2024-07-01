@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.33.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.32.1...v2.33.0) (2024-07-01)
+
+
+### Features
+
+* **install:** Error if trying to install lua rocks by owner/repo ([1e7b0e2](https://github.com/nvim-neorocks/rocks.nvim/commit/1e7b0e243b463f77bae17fc8de6e336dfe45876e))
+
 ## [2.32.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.32.0...v2.32.1) (2024-06-29)
 
 
