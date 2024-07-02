@@ -153,7 +153,7 @@ if #config.debug_info.unrecognized_configs > 0 then
     )
 end
 
-if opts.luarocks_config then
+if type(opts.luarocks_config) == "string" then
     -- luarocks_config override
     if vim.uv.fs_stat(opts.luarocks_config) then
         ---@diagnostic disable-next-line: inject-field
@@ -163,21 +163,28 @@ if opts.luarocks_config then
         opts.luarocks_config = nil
     end
 end
-if not opts.luarocks_config then
+if not opts.luarocks_config or type(opts.luarocks_config) == "table" then
     local luarocks_config_path = vim.fs.joinpath(config.rocks_path, "luarocks-config.lua")
-    fs.write_file(
-        luarocks_config_path,
-        "w+",
-        ([==[
-lua_version = "5.1"
-rocks_trees = {
-    {
-      name = "rocks.nvim",
-      root = "%s",
-    },
-}
-]==]):format(config.rocks_path)
-    )
+    local default_luarocks_config = {
+        lua_version = "5.1",
+        rocks_trees = {
+            {
+                name = "rocks.nvim",
+                root = config.rocks_path,
+            },
+        },
+    }
+    local luarocks_config = vim.tbl_deep_extend("force", default_luarocks_config, opts.luarocks_config or {})
+
+    ---@type string
+    local config_str = vim.iter(luarocks_config):fold("", function(acc, k, v)
+        return ([[
+%s
+%s = %s
+]]):format(acc, k, vim.inspect(v))
+    end)
+
+    fs.write_file(luarocks_config_path, "w+", config_str)
 
     ---@diagnostic disable-next-line: inject-field
     config.luarocks_config = ("%s"):format(luarocks_config_path)
