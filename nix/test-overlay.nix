@@ -1,4 +1,7 @@
-{self}: final: prev: let
+{
+  self,
+  inputs,
+}: final: prev: let
   mkNeorocksTest = name: nvim:
     with final;
       neorocksTest {
@@ -26,17 +29,18 @@
         preCheck = ''
           # Neovim expects to be able to create log files, etc.
           export HOME=$(realpath .)
+          export GIT2_DIR=${final.libgit2.lib}
         '';
       };
 
   docgen = final.writeShellApplication {
     name = "docgen";
-    runtimeInputs = with final; [
-      lemmy-help
+    runtimeInputs = [
+      inputs.cats-doc.packages.${final.system}.default
     ];
     text = ''
       mkdir -p doc
-      lemmy-help lua/rocks/{commands,config/init,api/{init,hooks},log}.lua > doc/rocks.txt
+      lemmy-help lua/rocks/{init,commands,config/init,api/{init,hooks},log}.lua > doc/rocks.txt
     '';
   };
 in {

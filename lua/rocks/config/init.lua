@@ -1,4 +1,4 @@
----@mod rocks.config rocks.nvim configuration
+---@mod rocks-config rocks.nvim configuration
 ---
 ---@brief [[
 ---

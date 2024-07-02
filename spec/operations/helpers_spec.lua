@@ -19,5 +19,22 @@ describe("operations.helpers", function()
         ---@diagnostic disable-next-line: missing-fields
         result = vim.fs.find("plenary", { path = config.rocks_path, type = "directory" })
         assert(#result == 0, "remove failed")
+        local GIT2_DIR = os.getenv("GIT2_DIR")
+        if type(GIT2_DIR) == "string" then
+            helpers
+                .install({
+                    name = "fugit2.nvim",
+                    version = "0.2.0",
+                    install_args = { "GIT2_DIR=" .. GIT2_DIR },
+                })
+                .wait()
+            local installed_rocks = require("rocks.state").installed_rocks()
+            assert.same({
+                name = "fugit2.nvim",
+                version = "0.2.0",
+            }, installed_rocks["fugit2.nvim"])
+        else
+            print("GIT2_DIR not set. Skipping install_args test case")
+        end
     end)
 end)

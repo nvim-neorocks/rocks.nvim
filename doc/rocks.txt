@@ -1,22 +1,57 @@
 ==============================================================================
-Table of Contents                                               *rocks.contents*
-
-rocks.nvim ························································ |rocks.nvim|
-rocks.nvim commands ··········································· |rocks.commands|
-rocks.nvim configuration ········································ |rocks.config|
-Lua API for rocks.nvim extensions ·································· |rocks.api|
-rocks.nvim API hooks ········································· |rocks.api.hooks|
-rocks.nvim logging API ············································· |rocks.log|
-
-==============================================================================
-rocks.nvim                                                          *rocks.nvim*
+rocks.nvim                                                          *rocks-nvim*
 
 
 A luarocks plugin manager for Neovim.
 
 
 ==============================================================================
-rocks.nvim commands                                             *rocks.commands*
+Table of Contents                                               *rocks-contents*
+
+rocks.nvim ························································ |rocks-nvim|
+ ·································································· |rocks-toml|
+rocks.nvim commands ··········································· |rocks-commands|
+rocks.nvim configuration ········································ |rocks-config|
+Lua API for rocks.nvim extensions ·································· |rocks-api|
+rocks.nvim API hooks ········································· |rocks-api-hooks|
+rocks.nvim logging API ············································· |rocks-log|
+
+==============================================================================
+                                                                    *rocks-toml*
+
+rocks.nvim stores information about installed plugins in the
+`[plugins]` or `[rocks]` entries.
+`[plugins]` can be managed automatically using |rocks-commands|.
+
+Example:
+
+>toml
+     [plugins]
+     "rocks.nvim" = "2.0.0"
+     neorg = { version = "8.0.0", opt = true }
+
+     [plugins."sweetie.nvim"]
+     version = "2.0.0"
+     opt = true
+<
+
+ For the foll spec, refer to the |RockSpec|.
+
+RockSpec                                                              *RockSpec*
+
+    Fields: ~
+        {name}           (string)    The name of the rock
+        {version?}       (string)    The rock version
+        {opt?}           (boolean)   Set to `true` to prevent rocks from being loaded eagerly
+        {pin?}           (boolean)   Pinned rocks will not be updated
+        {install_args?}  (string[])  Additional args to pass to `luarocks install`
+        {string}         (unknown)   Fields that can be added by external modules
+
+
+ NOTE: Currently, all options except for `install_args` can be passed to `:Rocks install`.
+
+==============================================================================
+rocks.nvim commands                                             *rocks-commands*
 
 
  `:Rocks[!] {command {args?}}`
@@ -46,7 +81,7 @@ rocks.nvim commands                                             *rocks.commands*
 
 
 ==============================================================================
-rocks.nvim configuration                                          *rocks.config*
+rocks.nvim configuration                                          *rocks-config*
 
 
  You can set rocks.nvim configuration options via `vim.g.rocks_nvim`.
@@ -74,7 +109,7 @@ RocksOpts                                                            *RocksOpts*
 
 
 ==============================================================================
-Lua API for rocks.nvim extensions                                    *rocks.api*
+Lua API for rocks.nvim extensions                                    *rocks-api*
 
 
 The Lua API for rocks.nvim.
@@ -149,19 +184,13 @@ api.get_rocks_toml_path()                              *api.get_rocks_toml_path*
         (string)  rocks_toml_file_path
 
 
-RockSpec                                                              *RockSpec*
-
-
-        { name: rock_name, version?: string, opt?: boolean, pin?: boolean, [string]: V }
-
-Specification for a rock in rocks.toml. May be extended by external modules.
-
 RocksToml                                                            *RocksToml*
 
+    Fields: ~
+        {rocks?}    (table<rock_name,RockSpec[]>)  The `[rocks]` entries
+        {plugins?}  (table<rock_name,RockSpec[]>)  The `[plugins]` entries
+        {string}    (unknown)                      Fields that can be added by external modules
 
-        { rocks?: table<string, RockSpec[]>, plugins?: table<string,RockSpec[]>, [string]: V }
-
-Content of rocks.toml
 
 api.get_rocks_toml()                                        *api.get_rocks_toml*
     Returns a table with the parsed rocks.toml file.
@@ -208,15 +237,13 @@ rock_version                                                      *rock_version*
 
 
 MutRocksTomlRef                                                *MutRocksTomlRef*
+    A mutable Lua representation of rocks.toml. May be extended by external modules.
 
     Fields: ~
         {rocks?}    (rock_config_table)
         {plugins?}  (rock_config_table)
+        {string}    (unknown)
 
-
-        { rocks?: rock_config_table, plugins?: rocks_command_tbl, [string]: V }
-
-A mutable Lua representation of rocks.toml. May be extended by external modules.
 
 rock_handler_callback                                    *rock_handler_callback*
 
@@ -256,7 +283,7 @@ api.install({rock_name}, {version?}, {callback?})
 
 
 ==============================================================================
-rocks.nvim API hooks                                           *rocks.api.hooks*
+rocks.nvim API hooks                                           *rocks-api-hooks*
 
 
 Hooks that rocks.nvim modules can inject behaviour into.
@@ -300,7 +327,7 @@ rock_spec_modifier                                          *rock_spec_modifier*
 
 
 ==============================================================================
-rocks.nvim logging API                                               *rocks.log*
+rocks.nvim logging API                                               *rocks-log*
 
 
 The logging interface for rocks.nvim.

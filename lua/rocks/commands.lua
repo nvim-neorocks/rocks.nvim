@@ -1,14 +1,4 @@
----@toc rocks.contents
-
----@mod rocks.nvim rocks.nvim
----
----@brief [[
----
----A luarocks plugin manager for Neovim.
----
----@brief ]]
-
----@mod rocks.commands rocks.nvim commands
+---@mod rocks-commands rocks.nvim commands
 ---
 ---@brief [[
 ---
