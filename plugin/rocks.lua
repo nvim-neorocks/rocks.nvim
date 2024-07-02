@@ -18,6 +18,7 @@ end
 
 local log = require("rocks.log")
 log.info(vim.uv.os_uname())
+log.info("Using luarocks config " .. (vim.g.rocks_nvim.luarocks_config or "unset"))
 log.trace("loading nio")
 local nio = require("nio")
 log.trace("loading rocks.adapter")
