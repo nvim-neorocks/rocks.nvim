@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.33.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.32.1...v2.33.0) (2024-07-02)
+
+
+### Features
+
+* **health:** check for nvim-treesitter conflicts ([#447](https://github.com/nvim-neorocks/rocks.nvim/issues/447)) ([170a1b0](https://github.com/nvim-neorocks/rocks.nvim/commit/170a1b071e1c1dd8dc3446ace6bcacab466c355d))
+* **install:** improve 'dev' version search prompt ([#446](https://github.com/nvim-neorocks/rocks.nvim/issues/446)) ([7b454ba](https://github.com/nvim-neorocks/rocks.nvim/commit/7b454baeaa1695b6e8334ea8872a39c668e26f88))
+
+
+### Bug Fixes
+
+* **prune:** need to prune twice for rocks-git to remove plugin ([#451](https://github.com/nvim-neorocks/rocks.nvim/issues/451)) ([f8edb17](https://github.com/nvim-neorocks/rocks.nvim/commit/f8edb1744ee895daee31617f710224e1f7b15913))
+
 ## [2.32.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.32.0...v2.32.1) (2024-06-29)
 
 

@@ -459,9 +459,11 @@ end
 ---@param version? string #The version of the rock to use
 local function prompt_retry_install_with_dev(arg_list, rock_name, version)
     if version ~= "dev" then
+        local rocks = cache.try_get_rocks()
+        local prompt = rocks[rock_name] and rock_name .. " only has a 'dev' version. Install anyway? "
+            or "Could not find " .. rock_name .. ". Search for 'dev' version?"
         vim.schedule(function()
-            local choice =
-                vim.fn.confirm("Could not find " .. rock_name .. ". Search for 'dev' version?", "y/n", "y", "Question")
+            local choice = vim.fn.confirm(prompt, "y/n", "y", "Question")
             if choice == 1 then
                 arg_list = vim.iter(arg_list)
                     :filter(function(arg)
@@ -660,9 +662,9 @@ operations.prune = function(rock_name)
                 progress_handle:report({ message = message, title = "Error" })
                 success = false
             end
+            fs.write_file_await(config.config_path, "w", tostring(user_config))
             local user_rocks = config.get_user_rocks()
             handlers.prune_user_rocks(user_rocks, report_progress, report_error)
-            fs.write_file_await(config.config_path, "w", tostring(user_config))
             cache.populate_removable_rock_cache()
             vim.schedule(function()
                 if success then
