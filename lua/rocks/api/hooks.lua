@@ -1,4 +1,4 @@
----@mod rocks.api.hooks rocks.nvim API hooks
+---@mod rocks-api-hooks rocks.nvim API hooks
 ---
 ---@brief [[
 ---
