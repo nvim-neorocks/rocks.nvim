@@ -49,7 +49,7 @@ end
 ---   asynchronously. Receives SystemCompleted object, see return of SystemObj:wait().
 ---@param opts? LuarocksCliOpts
 ---@see vim.system
-luarocks.cli = function(args, on_exit, opts)
+luarocks.cli = nio.create(function(args, on_exit, opts)
     opts = opts or {}
     ---@cast opts LuarocksCliOpts
     opts.synchronized = opts.synchronized ~= nil and opts.synchronized or false
@@ -72,7 +72,7 @@ luarocks.cli = function(args, on_exit, opts)
         semaphore.acquire()
     end
     opts.env = vim.tbl_deep_extend("force", opts.env or {}, {
-        LUAROCKS_CONFIG = config.luarocks_config,
+        LUAROCKS_CONFIG = config.luarocks_config_path(),
         TREE_SITTER_LANGUAGE_VERSION = tostring(vim.treesitter.language_version),
         LUA_PATH = ('"%s"'):format(package.path),
         LUA_CPATH = ('"%s"'):format(package.cpath),
@@ -97,7 +97,7 @@ luarocks.cli = function(args, on_exit, opts)
         }
         on_exit_wrapped(sc)
     end
-end
+end, 3)
 
 ---@class LuarocksSearchOpts
 ---@field dev? boolean Include dev manifest? Default: false
