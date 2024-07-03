@@ -98,31 +98,29 @@ RocksOpts                                                            *RocksOpts*
 
     Fields: ~
         {rocks_path?}                     (string)
-                                                           Local path in your file system to install rocks
-                                                           (Default: a `rocks` directory in `vim.fn.stdpath("data")`).
+                                                      Local path in your file system to install rocks
+                                                      (Default: a `rocks` directory in `vim.fn.stdpath("data")`).
         {config_path?}                    (string)
-                                                           Rocks declaration file path (Default: `rocks.toml`) in `vim.fn.stdpath("config")`.
+                                                      Rocks declaration file path (Default: `rocks.toml`) in `vim.fn.stdpath("config")`.
         {luarocks_binary?}                (string)
-                                                           Luarocks binary path (Default: `{rocks_path}/bin/luarocks`).
+                                                      Luarocks binary path (Default: `{rocks_path}/bin/luarocks`).
         {lazy?}                           (boolean)
-                                                           Whether to query luarocks.org lazily (Default: `false`).
-                                                           Setting this to `true` may improve startup time,
-                                                           but features like auto-completion will lag initially.
+                                                      Whether to query luarocks.org lazily (Default: `false`).
+                                                      Setting this to `true` may improve startup time,
+                                                      but features like auto-completion will lag initially.
         {dynamic_rtp?}                    (boolean)
-                                                           Whether to automatically add freshly installed plugins to the 'runtimepath'.
-                                                           (Default: `true` for the best default experience).
+                                                      Whether to automatically add freshly installed plugins to the 'runtimepath'.
+                                                      (Default: `true` for the best default experience).
         {generate_help_pages?}            (boolean)
-                                                           Whether to re-generate plugins help pages after installation/upgrade. (Default: `true`).
+                                                      Whether to re-generate plugins help pages after installation/upgrade. (Default: `true`).
         {reinstall_dev_rocks_on_update?}  (boolean)
-                                                           Whether to reinstall 'dev' rocks on update
-                                                           (Default: `true`, as rocks.nvim cannot determine if 'dev' rocks are up to date).
+                                                      Whether to reinstall 'dev' rocks on update
+                                                      (Default: `true`, as rocks.nvim cannot determine if 'dev' rocks are up to date).
         {enable_luarocks_loader?}         (boolean)
-                                                           Whether to use the luarocks loader to support multiple dependencies (Default: `true`).
-        {luarocks_config?}                (string|table)
-                                                           Path to the luarocks config file or table of extra luarocks config options.
-                                                           If a table or not set, rocks.nvim will create a default luarocks config in `rocks_path`
-                                                           and merge it with this table.
-                                                           Warning: this is a file path, You should include the settings in the default luarocks-config.lua before overriding this.
+                                                      Whether to use the luarocks loader to support multiple dependencies (Default: `true`).
+        {luarocks_config?}                (table)
+                                                      Extra luarocks config options.
+                                                      rocks.nvim will create a default luarocks config in `rocks_path` and merge it with this table (if set).
 
 
 ==============================================================================

@@ -117,7 +117,7 @@ local default_config = {
             vim.tbl_deep_extend("force", vim.empty_dict(), rocks_toml.rocks or {}, rocks_toml.plugins or {})
         return config.apply_rock_spec_modifiers(user_rocks)
     end,
-    ---@type fun():string
+    ---@type async fun():string
     luarocks_config_path = nil,
 }
 
@@ -154,6 +154,12 @@ if #config.debug_info.unrecognized_configs > 0 then
 end
 
 if type(opts.luarocks_config) == "string" then
+    vim.deprecate(
+        "g:rocks_nvim.luarocks_config (string)",
+        "g:rocks_nvim.luarocks_config (table)",
+        "3.0.0",
+        "rocks.nvim"
+    )
     -- luarocks_config override
     if vim.uv.fs_stat(opts.luarocks_config) then
         local luarocks_config_path = ("%s"):format(opts.luarocks_config)
@@ -168,11 +174,13 @@ if type(opts.luarocks_config) == "string" then
 end
 if not opts.luarocks_config or type(opts.luarocks_config) == "table" then
     local nio = require("nio")
-    local semaphore = nio.control.semaphore(1)
+    local luarocks_config_path
     ---@diagnostic disable-next-line: inject-field
     config.luarocks_config_path = nio.create(function()
-        semaphore.acquire()
-        local luarocks_config_path = vim.fs.joinpath(config.rocks_path, "luarocks-config.lua")
+        if luarocks_config_path then
+            return luarocks_config_path
+        end
+        luarocks_config_path = vim.fs.joinpath(config.rocks_path, "luarocks-config.lua")
         local default_luarocks_config = {
             lua_version = "5.1",
             rocks_trees = {
@@ -194,8 +202,9 @@ if not opts.luarocks_config or type(opts.luarocks_config) == "table" then
 
         fs.write_file_await(luarocks_config_path, "w+", config_str)
 
-        semaphore.release()
-
+        vim.schedule(function()
+            require("rocks.log").debug("Using luarocks config " .. config_str)
+        end)
         ---@diagnostic disable-next-line: inject-field
         return ("%s"):format(luarocks_config_path)
     end)

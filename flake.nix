@@ -72,7 +72,6 @@
             inherit nvim;
             plugins = with pkgs.lua51Packages; [
               toml-edit
-              toml
               fidget-nvim
               fzy
               nvim-nio

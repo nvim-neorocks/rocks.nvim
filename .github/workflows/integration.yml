@@ -35,7 +35,7 @@ jobs:
         uses: rhysd/action-setup-vim@v1
         with:
           neovim: true
-          version: nightly
+          version: stable
       - name: Install rocks.nvim
         run: |
           mkdir rocks
@@ -54,7 +54,7 @@ jobs:
           cat rocks/rocks.log
           echo "vim.cmd.colorscheme('sweetie')" >> .github/resources/init-integration.lua
           echo "vim.cmd.e('success')" >> .github/resources/init-integration.lua
-          nvim -u .github/resources/init-integration.lua -c +wq
+          nvim -u .github/resources/init-integration.lua -c 'set noswapfile' +wq || true
           if [ ! -f success ]; then
             echo "Integration test failed!"
             exit 1

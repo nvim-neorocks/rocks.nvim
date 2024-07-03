@@ -24,11 +24,12 @@ log.trace("loading rocks.adapter")
 local adapter = require("rocks.adapter")
 log.trace("loading rocks config")
 local config = require("rocks.config.internal")
-log.debug("Using luarocks config " .. config.luarocks_config)
 
 -- Initialize the luarocks loader
 if config.enable_luarocks_loader then
-    nio.run(require("rocks.loader").enable)
+    nio.run(function()
+        require("rocks.loader").enable()
+    end)
 end
 
 -- Set up the Rocks user command
