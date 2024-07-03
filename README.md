@@ -490,7 +490,7 @@ and you're good to go!
 The `:Rocks log` command opens a log file for the current session,
 which contains the `luarocks` stderr output, among other logs.
 
-## :link: Related projects
+## :link: projects related to neovim and luarocks
 
 - [luarocks-tag-release](https://github.com/nvim-neorocks/luarocks-tag-release):
   A GitHub action that automates publishing to luarocks.org
@@ -499,6 +499,16 @@ which contains the `luarocks` stderr output, among other logs.
   to luarocks.org
 - [luarocks.nvim](https://github.com/vhyrro/luarocks.nvim):
   Adds basic support for installing lua rocks to [lazy.nvim](https://github.com/folke/lazy.nvim)
+
+
+## :link: Other neovim plugin managers
+
+- [lazy.nvim](https://github.com/folke/lazy.nvim): started luarocks support in
+  version [11.X](https://lazy.folke.io/news#11x)
+- [mini.deps](https://github.com/echasnovski/mini.deps)
+- [paq-nvim](https://github.com/savq/paq-nvim)
+- [pckr](https://github.com/lewis6991/pckr.nvim)
+- [vim-plug](https://github.com/junegunn/vim-plug)
 
 ## :book: License
 
