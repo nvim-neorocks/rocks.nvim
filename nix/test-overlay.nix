@@ -13,7 +13,6 @@
           with ps; [
             final.lua51Packages.luarocks-rock
             toml-edit
-            toml
             fidget-nvim
             fzy
             nvim-nio

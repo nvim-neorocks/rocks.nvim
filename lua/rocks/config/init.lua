@@ -46,11 +46,9 @@ local config = {}
 --- Whether to use the luarocks loader to support multiple dependencies (Default: `true`).
 ---@field enable_luarocks_loader? boolean
 ---
---- Path to the luarocks config file or table of extra luarocks config options.
---- If a table or not set, rocks.nvim will create a default luarocks config in `rocks_path`
---- and merge it with this table.
---- Warning: this is a file path, You should include the settings in the default luarocks-config.lua before overriding this.
----@field luarocks_config? string | table
+--- Extra luarocks config options.
+--- rocks.nvim will create a default luarocks config in `rocks_path` and merge it with this table (if set).
+---@field luarocks_config? table
 
 ---@type RocksOpts | fun():RocksOpts
 vim.g.rocks_nvim = vim.g.rocks_nvim

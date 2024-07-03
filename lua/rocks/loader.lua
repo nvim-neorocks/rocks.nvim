@@ -27,13 +27,13 @@ end
 
 ---@type async fun():boolean
 loader.enable = nio.create(function()
-    log.trace("Enabling luarocks loader")
     local luarocks_config_path = config.luarocks_config_path()
     local luarocks_lua_dir = config.luarocks_binary == config.default_luarocks_binary
             and vim.fs.joinpath(config.rocks_path, "share", "lua")
         or get_luarocks_lua_dir_from_luarocks()
     local future = nio.control.future()
     vim.schedule(function()
+        log.trace("Enabling luarocks loader")
         if luarocks_lua_dir then
             package.path = package.path
                 .. ";"
