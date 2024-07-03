@@ -28,7 +28,7 @@ log.debug("Using luarocks config " .. config.luarocks_config)
 
 -- Initialize the luarocks loader
 if config.enable_luarocks_loader then
-    require("rocks.loader").enable()
+    nio.run(require("rocks.loader").enable)
 end
 
 -- Set up the Rocks user command

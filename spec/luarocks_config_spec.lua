@@ -19,10 +19,10 @@ describe("luarocks config", function()
         }
 
         local config = require("rocks.config.internal")
-        nio.sleep(2000)
-        assert.is_not_nil(vim.uv.fs_stat(config.luarocks_config))
+        local luarocks_config_path = config.luarocks_config_path()
+        assert.is_not_nil(vim.uv.fs_stat(luarocks_config_path))
         local luarocks_config = {}
-        loadfile(config.luarocks_config, "t", luarocks_config)()
+        loadfile(luarocks_config_path, "t", luarocks_config)()
         assert.same({
             lua_version = "5.1",
             external_deps_dirs = external_deps_dirs,

@@ -30,7 +30,7 @@ local helpers = {}
 ---@param rock_spec RockSpec
 ---@param progress_handle? ProgressHandle
 ---@return nio.control.Future
-helpers.install = function(rock_spec, progress_handle)
+helpers.install = nio.create(function(rock_spec, progress_handle)
     cache.invalidate_removable_rocks()
     local name = rock_spec.name:lower()
     local version = rock_spec.version
@@ -103,7 +103,7 @@ helpers.install = function(rock_spec, progress_handle)
         servers = servers,
     })
     return future
-end
+end, 2)
 
 ---Removes a rock
 ---@param name string
