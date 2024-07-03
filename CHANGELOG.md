@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.34.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.33.0...v2.34.0) (2024-07-03)
+
+
+### Features
+
+* **install:** Error if trying to install lua rocks by owner/repo ([#445](https://github.com/nvim-neorocks/rocks.nvim/issues/445)) ([36041f2](https://github.com/nvim-neorocks/rocks.nvim/commit/36041f2788f6eea7a29b154e4fbe8f1149c81758))
+* **log:** trace luarocks_config path ([#450](https://github.com/nvim-neorocks/rocks.nvim/issues/450)) ([c3b0297](https://github.com/nvim-neorocks/rocks.nvim/commit/c3b0297bc48eb8d1d046c586fd5195786b8b10d7))
+* **rocks.toml:** support specifying extra luarocks `install_args` ([#442](https://github.com/nvim-neorocks/rocks.nvim/issues/442)) ([ca44f7b](https://github.com/nvim-neorocks/rocks.nvim/commit/ca44f7bcd879c7e4538a02184b1f922d549cde41))
+
 ## [2.33.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.32.1...v2.33.0) (2024-07-02)
 
 

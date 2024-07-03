@@ -516,6 +516,14 @@ operations.add = function(arg_list, callback)
             end
             ---@type rock_name
             local rock_name = arg_list[1]:lower()
+            if #(vim.split(rock_name, "/")) ~= 1 then
+                local message = [[
+'Rocks install' does not support {owner/repo} for luarocks packages.
+Use 'Rocks install {rock_name}' or install rocks-git.nvim.
+]]
+                report_error(message)
+                return
+            end
             -- We can't mutate the arg_list, because we may need it for a recursive add
             ---@type string[]
             local args = #arg_list == 1 and {} or { unpack(arg_list, 2, #arg_list) }

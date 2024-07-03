@@ -1,4 +1,4 @@
----@mod rocks.api Lua API for rocks.nvim extensions
+---@mod rocks-api Lua API for rocks.nvim extensions
 ---
 ---@brief [[
 ---
@@ -96,19 +96,10 @@ function api.get_rocks_toml_path()
     return config.config_path
 end
 
----@class RockSpec: { name: rock_name, version?: string, opt?: boolean, pin?: boolean, [string]: unknown }
----@brief [[
----        { name: rock_name, version?: string, opt?: boolean, pin?: boolean, [string]: V }
----
----Specification for a rock in rocks.toml. May be extended by external modules.
----@brief ]]
-
----@class RocksToml: { rocks?: table<string, RockSpec[]>, plugins?: table<string, RockSpec[]>, [string]: unknown }
----@brief [[
----        { rocks?: table<string, RockSpec[]>, plugins?: table<string,RockSpec[]>, [string]: V }
----
----Content of rocks.toml
----@brief ]]
+---@class RocksToml
+---@field rocks? table<rock_name, RockSpec[]> The `[rocks]` entries
+---@field plugins? table<rock_name, RockSpec[]> The `[plugins]` entries
+---@field [string] unknown Fields that can be added by external modules
 
 ---Returns a table with the parsed rocks.toml file.
 ---If the file doesn't exist a file with the default configuration will be created.
@@ -139,15 +130,11 @@ end
 
 ---@alias rock_version string
 
+---A mutable Lua representation of rocks.toml. May be extended by external modules.
 ---@class MutRocksTomlRef
 ---@field rocks? rock_config_table
 ---@field plugins? rock_config_table
-
----@brief [[
----        { rocks?: rock_config_table, plugins?: rocks_command_tbl, [string]: V }
----
----A mutable Lua representation of rocks.toml. May be extended by external modules.
----@brief ]]
+---@field [string] unknown
 
 ---@alias rock_handler_callback fun(report_progress: fun(message: string), report_error: fun(message: string))
 ---@brief [[
