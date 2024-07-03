@@ -43,7 +43,7 @@
     for lazy-loading.
   - [`rocks-treesitter.nvim`](https://github.com/nvim-neorocks/rocks-treesitter.nvim)
     for automatic tree-sitter parser management.
-  - And more...
+  - And [more...](https://github.com/topics/rocks-nvim)
 - Command completions for plugins and versions on luarocks.org.
 - Binary rocks pulled from [rocks-binaries](https://nvim-neorocks.github.io/rocks-binaries/)
   so you don't have to compile them.
@@ -82,7 +82,7 @@ Consider the following example using lazy.nvim[^2]:
 This setup illustrates several pain points in the status quo:
 
 - Manual dependency management:
-  Users are often required to manually specify and manage dependencies.
+  Users are required to specify and manage dependencies.
 - Breaking changes:
   Updates to a plugin's dependencies can lead to breaking changes for users.
 - Platform-specific instructions:
@@ -481,6 +481,8 @@ Following are some examples:
   Adds an API for developing and testing luarocks plugins locally.
 - [`rocks-treesitter.nvim`](https://github.com/nvim-neorocks/rocks-treesitter.nvim)
   Automatic highlighting and installation of tree-sitter parsers.
+- And [more...](https://github.com/topics/rocks-nvim)
+
 
 To extend `rocks.nvim`, simply install a module with `:Rocks install`,
 and you're good to go!
