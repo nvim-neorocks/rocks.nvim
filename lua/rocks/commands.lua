@@ -16,12 +16,13 @@
 ---                                       - pin={true|false}
 ---                                         Rocks that have been installed with 'pim=true'
 ---                                         will be ignored by ':Rocks update'.
+---                                     Use 'Rocks! install ...' to skip prompts
 --- prune {rock}                        Uninstall {rock} and its stale dependencies,
 ---                                     and remove it from rocks.toml.
 --- sync                                Synchronize installed rocks with rocks.toml.
 ---                                     It may take more than one sync to prune all rocks that can be pruned.
 --- update                              Search for updated rocks and install them.
----                                     Use 'Rocks! update` to skip prompts to install updates
+---                                     Use 'Rocks! update` to skip prompts
 ---                                     with breaking changes.
 --- edit                                Edit the rocks.toml file.
 --- pin {rock}                          Pin {rock} to the installed version.
@@ -133,12 +134,14 @@ local rocks_command_tbl = {
         end,
     },
     install = {
-        impl = function(args)
+        impl = function(args, opts)
             if #args == 0 then
                 vim.notify("Rocks install: Called without required package argument.", vim.log.levels.ERROR)
                 return
             end
-            require("rocks.operations").add(args)
+            require("rocks.operations").add(args, nil, {
+                auto_search_dev = opts.bang,
+            })
         end,
         complete = function(query)
             local name, version_query = query:match("([^%s]+)%s(.+)$")

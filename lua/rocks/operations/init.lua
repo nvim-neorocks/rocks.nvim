@@ -323,7 +323,7 @@ operations.sync = function(user_rocks, on_complete)
 end
 
 ---@class rocks.UpdateOpts
----@field skip_prompt? boolean Whether to skip "install breaking changes?" prompts
+---@field skip_prompts? boolean Whether to skip "install breaking changes?" prompts
 
 --- Attempts to update every available rock if it is not pinned.
 --- This function invokes a UI.
@@ -373,7 +373,7 @@ operations.update = function(on_complete, opts)
             )
 
             local breaking_changes = helpers.get_breaking_changes(to_update)
-            if not opts.skip_prompt and not vim.tbl_isempty(breaking_changes) then
+            if not opts.skip_prompts and not vim.tbl_isempty(breaking_changes) then
                 to_update = helpers.prompt_for_breaking_update(breaking_changes, to_update)
             end
             if config.reinstall_dev_rocks_on_update then
@@ -475,13 +475,18 @@ end
 ---@param arg_list string[] #Argument list, potentially used by external handlers
 ---@param rock_name rock_name #The rock name
 ---@param version? string #The version of the rock to use
-local function prompt_retry_install_with_dev(arg_list, rock_name, version)
+---@param skip_prompt? boolean
+local function prompt_retry_install_with_dev(arg_list, rock_name, version, skip_prompt)
     if version ~= "dev" then
         local rocks = cache.try_get_rocks()
-        local prompt = rocks[rock_name] and rock_name .. " only has a 'dev' version. Install anyway? "
+        local prompt = (
+            rocks[rock_name] and rock_name .. " only has a 'dev' version. Install anyway? "
             or "Could not find " .. rock_name .. ". Search for 'dev' version?"
+        )
+            .. "\n"
+            .. "To skip this prompt, run 'Rocks! install {rock}'"
         vim.schedule(function()
-            local choice = vim.fn.confirm(prompt, "&Yes\n&No", 1, "Question")
+            local choice = skip_prompt and 1 or vim.fn.confirm(prompt, "&Yes\n&No", 1, "Question")
             if choice == 1 then
                 arg_list = vim.iter(arg_list)
                     :filter(function(arg)
@@ -499,10 +504,15 @@ local function prompt_retry_install_with_dev(arg_list, rock_name, version)
     end
 end
 
+---@class rocks.AddOpts
+---@field skip_prompts? boolean Whether to skip any "search 'dev' manifest prompts
+
 --- Adds a new rock and updates the `rocks.toml` file
 ---@param arg_list string[] #Argument list, potentially used by external handlers. The first argument is the package, e.g. the rock name
 ---@param callback? fun(rock: Rock)
-operations.add = function(arg_list, callback)
+---@param opts? rocks.AddOpts
+operations.add = function(arg_list, callback, opts)
+    opts = opts or {}
     local progress_handle = progress.handle.create({
         title = "Installing",
         lsp_client = { name = constants.ROCKS_NVIM },
@@ -580,7 +590,7 @@ Use 'Rocks install {rock_name}' or install rocks-git.nvim.
                     message = message,
                 })
                 if not_found then
-                    prompt_retry_install_with_dev(arg_list, rock_name, version)
+                    prompt_retry_install_with_dev(arg_list, rock_name, version, opts.skip_prompts)
                 end
                 nio.scheduler()
                 progress_handle:cancel()
