@@ -322,10 +322,15 @@ operations.sync = function(user_rocks, on_complete)
     end)
 end
 
+---@class rocks.UpdateOpts
+---@field skip_prompt? boolean Whether to skip "install breaking changes?" prompts
+
 --- Attempts to update every available rock if it is not pinned.
 --- This function invokes a UI.
 ---@param on_complete? function
-operations.update = function(on_complete)
+---@param opts? rocks.UpdateOpts
+operations.update = function(on_complete, opts)
+    opts = opts or {}
     local progress_handle = progress.handle.create({
         title = "Updating",
         message = "Checking for updates...",
@@ -352,22 +357,36 @@ operations.update = function(on_complete)
 
             local user_rocks = parse_rocks_toml()
 
-            local outdated_rocks = state.outdated_rocks()
+            local to_update = vim.iter(state.outdated_rocks()):fold(
+                {},
+                -- Filter unpinned rocks
+                ---@param acc table<rock_name, OutdatedRock>
+                ---@param key rock_name
+                ---@param rock OutdatedRock
+                function(acc, key, rock)
+                    local _, user_rock = get_rock_and_key(user_rocks, rock.name)
+                    if user_rock and not user_rock.pin then
+                        acc[key] = rock
+                    end
+                    return acc
+                end
+            )
+
+            local breaking_changes = helpers.get_breaking_changes(to_update)
+            if not opts.skip_prompt and not vim.tbl_isempty(breaking_changes) then
+                to_update = helpers.prompt_for_breaking_update(breaking_changes, to_update)
+            end
             if config.reinstall_dev_rocks_on_update then
-                outdated_rocks = add_dev_rocks_for_update(outdated_rocks)
+                to_update = add_dev_rocks_for_update(to_update)
             end
             local external_update_handlers = handlers.get_update_handler_callbacks(user_rocks)
 
-            local total_update_count = #outdated_rocks + #external_update_handlers
+            local total_update_count = #to_update + #external_update_handlers
 
             nio.scheduler()
 
             local ct = 0
-            for name, rock in pairs(outdated_rocks) do
-                local _, user_rock = get_rock_and_key(user_rocks, rock.name)
-                if not user_rock or user_rock.pin then
-                    goto skip_update
-                end
+            for name, rock in pairs(to_update) do
                 nio.scheduler()
                 progress_handle:report({
                     message = name,
@@ -392,7 +411,6 @@ operations.update = function(on_complete)
                         percentage = get_percentage(ct, total_update_count),
                     })
                 end
-                ::skip_update::
             end
             for _, handler in pairs(external_update_handlers) do
                 local function report_progress(message)
@@ -407,7 +425,7 @@ operations.update = function(on_complete)
                 ct = ct + 1
             end
 
-            if vim.tbl_isempty(outdated_rocks) and vim.tbl_isempty(external_update_handlers) then
+            if vim.tbl_isempty(to_update) and vim.tbl_isempty(external_update_handlers) then
                 progress_handle:report({ message = "Nothing to update!", percentage = 100 })
             end
             -- Update the version for all installed rocks in case rocks.toml is out of date [#380]
@@ -463,7 +481,7 @@ local function prompt_retry_install_with_dev(arg_list, rock_name, version)
         local prompt = rocks[rock_name] and rock_name .. " only has a 'dev' version. Install anyway? "
             or "Could not find " .. rock_name .. ". Search for 'dev' version?"
         vim.schedule(function()
-            local choice = vim.fn.confirm(prompt, "y/n", "y", "Question")
+            local choice = vim.fn.confirm(prompt, "&Yes\n&No", 1, "Question")
             if choice == 1 then
                 arg_list = vim.iter(arg_list)
                     :filter(function(arg)
@@ -581,7 +599,6 @@ Use 'Rocks install {rock_name}' or install rocks-git.nvim.
             -- This should be fixed ASAP.
             if not user_rocks.plugins then
                 local plugins = vim.empty_dict()
-                ---@cast plugins rock_table
                 user_rocks.plugins = plugins
             end
 
@@ -603,6 +620,7 @@ Use 'Rocks install {rock_name}' or install rocks-git.nvim.
             elseif install_spec.opt or install_spec.pin then
                 -- toml-edit's metatable can't set a table directly.
                 -- Each field has to be set individually.
+                ---@diagnostic disable-next-line: missing-fields
                 user_rocks.plugins[rock_name] = {}
                 user_rocks.plugins[rock_name].version = installed_rock.version
                 user_rocks.plugins[rock_name].opt = install_spec.opt

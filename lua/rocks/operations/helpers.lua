@@ -176,4 +176,74 @@ helpers.is_installed = nio.create(function(rock_name)
     return future.wait()
 end, 1)
 
+---@class RockUpdate
+---@field name rock_name
+---@field version vim.Version
+---@field target_version vim.Version
+---@field pretty string
+
+---@param outdated_rocks table<rock_name, OutdatedRock>
+---@return table<rock_name, RockUpdate[]>
+function helpers.get_breaking_changes(outdated_rocks)
+    return vim.iter(outdated_rocks):fold(
+        {},
+        ---@param acc table<rock_name, OutdatedRock>
+        ---@param key rock_name
+        ---@param rock OutdatedRock
+        function(acc, key, rock)
+            local _, version = pcall(vim.version.parse, rock.version)
+            local _, target_version = pcall(vim.version.parse, rock.target_version)
+            if
+                type(version) == "table"
+                and type(target_version) == "table"
+                and target_version.major > version.major
+            then
+                acc[key] = setmetatable({
+                    name = rock.name,
+                    version = version,
+                    target_version = target_version,
+                }, {
+                    __tostring = function()
+                        return ("%s %s -> %s"):format(rock.name, tostring(version), tostring(target_version))
+                    end,
+                })
+            end
+            return acc
+        end
+    )
+end
+
+---@type async fun(breaking_changes: table<rock_name, RockUpdate>, outdated_rocks: table<rock_name, OutdatedRock>): table<rock_name, OutdatedRock>
+helpers.prompt_for_breaking_update = nio.create(function(breaking_changes, outdated_rocks)
+    local pretty_changes = vim.iter(breaking_changes)
+        :map(function(_, breaking_change)
+            return tostring(breaking_change)
+        end)
+        :totable()
+    local prompt = ([[
+There are potential breaking changes! Update them anyway?
+To skip this prompt, run 'Rocks! update'
+
+Breaking changes:
+%s
+]]):format(table.concat(pretty_changes, "\n"))
+    nio.scheduler()
+    local choice = vim.fn.confirm(prompt, "&Yes\n&No", 2, "Question")
+    if choice == 1 then
+        return outdated_rocks
+    end
+    return vim.iter(outdated_rocks):fold(
+        {},
+        ---@param acc table<rock_name, OutdatedRock>
+        ---@param key rock_name
+        ---@param rock OutdatedRock
+        function(acc, key, rock)
+            if not breaking_changes[key] then
+                acc[key] = rock
+            end
+            return acc
+        end
+    )
+end, 2)
+
 return helpers
