@@ -342,8 +342,11 @@ Examples:
 
 ### Updating rocks
 
-Running the `:Rocks update` command will attempt to update every available rock
-if it is not pinned.
+- Running the `:Rocks update` command will update every available rock
+  that is not pinned.
+
+- `:Rocks install {rock}` (without a version) will update `{rock}`
+  to the latest version.
 
 ### Syncing rocks
 
