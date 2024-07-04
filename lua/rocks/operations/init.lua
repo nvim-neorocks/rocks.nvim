@@ -566,6 +566,13 @@ Use 'Rocks install {rock_name}' or install rocks-git.nvim.
             end
             local install_spec = parse_result.spec
             local version = install_spec.version
+            local breaking_change = not version and helpers.get_breaking_change(rock_name)
+            if breaking_change and not helpers.prompt_for_breaking_intall(breaking_change) then
+                progress_handle:report({
+                    title = "Installation aborted",
+                })
+                progress_handle:cancel()
+            end
             nio.scheduler()
             progress_handle:report({
                 message = version and ("%s -> %s"):format(rock_name, version) or rock_name,

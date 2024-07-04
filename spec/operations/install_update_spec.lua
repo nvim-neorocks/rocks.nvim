@@ -30,7 +30,9 @@ describe("install/update", function()
         future = nio.control.future()
         operations.update(function()
             future.set(true)
-        end)
+        end, {
+            skip_prompts = true,
+        })
         future.wait()
         installed_rocks = state.installed_rocks()
         local updated_version = vim.version.parse(installed_rocks.neorg.version)
