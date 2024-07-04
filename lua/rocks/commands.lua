@@ -21,6 +21,8 @@
 --- sync                                Synchronize installed rocks with rocks.toml.
 ---                                     It may take more than one sync to prune all rocks that can be pruned.
 --- update                              Search for updated rocks and install them.
+---                                     Use 'Rocks! update` to skip prompts to install updates
+---                                     with breaking changes.
 --- edit                                Edit the rocks.toml file.
 --- pin {rock}                          Pin {rock} to the installed version.
 ---                                     Pinned rocks are ignored by ':Rocks update'.
@@ -119,8 +121,10 @@ end
 ---@type { [string]: RocksCmd }
 local rocks_command_tbl = {
     update = {
-        impl = function(_)
-            require("rocks.operations").update()
+        impl = function(_, opts)
+            require("rocks.operations").update(nil, {
+                skip_prompt = opts.bang,
+            })
         end,
     },
     sync = {

@@ -51,10 +51,9 @@ state.installed_rocks = nio.create(function()
     return rocks
 end)
 
----@type async fun(): {[string]: OutdatedRock}
+---@type async fun(): table<rock_name, OutdatedRock>
 state.outdated_rocks = nio.create(function()
-    local rocks = vim.empty_dict()
-    ---@cast rocks {[string]: Rock}
+    local rocks = vim.empty_dict() --[[ @as table<rock_name, OutdatedRock> ]]
 
     local future = nio.control.future()
 

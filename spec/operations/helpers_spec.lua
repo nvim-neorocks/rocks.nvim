@@ -37,4 +37,15 @@ describe("operations.helpers", function()
             print("GIT2_DIR not set. Skipping install_args test case")
         end
     end)
+    it("Detect breaking changes", function()
+        local result = helpers.get_breaking_changes({
+            foo = { name = "foo", version = "7.0.0", target_version = "8.0.0" },
+            bar = { name = "bar", version = "7.0.0", target_version = "7.1.0" },
+            baz = { name = "baz", version = "7.0.0", target_version = "7.1.1" },
+        })
+        assert.is_not_nil(result.foo)
+        assert.is_nil(result.bar)
+        assert.is_nil(result.baz)
+        assert.same("foo 7.0.0 -> 8.0.0", tostring(result.foo))
+    end)
 end)
