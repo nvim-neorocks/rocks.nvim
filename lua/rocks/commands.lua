@@ -140,7 +140,7 @@ local rocks_command_tbl = {
                 return
             end
             require("rocks.operations").add(args, nil, {
-                auto_search_dev = opts.bang,
+                skip_prompts = opts.bang,
             })
         end,
         complete = function(query)
