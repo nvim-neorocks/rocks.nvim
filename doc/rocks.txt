@@ -68,11 +68,14 @@ rocks.nvim commands                                             *rocks-commands*
                                        - pin={true|false}
                                          Rocks that have been installed with 'pim=true'
                                          will be ignored by ':Rocks update'.
+                                     Use 'Rocks! install ...' to skip prompts
  prune {rock}                        Uninstall {rock} and its stale dependencies,
                                      and remove it from rocks.toml.
  sync                                Synchronize installed rocks with rocks.toml.
                                      It may take more than one sync to prune all rocks that can be pruned.
  update                              Search for updated rocks and install them.
+                                     Use 'Rocks! update` to skip prompts
+                                     with breaking changes.
  edit                                Edit the rocks.toml file.
  pin {rock}                          Pin {rock} to the installed version.
                                      Pinned rocks are ignored by ':Rocks update'.
