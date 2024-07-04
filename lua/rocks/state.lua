@@ -23,7 +23,7 @@ local config = require("rocks.config.internal")
 local log = require("rocks.log")
 local nio = require("nio")
 
----@type async fun(): {[string]: Rock}
+---@type async fun(): table<rock_name, Rock>
 state.installed_rocks = nio.create(function()
     local rocks = vim.empty_dict()
     ---@cast rocks {[string]: Rock}

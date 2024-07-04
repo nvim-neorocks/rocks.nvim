@@ -176,6 +176,30 @@ helpers.is_installed = nio.create(function(rock_name)
     return future.wait()
 end, 1)
 
+---@param rock OutdatedRock
+---@return RockUpdate | nil
+local function get_breaking_change(rock)
+    local _, version = pcall(vim.version.parse, rock.version)
+    local _, target_version = pcall(vim.version.parse, rock.target_version)
+    if type(version) == "table" and type(target_version) == "table" and target_version.major > version.major then
+        return setmetatable({
+            name = rock.name,
+            version = version,
+            target_version = target_version,
+        }, {
+            __tostring = function()
+                return ("%s %s -> %s"):format(rock.name, tostring(version), tostring(target_version))
+            end,
+        })
+    end
+end
+
+---@type fun(rock_name: rock_name): RockUpdate | nil
+helpers.get_breaking_change = nio.create(function(rock_name)
+    local rock = state.outdated_rocks()[rock_name]
+    return rock and get_breaking_change(rock)
+end, 2)
+
 ---@class RockUpdate
 ---@field name rock_name
 ---@field version vim.Version
@@ -187,31 +211,29 @@ end, 1)
 function helpers.get_breaking_changes(outdated_rocks)
     return vim.iter(outdated_rocks):fold(
         {},
-        ---@param acc table<rock_name, OutdatedRock>
+        ---@param acc table<rock_name, RockUpdate>
         ---@param key rock_name
         ---@param rock OutdatedRock
         function(acc, key, rock)
-            local _, version = pcall(vim.version.parse, rock.version)
-            local _, target_version = pcall(vim.version.parse, rock.target_version)
-            if
-                type(version) == "table"
-                and type(target_version) == "table"
-                and target_version.major > version.major
-            then
-                acc[key] = setmetatable({
-                    name = rock.name,
-                    version = version,
-                    target_version = target_version,
-                }, {
-                    __tostring = function()
-                        return ("%s %s -> %s"):format(rock.name, tostring(version), tostring(target_version))
-                    end,
-                })
+            local breaking_change = get_breaking_change(rock)
+            if breaking_change then
+                acc[key] = breaking_change
             end
             return acc
         end
     )
 end
+
+---@type async fun(rock: RockUpdate): boolean
+helpers.prompt_for_breaking_intall = nio.create(function(rock)
+    local prompt = ([[
+%s may be a breaking change! Update anyway?
+To skip this prompt, run 'Rocks! install {rock}'
+]]):format(tostring(rock))
+    nio.scheduler()
+    local choice = vim.fn.confirm(prompt, "&Yes\n&No", 2, "Question")
+    return choice == 1
+end, 1)
 
 ---@type async fun(breaking_changes: table<rock_name, RockUpdate>, outdated_rocks: table<rock_name, OutdatedRock>): table<rock_name, OutdatedRock>
 helpers.prompt_for_breaking_update = nio.create(function(breaking_changes, outdated_rocks)
