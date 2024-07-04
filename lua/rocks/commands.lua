@@ -124,7 +124,7 @@ local rocks_command_tbl = {
     update = {
         impl = function(_, opts)
             require("rocks.operations").update(nil, {
-                skip_prompt = opts.bang,
+                skip_prompts = opts.bang,
             })
         end,
     },
