@@ -117,7 +117,7 @@ local default_config = {
             vim.tbl_deep_extend("force", vim.empty_dict(), rocks_toml.rocks or {}, rocks_toml.plugins or {})
         return config.apply_rock_spec_modifiers(user_rocks)
     end,
-    ---@type async fun():string
+    ---@type fun():string
     luarocks_config_path = nil,
 }
 
@@ -153,6 +153,29 @@ if #config.debug_info.unrecognized_configs > 0 then
     )
 end
 
+---@return string
+local function mk_luarocks_config()
+    local default_luarocks_config = {
+        lua_version = "5.1",
+        rocks_trees = {
+            {
+                name = "rocks.nvim",
+                root = config.rocks_path,
+            },
+        },
+    }
+    local luarocks_config = vim.tbl_deep_extend("force", default_luarocks_config, opts.luarocks_config or {})
+
+    local config_str = vim.iter(luarocks_config):fold("", function(acc, k, v)
+        return ([[
+%s
+%s = %s
+]]):format(acc, k, vim.inspect(v))
+    end)
+    require("rocks.log").debug("luarocks config:\n" .. config_str)
+    return config_str
+end
+
 if type(opts.luarocks_config) == "string" then
     vim.deprecate(
         "g:rocks_nvim.luarocks_config (string)",
@@ -173,41 +196,28 @@ if type(opts.luarocks_config) == "string" then
     end
 end
 if not opts.luarocks_config or type(opts.luarocks_config) == "table" then
-    local nio = require("nio")
     local luarocks_config_path
     ---@diagnostic disable-next-line: inject-field
-    config.luarocks_config_path = nio.create(function()
+    config.luarocks_config_path = function()
         if luarocks_config_path then
-            return luarocks_config_path
+            return ("%s"):format(luarocks_config_path)
         end
         luarocks_config_path = vim.fs.joinpath(config.rocks_path, "luarocks-config.lua")
-        local default_luarocks_config = {
-            lua_version = "5.1",
-            rocks_trees = {
-                {
-                    name = "rocks.nvim",
-                    root = config.rocks_path,
-                },
-            },
-        }
-        local luarocks_config = vim.tbl_deep_extend("force", default_luarocks_config, opts.luarocks_config or {})
-
-        ---@type string
-        local config_str = vim.iter(luarocks_config):fold("", function(acc, k, v)
-            return ([[
-%s
-%s = %s
-]]):format(acc, k, vim.inspect(v))
-        end)
-
-        fs.write_file_await(luarocks_config_path, "w+", config_str)
-
-        vim.schedule(function()
-            require("rocks.log").debug("Using luarocks config " .. config_str)
-        end)
+        require("rocks.log").debug("luarocks config path: " .. luarocks_config_path)
+        -- NOTE: We don't use fs/libuv here, because we need the file to be written
+        -- before it is used
+        local fh = io.open(luarocks_config_path, "w+")
+        if fh then
+            local config_str = mk_luarocks_config()
+            fh:write(config_str)
+            fh:close()
+        else
+            require("rocks.log").error(("Could not open %s for writing."):format(luarocks_config_path))
+            luarocks_config_path = ""
+        end
         ---@diagnostic disable-next-line: inject-field
         return ("%s"):format(luarocks_config_path)
-    end)
+    end
 end
 
 return config

@@ -27,9 +27,7 @@ local config = require("rocks.config.internal")
 
 -- Initialize the luarocks loader
 if config.enable_luarocks_loader then
-    nio.run(function()
-        require("rocks.loader").enable()
-    end)
+    require("rocks.loader").enable()
 end
 
 -- Set up the Rocks user command

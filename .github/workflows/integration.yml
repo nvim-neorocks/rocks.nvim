@@ -54,7 +54,7 @@ jobs:
           cat rocks/rocks.log
           echo "vim.cmd.colorscheme('sweetie')" >> .github/resources/init-integration.lua
           echo "vim.cmd.e('success')" >> .github/resources/init-integration.lua
-          nvim -u .github/resources/init-integration.lua -c 'set noswapfile' +wq || true
+          nvim -u .github/resources/init-integration.lua -c 'set noswapfile' +wq
           if [ ! -f success ]; then
             echo "Integration test failed!"
             exit 1
