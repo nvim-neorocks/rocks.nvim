@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.35.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.34.0...v2.35.0) (2024-07-05)
+
+
+### Features
+
+* **install:** add breaking change check for `Rocks install {rock}` ([91431b4](https://github.com/nvim-neorocks/rocks.nvim/commit/91431b4bc46fc1bafbccc4d00dd91fb6337b8255))
+* **install:** skip prompts with `Rocks! install` ([46f154a](https://github.com/nvim-neorocks/rocks.nvim/commit/46f154ac18afeb8b87d12487dd2dc53688aa6fc8))
+* support extending the default luarocks config with a table ([00014a8](https://github.com/nvim-neorocks/rocks.nvim/commit/00014a89a81d7f083367ce8769dc67153f0e8bd6))
+* **update:** prompt to install breaking changes ([6be3fe5](https://github.com/nvim-neorocks/rocks.nvim/commit/6be3fe5851a0c59dc3a092fec2b1d077a7a4f2d5))
+
 ## [2.34.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.33.0...v2.34.0) (2024-07-03)
 
 
