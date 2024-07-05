@@ -126,6 +126,12 @@ RocksOpts                                                            *RocksOpts*
                                                       rocks.nvim will create a default luarocks config in `rocks_path` and merge it with this table (if set).
 
 
+                                                         *rocks.troubleshooting*
+
+What to do when an installation fails ?
+1. fall back to https://github.com/nvim-neorocks/rocks-git.nvim (cons: doesn't list dependencies)
+2. Add the plugin to luarocks.org <link on guide how to do that?
+
 ==============================================================================
 Lua API for rocks.nvim extensions                                    *rocks-api*
 

@@ -587,7 +587,9 @@ Use 'Rocks install {rock_name}' or install rocks-git.nvim.
                 local stderr = installed_rock
                 ---@cast stderr string
                 local not_found = stderr:match("No results matching query were found") ~= nil
-                local message = ("Installation of %s failed. Run ':Rocks log' for details."):format(rock_name)
+                local message = ("Installation of %s failed. Run ':Rocks log' for details and :h rocks.troubleshooting"):format(
+                    rock_name
+                )
                 if not_found then
                     message = ("Could not find %s %s"):format(rock_name, version or "")
                 end
