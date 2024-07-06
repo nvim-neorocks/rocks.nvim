@@ -18,6 +18,7 @@
 local luarocks = require("rocks.luarocks")
 local constants = require("rocks.constants")
 local config = require("rocks.config.internal")
+local fs = require("rocks.fs")
 local runtime = require("rocks.runtime")
 local adapter = require("rocks.adapter")
 local state = require("rocks.state")
@@ -26,6 +27,25 @@ local cache = require("rocks.cache")
 local nio = require("nio")
 
 local helpers = {}
+
+helpers.semaphore = nio.control.semaphore(1)
+
+---Decode the user rocks from rocks.toml, creating a default config file if it does not exist
+---@return MutRocksTomlRef
+function helpers.parse_rocks_toml()
+    local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
+    return require("toml_edit").parse(config_file)
+end
+
+---@param rocks_toml MutRocksTomlRef
+---@param rock_name rock_name
+---@return "plugins"|"rocks"|nil rocks_key The key of the table containing the rock entry
+---@return rock_config_table|nil
+function helpers.get_rock_and_key(rocks_toml, rock_name)
+    local rocks_key = (rocks_toml.plugins and rocks_toml.plugins[rock_name] and "plugins")
+        or (rocks_toml.rocks and rocks_toml.rocks[rock_name] and "rocks")
+    return rocks_key, rocks_key and rocks_toml[rocks_key][rock_name]
+end
 
 ---@param rock_spec RockSpec
 ---@param progress_handle? ProgressHandle
