@@ -24,9 +24,6 @@ local nio = require("nio")
 
 ---@class LuarocksCliOpts: vim.SystemOpts
 ---@field servers? server_url[] | only_server_url
----@field synchronized? boolean Whether to wait for and acquire a lock (recommended for file system IO, default: `true`)
-
-local semaphore = nio.control.semaphore(1)
 
 --- --only-server if `servers` is a `string`, otherwise --server for each element
 ---@param servers server_url[]|only_server_url|nil
@@ -52,13 +49,9 @@ end
 luarocks.cli = nio.create(function(args, on_exit, opts)
     opts = opts or {}
     ---@cast opts LuarocksCliOpts
-    opts.synchronized = opts.synchronized ~= nil and opts.synchronized or false
     -- Make sure no operations are aborted on nvim exit
     opts.detach = true
     local on_exit_wrapped = vim.schedule_wrap(function(sc)
-        if opts.synchronized then
-            semaphore.release()
-        end
         ---@cast sc vim.SystemCompleted
         if sc.code ~= 0 then
             log.error("luarocks CLI FAILED")
@@ -68,9 +61,6 @@ luarocks.cli = nio.create(function(args, on_exit, opts)
             on_exit(sc)
         end
     end)
-    if opts.synchronized then
-        semaphore.acquire()
-    end
     opts.env = vim.tbl_deep_extend("force", opts.env or {}, {
         LUAROCKS_CONFIG = config.luarocks_config_path(),
         TREE_SITTER_LANGUAGE_VERSION = tostring(vim.treesitter.language_version),
@@ -117,7 +107,7 @@ luarocks.search_all = nio.create(function(callback, opts)
     luarocks.cli(cmd, function(obj)
         ---@cast obj vim.SystemCompleted
         future.set(obj)
-    end, { text = true, synchronized = false, servers = opts and opts.servers or constants.ALL_SERVERS })
+    end, { text = true, servers = opts and opts.servers or constants.ALL_SERVERS })
     ---@type vim.SystemCompleted
     local obj = future.wait()
     local result = obj.stdout
