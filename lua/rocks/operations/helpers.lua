@@ -48,17 +48,13 @@ function helpers.get_rock_and_key(rocks_toml, rock_name)
 end
 
 ---@param rock_spec RockSpec
----@param progress_handle? ProgressHandle
 ---@return nio.control.Future
-helpers.install = nio.create(function(rock_spec, progress_handle)
+helpers.install = nio.create(function(rock_spec)
     cache.invalidate_removable_rocks()
     local name = rock_spec.name:lower()
     local version = rock_spec.version
     local message = version and ("Installing: %s -> %s"):format(name, version) or ("Installing: %s"):format(name)
     log.info(message)
-    if progress_handle then
-        progress_handle:report({ message = message })
-    end
     -- TODO(vhyrro): Input checking on name and version
     local future = nio.control.future()
     local install_cmd = {
@@ -91,9 +87,6 @@ helpers.install = nio.create(function(rock_spec, progress_handle)
         if sc.code ~= 0 then
             message = ("Failed to install %s"):format(name)
             log.error(message)
-            if progress_handle then
-                progress_handle:report({ message = message })
-            end
             future.set_error(sc.stderr)
         else
             ---@type Rock
@@ -106,9 +99,6 @@ helpers.install = nio.create(function(rock_spec, progress_handle)
             }
             message = ("Installed: %s -> %s"):format(installed_rock.name, installed_rock.version)
             log.info(message)
-            if progress_handle then
-                progress_handle:report({ message = message })
-            end
 
             nio.run(function()
                 adapter.init_site_symlinks()
