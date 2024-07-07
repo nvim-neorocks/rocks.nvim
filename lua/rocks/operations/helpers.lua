@@ -47,9 +47,14 @@ function helpers.get_rock_and_key(rocks_toml, rock_name)
     return rocks_key, rocks_key and rocks_toml[rocks_key][rock_name]
 end
 
+---@class rocks.operations.helpers.InstallOpts
+---@field only_deps? boolean
+
 ---@param rock_spec RockSpec
+---@param opts? rocks.operations.helpers.InstallOpts
 ---@return nio.control.Future
-helpers.install = nio.create(function(rock_spec)
+helpers.install = nio.create(function(rock_spec, opts)
+    opts = opts or {}
     cache.invalidate_removable_rocks()
     local name = rock_spec.name:lower()
     local version = rock_spec.version
@@ -81,7 +86,11 @@ helpers.install = nio.create(function(rock_spec)
     vim.iter(rock_spec.install_args or {}):each(function(install_arg)
         table.insert(install_cmd, install_arg)
     end)
-    table.insert(install_cmd, 2, "--force")
+    if opts.only_deps then
+        table.insert(install_cmd, 2, "--only-deps")
+    elseif version == "dev" or version == "scm" then
+        table.insert(install_cmd, 2, "--force")
+    end
     luarocks.cli(install_cmd, function(sc)
         ---@cast sc vim.SystemCompleted
         if sc.code ~= 0 then

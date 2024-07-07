@@ -7,9 +7,11 @@
   };
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
     neorocks.url = "github:nvim-neorocks/neorocks";
+
+    luarocks-flake.url = "github:mrcjkb/luarocks/flake-ignore-lock";
 
     gen-luarc = {
       url = "github:mrcjkb/nix-gen-luarc-json";
@@ -38,7 +40,7 @@
     name = "rocks.nvim";
 
     plugin-overlay = import ./nix/plugin-overlay.nix {
-      inherit name self;
+      inherit name self inputs;
     };
     test-overlay = import ./nix/test-overlay.nix {
       inherit self inputs;

@@ -1,8 +1,10 @@
 {
   name,
   self,
+  inputs,
 }: final: prev: let
   lib = final.lib;
+  luarocks = inputs.luarocks-flake.packages.${final.system}.default;
   luaPackage-override = luaself: luaprev: {
     toml-edit =
       (luaself.callPackage ({
@@ -192,6 +194,8 @@ in {
       ];
     };
     rocks = luajitPackages.rocks-nvim;
+    inherit luarocks;
+    # luarocks = final.luajitPackages.luarocks;
   in
     (final.wrapNeovimUnstable final.neovim-nightly (neovimConfig
       // {
@@ -203,7 +207,7 @@ in {
             -- Copied from installer.lua
             local rocks_config = {
                 rocks_path = vim.fn.stdpath("data") .. "/rocks",
-                luarocks_binary = "${final.luajitPackages.luarocks}/bin/luarocks",
+                luarocks_binary = "${luarocks}/bin/luarocks",
             }
 
             vim.g.rocks_nvim = rocks_config
@@ -229,14 +233,8 @@ in {
           + ''--set NVIM_APPNAME "nvimrocks"'';
       }))
     .overrideAttrs (oa: {
-      nativeBuildInputs =
-        oa.nativeBuildInputs
-        ++ [
-          final.luajit.pkgs.wrapLua
-          # rocks
-        ];
-      # postFixup = ''
-      #   wrapLuaPrograms
-      # '';
+      propagatedBuildInputs = [
+        final.luajit.pkgs.wrapLua
+      ];
     });
 }

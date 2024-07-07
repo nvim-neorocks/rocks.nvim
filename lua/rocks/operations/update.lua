@@ -27,12 +27,6 @@ local handlers = require("rocks.operations.handlers")
 local nio = require("nio")
 local progress = require("fidget.progress")
 
----@param counter number
----@param total number
-local function get_percentage(counter, total)
-    return counter > 0 and math.min(100, math.floor((counter / total) * 100)) or 0
-end
-
 ---@param outdated_rocks table<rock_name, OutdatedRock>
 ---@return table<rock_name, OutdatedRock>
 local function add_dev_rocks_for_update(outdated_rocks)
@@ -110,37 +104,51 @@ update.update = function(on_complete, opts)
             end
             local external_update_handlers = handlers.get_update_handler_callbacks(user_rocks)
 
-            local total_update_count = #to_update + #external_update_handlers
+            local update_summary_tbl = vim
+                .iter(to_update)
+                ---@param rock OutdatedRock
+                :map(function(_, rock)
+                    return ("%s %s -> %s"):format(rock.name, rock.version, rock.target_version)
+                end)
+                :totable()
+            local update_summary = table.concat(update_summary_tbl, "\n")
 
             nio.scheduler()
-
-            local ct = 0
+            progress_handle:report({
+                message = update_summary,
+            })
+            -- Update dependencies sequentially first
             for name, rock in pairs(to_update) do
-                nio.scheduler()
-                progress_handle:report({
-                    message = name,
-                })
                 local future = helpers.install({
                     name = name,
                     version = rock.target_version,
+                }, {
+                    only_deps = true,
                 })
                 local success = pcall(future.wait)
-                ct = ct + 1
-                nio.scheduler()
-                if success then
-                    progress_handle:report({
-                        message = rock.version == rock.target_version
-                                and ("Updated rock %s: %s"):format(rock.name, rock.version)
-                            or ("Updated %s: %s -> %s"):format(rock.name, rock.version, rock.target_version),
-                        percentage = get_percentage(ct, total_update_count),
-                    })
-                else
+                if not success then
+                    nio.scheduler()
                     report_error(("Failed to update %s."):format(rock.name))
-                    progress_handle:report({
-                        percentage = get_percentage(ct, total_update_count),
-                    })
                 end
             end
+            -- Then update rocks concurrently
+            ---@type (async fun())[]
+            local actions = vim.iter(to_update)
+                :map(function(name, rock)
+                    return nio.create(function()
+                        local future = helpers.install({
+                            name = name,
+                            version = rock.target_version,
+                        })
+                        local success = pcall(future.wait)
+                        if not success then
+                            nio.scheduler()
+                            report_error(("Failed to update %s."):format(rock.name))
+                        end
+                    end)
+                end)
+                :totable()
+            nio.gather(actions)
             for _, handler in pairs(external_update_handlers) do
                 local function report_progress(message)
                     progress_handle:report({
@@ -148,10 +156,6 @@ update.update = function(on_complete, opts)
                     })
                 end
                 handler(report_progress, report_error)
-                progress_handle:report({
-                    percentage = get_percentage(ct, total_update_count),
-                })
-                ct = ct + 1
             end
 
             if vim.tbl_isempty(to_update) and vim.tbl_isempty(external_update_handlers) then
