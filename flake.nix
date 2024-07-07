@@ -50,13 +50,7 @@
         "x86_64-darwin"
         "aarch64-darwin"
       ];
-      perSystem = {
-        config,
-        self',
-        inputs',
-        system,
-        ...
-      }: let
+      perSystem = {system, ...}: let
         pkgs = import nixpkgs {
           inherit system;
           overlays = [

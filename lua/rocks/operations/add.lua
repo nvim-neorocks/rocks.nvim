@@ -23,6 +23,7 @@ local config = require("rocks.config.internal")
 local cache = require("rocks.cache")
 local helpers = require("rocks.operations.helpers")
 local handlers = require("rocks.operations.handlers")
+local lock = require("rocks.operations.lock")
 local parser = require("rocks.operations.parser")
 local nio = require("nio")
 local progress = require("fidget.progress")
@@ -203,6 +204,7 @@ Use 'Rocks install {rock_name}' or install rocks-git.nvim.
                 user_rocks.plugins[rock_name] = installed_rock.version
             end
             fs.write_file_await(config.config_path, "w", tostring(user_rocks))
+            lock.update_lockfile(installed_rock.name)
             cache.populate_removable_rock_cache()
             vim.schedule(function()
                 -- Re-generate help tags

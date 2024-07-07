@@ -105,6 +105,8 @@ RocksOpts                                                            *RocksOpts*
                                                       (Default: a `rocks` directory in `vim.fn.stdpath("data")`).
         {config_path?}                    (string)
                                                       Rocks declaration file path (Default: `rocks.toml`) in `vim.fn.stdpath("config")`.
+        {lockfile_path?}                  (string)
+                                                      Rocks lockfile path. Defaults to `rocks.lock` in `vim.fn.stdpath("config")`.
         {luarocks_binary?}                (string)
                                                       Luarocks binary path. Defaults to the bundled installation if executable.
         {lazy?}                           (boolean)

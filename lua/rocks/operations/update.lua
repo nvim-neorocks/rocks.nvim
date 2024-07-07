@@ -23,6 +23,7 @@ local config = require("rocks.config.internal")
 local state = require("rocks.state")
 local cache = require("rocks.cache")
 local helpers = require("rocks.operations.helpers")
+local lock = require("rocks.operations.lock")
 local handlers = require("rocks.operations.handlers")
 local nio = require("nio")
 local progress = require("fidget.progress")
@@ -170,6 +171,7 @@ update.update = function(on_complete, opts)
                 end
             end
             fs.write_file_await(config.config_path, "w", tostring(user_rocks))
+            lock.update_lockfile()
             nio.scheduler()
             if not vim.tbl_isempty(error_handles) then
                 local message = "Update completed with errors! Run ':Rocks log' for details."

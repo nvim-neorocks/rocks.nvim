@@ -16,6 +16,7 @@
 ---@brief ]]
 
 local luarocks = require("rocks.luarocks")
+local lock = require("rocks.operations.lock")
 local constants = require("rocks.constants")
 local config = require("rocks.config.internal")
 local fs = require("rocks.fs")
@@ -47,18 +48,19 @@ function helpers.get_rock_and_key(rocks_toml, rock_name)
     return rocks_key, rocks_key and rocks_toml[rocks_key][rock_name]
 end
 
+---@class rocks.helpers.InstallOpts
+---@field use_lockfile boolean
+
 ---@param rock_spec RockSpec
----@param progress_handle? ProgressHandle
+---@param opts? rocks.helpers.InstallOpts
 ---@return nio.control.Future
-helpers.install = nio.create(function(rock_spec, progress_handle)
+helpers.install = nio.create(function(rock_spec, opts)
+    opts = opts or {}
     cache.invalidate_removable_rocks()
     local name = rock_spec.name:lower()
     local version = rock_spec.version
     local message = version and ("Installing: %s -> %s"):format(name, version) or ("Installing: %s"):format(name)
     log.info(message)
-    if progress_handle then
-        progress_handle:report({ message = message })
-    end
     -- TODO(vhyrro): Input checking on name and version
     local future = nio.control.future()
     local install_cmd = {
@@ -86,14 +88,24 @@ helpers.install = nio.create(function(rock_spec, progress_handle)
         table.insert(install_cmd, install_arg)
     end)
     table.insert(install_cmd, 2, "--force")
+    local install_opts = {
+        servers = servers,
+    }
+    if opts.use_lockfile then
+        -- luarocks locks dependencies when there is a lockfile in the cwd
+        local lockfile = lock.create_luarocks_lock(rock_spec.name)
+        if lockfile and vim.uv.fs_stat(lockfile) then
+            install_opts.cwd = vim.fs.dirname(lockfile)
+        end
+    end
+    -- We always want to insert --pin so that the luarocks.lock is created in the
+    -- install directory on the rtp
+    table.insert(install_cmd, "--pin")
     luarocks.cli(install_cmd, function(sc)
         ---@cast sc vim.SystemCompleted
         if sc.code ~= 0 then
             message = ("Failed to install %s"):format(name)
             log.error(message)
-            if progress_handle then
-                progress_handle:report({ message = message })
-            end
             future.set_error(sc.stderr)
         else
             ---@type Rock
@@ -106,9 +118,6 @@ helpers.install = nio.create(function(rock_spec, progress_handle)
             }
             message = ("Installed: %s -> %s"):format(installed_rock.name, installed_rock.version)
             log.info(message)
-            if progress_handle then
-                progress_handle:report({ message = message })
-            end
 
             nio.run(function()
                 adapter.init_site_symlinks()
@@ -122,9 +131,7 @@ helpers.install = nio.create(function(rock_spec, progress_handle)
                 future.set(installed_rock)
             end)
         end
-    end, {
-        servers = servers,
-    })
+    end, install_opts)
     return future
 end, 2)
 

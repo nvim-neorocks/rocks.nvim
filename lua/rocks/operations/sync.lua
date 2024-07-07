@@ -117,7 +117,7 @@ operations.sync = function(user_rocks, on_complete)
                 if vim.startswith(user_rocks[key].version, "scm-") then
                     user_rocks[key].version = "dev"
                 end
-                local future = helpers.install(user_rocks[key])
+                local future = helpers.install(user_rocks[key], { use_lockfile = true })
                 local success = pcall(future.wait)
 
                 ct = ct + 1
@@ -162,7 +162,7 @@ operations.sync = function(user_rocks, on_complete)
                     message = is_downgrading and ("Downgrading: %s"):format(key) or ("Updating: %s"):format(key),
                 })
 
-                local future = helpers.install(user_rocks[key])
+                local future = helpers.install(user_rocks[key], { use_lockfile = true })
                 local success = pcall(future.wait)
 
                 ct = ct + 1
