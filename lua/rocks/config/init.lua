@@ -24,7 +24,7 @@ local config = {}
 --- Rocks declaration file path (Default: `rocks.toml`) in `vim.fn.stdpath("config")`.
 ---@field config_path? string
 ---
---- Luarocks binary path (Default: `{rocks_path}/bin/luarocks`).
+--- Luarocks binary path. Defaults to the bundled installation if executable.
 ---@field luarocks_binary? string
 ---
 --- Whether to query luarocks.org lazily (Default: `false`).

@@ -12,8 +12,7 @@ math.randomseed(os.time())
 local config_data = vim.g.rocks_nvim or {}
 local install_path = config_data.rocks_path or vim.fs.joinpath(vim.fn.stdpath("data") --[[@as string]], "rocks")
 local temp_luarocks_path =
-    ---@diagnostic disable-next-line: param-type-mismatch
-    vim.fs.joinpath(vim.fn.stdpath("run"), ("luarocks-%X"):format(math.random(256 ^ 7)))
+    vim.fs.joinpath(vim.fn.stdpath("run") --[[@as string]], ("luarocks-%X"):format(math.random(256 ^ 7)))
 local luarocks_binary = vim.fs.joinpath(temp_luarocks_path, "bin", "luarocks")
 
 ---@param dep string
@@ -55,8 +54,8 @@ local function set_up_luarocks(path)
         return false
     end
 
-    ---@diagnostic disable-next-line: param-type-mismatch
-    local tempdir = vim.fs.joinpath(vim.fn.stdpath("run"), ("luarocks-%X"):format(math.random(256 ^ 7)))
+    local tempdir =
+        vim.fs.joinpath(vim.fn.stdpath("run") --[[@as string]], ("luarocks-%X"):format(math.random(256 ^ 7)))
 
     vim.notify("Downloading luarocks...")
 

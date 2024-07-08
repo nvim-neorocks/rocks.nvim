@@ -23,8 +23,7 @@ local _rock_spec_modifiers = {}
 local constants = require("rocks.constants")
 local fs = require("rocks.fs")
 
----@diagnostic disable-next-line: param-type-mismatch
-local default_rocks_path = vim.fs.joinpath(vim.fn.stdpath("data"), "rocks")
+local default_rocks_path = vim.fs.joinpath(vim.fn.stdpath("data") --[[@as string]], "rocks")
 
 ---@param rocks_path string
 ---@return string
@@ -45,8 +44,7 @@ local default_config = {
     ---@type string Local path in your filesystem to install rocks
     rocks_path = default_rocks_path,
     ---@type string Rocks declaration file path
-    ---@diagnostic disable-next-line: param-type-mismatch
-    config_path = vim.fs.joinpath(vim.fn.stdpath("config"), "rocks.toml"),
+    config_path = vim.fs.joinpath(vim.fn.stdpath("config") --[[@as string]], "rocks.toml"),
     ---@type string Luarocks binary path
     luarocks_binary = get_default_luarocks_binary(default_rocks_path),
     ---@type boolean Whether to query luarocks.org lazily

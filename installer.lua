@@ -169,8 +169,8 @@ local function set_up_luarocks(install_path)
         return false
     end
 
-    ---@diagnostic disable-next-line: param-type-mismatch
-    local tempdir = vim.fs.joinpath(vim.fn.stdpath("run"), ("luarocks-%X"):format(math.random(256 ^ 7)))
+    local tempdir =
+        vim.fs.joinpath(vim.fn.stdpath("run") --[[@as string]], ("luarocks-%X"):format(math.random(256 ^ 7)))
 
     vim.notify("Downloading luarocks...")
 
@@ -350,8 +350,7 @@ local function install()
             local install_path = input_fields.install_path.content
             local setup_luarocks = input_fields.setup_luarocks.content == "true"
             local temp_luarocks_path =
-                ---@diagnostic disable-next-line: param-type-mismatch
-                vim.fs.joinpath(vim.fn.stdpath("run"), ("luarocks-%X"):format(math.random(256 ^ 7)))
+                vim.fs.joinpath(vim.fn.stdpath("run") --[[@as string]], ("luarocks-%X"):format(math.random(256 ^ 7)))
 
             local luarocks_binary = "luarocks"
 
@@ -466,8 +465,7 @@ local function install()
                 vim.bo[buffer].filetype = "help"
             end)
         elseif line == "<< OPEN INIT.LUA >>" then
-            ---@diagnostic disable-next-line: param-type-mismatch
-            vim.cmd.edit(vim.fs.joinpath(vim.fn.stdpath("config"), "init.lua"))
+            vim.cmd.edit(vim.fs.joinpath(vim.fn.stdpath("config") --[[@as string]], "init.lua"))
             vim.cmd("write ++p")
             pcall(vim.api.nvim_buf_delete, buffer, { force = true })
         end

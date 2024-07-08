@@ -106,7 +106,7 @@ RocksOpts                                                            *RocksOpts*
         {config_path?}                    (string)
                                                       Rocks declaration file path (Default: `rocks.toml`) in `vim.fn.stdpath("config")`.
         {luarocks_binary?}                (string)
-                                                      Luarocks binary path (Default: `{rocks_path}/bin/luarocks`).
+                                                      Luarocks binary path. Defaults to the bundled installation if executable.
         {lazy?}                           (boolean)
                                                       Whether to query luarocks.org lazily (Default: `false`).
                                                       Setting this to `true` may improve startup time,
