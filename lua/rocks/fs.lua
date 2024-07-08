@@ -36,13 +36,13 @@ function fs.file_exists(location)
     return false
 end
 
---- Write `contents` to a file
+--- Write `contents` to a file asynchronously
 ---@param location string file path
 ---@param mode string mode to open the file for
 ---@param contents string file contents
 ---@param callback? function
 function fs.write_file(location, mode, contents, callback)
-    local dir = vim.fn.fnamemodify(location, ":h")
+    local dir = vim.fs.dirname(location)
     fs.mkdir_p(dir)
     -- 644 sets read and write permissions for the owner, and it sets read-only
     -- mode for the group and others
@@ -55,9 +55,13 @@ function fs.write_file(location, mode, contents, callback)
                 if write_err then
                     local msg = ("Error writing %s: %s"):format(location, err)
                     log.error(msg)
-                    vim.notify(msg, vim.log.levels.ERROR)
+                    vim.schedule(function()
+                        vim.notify(msg, vim.log.levels.ERROR)
+                    end)
                 end
-                uv.fs_close(file)
+                if file then
+                    uv.fs_close(file)
+                end
                 if callback then
                     callback()
                 end
