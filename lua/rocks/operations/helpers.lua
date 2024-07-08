@@ -115,6 +115,9 @@ helpers.install = nio.create(function(rock_spec, progress_handle)
                 if config.dynamic_rtp and not rock_spec.opt then
                     nio.scheduler()
                     runtime.packadd(name)
+                else
+                    -- Add rock to the rtp, but don't source any scripts
+                    runtime.packadd(name, { bang = true })
                 end
                 future.set(installed_rock)
             end)
