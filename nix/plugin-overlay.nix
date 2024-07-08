@@ -229,12 +229,14 @@ in {
           + ''--set NVIM_APPNAME "nvimrocks"'';
       }))
     .overrideAttrs (oa: {
-      propagatedBuildInputs = [
-        final.lua5_1.pkgs.wrapLua
-        rocks
-      ];
-      postFixup = ''
-        wrapLuaPrograms
-      '';
+      nativeBuildInputs =
+        oa.nativeBuildInputs
+        ++ [
+          final.luajit.pkgs.wrapLua
+          # rocks
+        ];
+      # postFixup = ''
+      #   wrapLuaPrograms
+      # '';
     });
 }
