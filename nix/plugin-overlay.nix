@@ -3,7 +3,7 @@
   self,
 }: final: prev: let
   lib = final.lib;
-  rocks-nvim-luaPackage-override = luaself: luaprev: {
+  luaPackage-override = luaself: luaprev: {
     toml-edit =
       (luaself.callPackage ({
         buildLuarocksPackage,
@@ -157,11 +157,11 @@
       }) {};
   };
   lua5_1 = prev.lua5_1.override {
-    packageOverrides = rocks-nvim-luaPackage-override;
+    packageOverrides = luaPackage-override;
   };
   lua51Packages = prev.lua51Packages // final.lua5_1.pkgs;
   luajit = prev.luajit.override {
-    packageOverrides = rocks-nvim-luaPackage-override;
+    packageOverrides = luaPackage-override;
   };
   luajitPackages = prev.luajitPackages // final.luajit.pkgs;
 in {
