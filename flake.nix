@@ -140,7 +140,7 @@
 
         packages = rec {
           default = rocks-nvim;
-          inherit (pkgs.luajitPackages) rocks-nvim luarocks-rock;
+          inherit (pkgs.luajitPackages) rocks-nvim;
           inherit
             (pkgs)
             neovim-with-rocks

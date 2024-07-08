@@ -11,7 +11,7 @@
         neovim = nvim;
         luaPackages = ps:
           with ps; [
-            final.lua51Packages.luarocks-rock
+            luarocks
             toml-edit
             fidget-nvim
             fzy

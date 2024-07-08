@@ -4,29 +4,6 @@
 }: final: prev: let
   lib = final.lib;
   rocks-nvim-luaPackage-override = luaself: luaprev: {
-    # Workaround for https://github.com/NixOS/nixpkgs/issues/316009
-    luarocks-rock = luaself.callPackage ({
-      buildLuarocksPackage,
-      fetchFromGitHub,
-      fetchurl,
-    }:
-      buildLuarocksPackage {
-        pname = "luarocks";
-        version = "3.11.1-1";
-        knownRockspec =
-          (fetchurl {
-            url = "mirror://luarocks/luarocks-3.11.1-1.rockspec";
-            sha256 = "0xg0siza8nlnnkaarmw73q12qx3frlfbysd5ipmxxi1d7yc38bbn";
-          })
-          .outPath;
-        src = fetchFromGitHub {
-          owner = "luarocks";
-          repo = "luarocks";
-          rev = "v3.11.1";
-          hash = "sha256-GglygI8HP+aDFEuucOkjQ2Pgfv4+jW+og+2vL3KoZCQ=";
-        };
-      }) {};
-
     toml-edit =
       (luaself.callPackage ({
         buildLuarocksPackage,
@@ -156,7 +133,7 @@
       luaOlder,
       buildLuarocksPackage,
       lua,
-      luarocks-rock,
+      luarocks,
       toml-edit,
       fidget-nvim,
       nvim-nio,
@@ -170,7 +147,7 @@
         src = self;
         disabled = luaOlder "5.1";
         propagatedBuildInputs = [
-          luarocks-rock
+          luarocks
           toml-edit
           fidget-nvim
           nvim-nio
@@ -214,7 +191,7 @@ in {
         final.vimPlugins.rocks-nvim
       ];
     };
-    rocks = lua51Packages.rocks-nvim;
+    rocks = luajitPackages.rocks-nvim;
   in
     (final.wrapNeovimUnstable final.neovim-nightly (neovimConfig
       // {
@@ -226,7 +203,7 @@ in {
             -- Copied from installer.lua
             local rocks_config = {
                 rocks_path = vim.fn.stdpath("data") .. "/rocks",
-                luarocks_binary = "${final.lua51Packages.luarocks-rock}/bin/luarocks",
+                luarocks_binary = "${final.luajitPackages.luarocks}/bin/luarocks",
             }
 
             vim.g.rocks_nvim = rocks_config
