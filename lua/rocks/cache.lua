@@ -22,15 +22,36 @@ local state = require("rocks.state")
 local constants = require("rocks.constants")
 local nio = require("nio")
 
----@type { [rock_name]: Rock[] } | nil
+---@type table<rock_name, Rock[]> | nil
 local _cached_rocks = nil
 
----@type { [rock_name]: Rock[] } | nil
+---@type table<rock_name, Rock[]> | nil
 local _cached_dev_binaries = nil
 
 ---Used for completions only
 ---@type string[] | nil
 local _removable_rock_cache = nil
+
+---@type table<rock_name, OutdatedRock[]> | nil
+local _outdated_rock_cache = nil
+
+---Tries to get the cached value
+---Returns an empty list if the cache is not ready,
+---and triggers an async task to populate the cache.
+---WARNING: `cache_ref` MUST be populated by `populate`
+---
+---@generic T
+---@param cache_ref T
+---@param populate async fun():T Stateul
+---@return table<string, T> result indexed by name
+local function try_get_unsafe(cache_ref, populate)
+    if not cache_ref then
+        nio.run(populate)
+        local result = vim.empty_dict()
+        return result
+    end
+    return cache_ref
+end
 
 ---Query luarocks packages and populate the cache.
 ---@type async fun()
@@ -50,15 +71,9 @@ end)
 ---Tries to get the cached rocks.
 ---Returns an empty list if the cache is not ready,
 ---and triggers an async task to populate the cache.
----@return { [string]: Rock[] } rocks indexed by name
+---@return table<string, Rock[]> rocks indexed by name
 function cache.try_get_rocks()
-    if not _cached_rocks then
-        nio.run(cache.populate_cached_rocks)
-        local rocks = vim.empty_dict()
-        ---@cast rocks { [string]: Rock[] }
-        return rocks
-    end
-    return _cached_rocks
+    return try_get_unsafe(_cached_rocks, cache.populate_cached_rocks)
 end
 
 ---Query the state for rocks that can be removed
@@ -74,20 +89,37 @@ end)
 ---Tries to get the cached removable rocks.
 ---Returns an empty list if the cache is not ready,
 ---and triggers an async task to populate the cache.
----@return { [string]: Rock[] } rocks indexed by name
+---@return table<string, Rock[]> rocks indexed by name
 function cache.try_get_removable_rocks()
-    if not _removable_rock_cache then
-        nio.run(cache.populate_removable_rock_cache)
-        local rocks = vim.empty_dict()
-        ---@cast rocks { [string]: Rock[] }
-        return rocks
-    end
-    return _removable_rock_cache
+    return try_get_unsafe(_removable_rock_cache, cache.populate_removable_rock_cache)
 end
 
 ---Invalidate the removable rocks cache
 cache.invalidate_removable_rocks = function()
     _removable_rock_cache = nil
+end
+
+---Query the state for rocks that can be removed
+---and populate the cache.
+---@type async fun()
+cache.populate_outdated_rock_cache = nio.create(function()
+    if _outdated_rock_cache then
+        return
+    end
+    _outdated_rock_cache = state.outdated_rocks()
+end)
+
+---Populate all rocks state caches
+cache.populate_all_rocks_state_caches = nio.create(function()
+    cache.populate_removable_rock_cache()
+    cache.populate_outdated_rock_cache()
+end)
+---Tries to get the cached removable rocks.
+---Returns an empty list if the cache is not ready,
+---and triggers an async task to populate the cache.
+---@return table<string, Rock[]> rocks indexed by name
+function cache.try_get_outdated_rocks()
+    return try_get_unsafe(_outdated_rock_cache, cache.populate_outdated_rock_cache)
 end
 
 ---Search the cache for rocks-binaries-dev rocks.
