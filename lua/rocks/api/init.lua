@@ -42,6 +42,19 @@ function api.try_get_cached_rocks()
     return cache.try_get_rocks()
 end
 
+---@class OutdatedRock: Rock
+---@field public target_version string
+
+---Tries to get the cached outdated rocks.
+---Returns an empty list if the cache has not been populated
+---or no connection to luarocks.org can be established.
+---Will spawn an async task to attempt to populate the cache
+---if it is not ready.
+---@return table<rock_name, OutdatedRock[]> rocks
+function api.try_get_cached_outdated_rocks()
+    return cache.try_get_outdated_rocks()
+end
+
 ---Queries luarocks.org for rocks and passes the rocks
 ---to a callback. Invokes the callback with an empty table
 ---if no rocks are found or no connection to luarocks.org can be established.
