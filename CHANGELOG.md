@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.35.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.35.0...v2.35.1) (2024-07-09)
+
+
+### Bug Fixes
+
+* external sync actions not running ([#469](https://github.com/nvim-neorocks/rocks.nvim/issues/469)) ([235c7df](https://github.com/nvim-neorocks/rocks.nvim/commit/235c7df46ff5e54d89ba46e2beb6c3656b6d49d6))
+* **install:** add newly installed `opt` plugins to the rtp ([54a5cfd](https://github.com/nvim-neorocks/rocks.nvim/commit/54a5cfd5bf6a8aea733d07c28beeaf2bd080ab35))
+
 ## [2.35.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.34.0...v2.35.0) (2024-07-05)
 
 
