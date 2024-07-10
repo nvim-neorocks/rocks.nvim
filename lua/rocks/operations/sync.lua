@@ -132,7 +132,7 @@ operations.sync = function(user_rocks, on_complete)
             end
 
             -- Sync actions handled by external modules that have registered handlers
-            for _, callback in ipairs(sync_status.external_actions) do
+            for _, callback in pairs(sync_status.external_actions) do
                 ct = ct + 1
                 callback(report_progress, report_error)
             end
