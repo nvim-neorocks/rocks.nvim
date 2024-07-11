@@ -205,9 +205,9 @@ api.get_rocks_toml_path()                              *api.get_rocks_toml_path*
 RocksToml                                                            *RocksToml*
 
     Fields: ~
-        {rocks?}    (table<rock_name,RockSpec[]>)  The `[rocks]` entries
-        {plugins?}  (table<rock_name,RockSpec[]>)  The `[plugins]` entries
-        {string}    (unknown)                      Fields that can be added by external modules
+        {rocks?}    (table<rock_name,RockSpec>)  The `[rocks]` entries
+        {plugins?}  (table<rock_name,RockSpec>)  The `[plugins]` entries
+        {string}    (unknown)                    Fields that can be added by external modules
 
 
 api.get_rocks_toml()                                        *api.get_rocks_toml*
