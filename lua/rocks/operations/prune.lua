@@ -23,6 +23,7 @@ local config = require("rocks.config.internal")
 local cache = require("rocks.cache")
 local helpers = require("rocks.operations.helpers")
 local handlers = require("rocks.operations.handlers")
+local lock = require("rocks.operations.lock")
 local nio = require("nio")
 local progress = require("fidget.progress")
 
@@ -59,6 +60,7 @@ prune.prune = function(rock_name)
                 success = false
             end
             fs.write_file_await(config.config_path, "w", tostring(user_config))
+            lock.update_lockfile()
             local user_rocks = config.get_user_rocks()
             handlers.prune_user_rocks(user_rocks, report_progress, report_error)
             cache.populate_removable_rock_cache()

@@ -5,6 +5,7 @@ vim.g.rocks_nvim = {
     luarocks_binary = "luarocks",
     rocks_path = tempdir,
     config_path = vim.fs.joinpath(tempdir, "rocks.toml"),
+    lockfile_path = vim.fs.joinpath(tempdir, "rocks.lock"),
 }
 local nio = require("nio")
 local operations = require("rocks.operations")
