@@ -47,7 +47,7 @@ local external_dependencies = {
     {
         name = "luarocks",
         get_binaries = function()
-            return { "luarocks" }
+            return { require("rocks.config.internal").luarocks_binary }
         end,
         optional = function()
             return true
@@ -79,11 +79,19 @@ local check_installed = function(dep)
     local binaries = dep.get_binaries()
     for _, binary in ipairs(binaries) do
         if vim.fn.executable(binary) == 1 then
-            local systemObj = vim.system({ binary, dep.version_flag or "--version" }):wait()
-            local version = binary == "lua" -- (╯°□°)╯︵ ┻━┻
-                    and systemObj.stderr
-                or systemObj.stdout
-            return true, version
+            local success, found, version = xpcall(function()
+                local systemObj = vim.system({ binary, dep.version_flag or "--version" }):wait()
+                local version = binary == "lua" -- (╯°□°)╯︵ ┻━┻
+                        and systemObj.stderr
+                    or systemObj.stdout
+                return true, version
+            end, function(err)
+                error(("%s: Failed to execute %s. %s"):format(dep.name, binary, err))
+            end)
+            if success and found then
+                ---@cast version string
+                return true, version
+            end
         end
     end
     return false

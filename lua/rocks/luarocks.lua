@@ -26,6 +26,7 @@ local nio = require("nio")
 ---@field servers? server_url[] | only_server_url
 ---@field synchronized? boolean Whether to wait for and acquire a lock (recommended for file system IO, default: `true`)
 
+-- NOTE: We cannot share the semaphore with operations.helpers, or it would deadlock
 local semaphore = nio.control.semaphore(1)
 
 --- --only-server if `servers` is a `string`, otherwise --server for each element
@@ -52,7 +53,7 @@ end
 luarocks.cli = nio.create(function(args, on_exit, opts)
     opts = opts or {}
     ---@cast opts LuarocksCliOpts
-    opts.synchronized = opts.synchronized ~= nil and opts.synchronized or false
+    opts.synchronized = opts.synchronized ~= nil and opts.synchronized or true
     -- Make sure no operations are aborted on nvim exit
     opts.detach = true
     local on_exit_wrapped = vim.schedule_wrap(function(sc)
@@ -117,7 +118,10 @@ luarocks.search_all = nio.create(function(callback, opts)
     luarocks.cli(cmd, function(obj)
         ---@cast obj vim.SystemCompleted
         future.set(obj)
-    end, { text = true, synchronized = false, servers = opts and opts.servers or constants.ALL_SERVERS })
+    end, {
+        text = true,
+        servers = opts and opts.servers or constants.ALL_SERVERS,
+    })
     ---@type vim.SystemCompleted
     local obj = future.wait()
     local result = obj.stdout

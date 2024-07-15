@@ -110,8 +110,8 @@ function api.get_rocks_toml_path()
 end
 
 ---@class RocksToml
----@field rocks? table<rock_name, RockSpec[]> The `[rocks]` entries
----@field plugins? table<rock_name, RockSpec[]> The `[plugins]` entries
+---@field rocks? table<rock_name, RockSpec> The `[rocks]` entries
+---@field plugins? table<rock_name, RockSpec> The `[plugins]` entries
 ---@field [string] unknown Fields that can be added by external modules
 
 ---Returns a table with the parsed rocks.toml file.

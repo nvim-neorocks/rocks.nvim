@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.35.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.35.1...v2.35.2) (2024-07-14)
+
+
+### Bug Fixes
+
+* **health:** fix external dependency checks ([4ae93ef](https://github.com/nvim-neorocks/rocks.nvim/commit/4ae93ef6fbc6ffa821d961d5c78a790ae0534516))
+* synchronize all luarocks CLI invocations ([#474](https://github.com/nvim-neorocks/rocks.nvim/issues/474)) ([4a9c276](https://github.com/nvim-neorocks/rocks.nvim/commit/4a9c2769679a3f06b48c4e682de473e6bcecdac5))
+
 ## [2.35.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.35.0...v2.35.1) (2024-07-09)
 
 
