@@ -318,6 +318,7 @@ Arguments:
 
 - `rock`: The luarocks package.
 - `version`: Optional. Used to pin a rock to a specific version.
+            If omitted, rocks.nvim will install (or update to) the latest version.
 - `args[]`: Optional arguments, e.g. `opt=true`, to prevent rocks.nvim
             from automatically sourcing a rock at startup.
 
@@ -345,8 +346,9 @@ Examples:
 - Running the `:Rocks update` command will update every available rock
   that is not pinned.
 
-- `:Rocks install {rock}` (without a version) will update `{rock}`
-  to the latest version.
+- `:Rocks update {rock}` will update `{rock}` to the latest version.
+  The command provides completions for outdated luarocks packages
+  and `scm`/`dev` rocks.
 
 ### Syncing rocks
 

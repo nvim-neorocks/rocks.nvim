@@ -47,6 +47,7 @@ if not config.lazy then
             nio.gather({
                 cache.populate_cached_rocks,
                 cache.populate_removable_rock_cache,
+                cache.populate_outdated_rock_cache,
             })
         end)
     end)

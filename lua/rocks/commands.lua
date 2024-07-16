@@ -9,6 +9,8 @@
 ---
 --- install {rock} {version?} {args[]?} Install {rock} with optional {version} and optional {args[]}.
 ---                                     Example: ':Rocks install neorg 8.0.0 opt=true'
+---                                     Will install or update to the latest version if called
+---                                     without {version}.
 ---                                     args (optional):
 ---                                       - opt={true|false}
 ---                                         Rocks that have been installed with 'opt=true'
@@ -16,13 +18,15 @@
 ---                                       - pin={true|false}
 ---                                         Rocks that have been installed with 'pim=true'
 ---                                         will be ignored by ':Rocks update'.
----                                     Use 'Rocks! install ...' to skip prompts
+---                                     Use 'Rocks! install ...' to skip prompts.
 --- prune {rock}                        Uninstall {rock} and its stale dependencies,
 ---                                     and remove it from rocks.toml.
 --- sync                                Synchronize installed rocks with rocks.toml.
 ---                                     It may take more than one sync to prune all rocks that can be pruned.
---- update                              Search for updated rocks and install them.
----                                     Use 'Rocks! update` to skip prompts
+--- update {rock?}                      Search for updated rocks and install them.
+---                                     If called with the optional {rock} argument, only {rock}
+---                                     will be updated.
+---                                     Use 'Rocks! update` to skip prompts.
 ---                                     with breaking changes.
 --- edit                                Edit the rocks.toml file.
 --- pin {rock}                          Pin {rock} to the installed version.
@@ -122,10 +126,36 @@ end
 ---@type { [string]: RocksCmd }
 local rocks_command_tbl = {
     update = {
-        impl = function(_, opts)
-            require("rocks.operations").update(nil, {
-                skip_prompts = opts.bang,
-            })
+        impl = function(args, opts)
+            if #args == 0 then
+                require("rocks.operations").update(nil, {
+                    skip_prompts = opts.bang,
+                })
+            elseif #args == 1 then
+                local rock_name = args[1]
+                local user_rocks = config.get_user_rocks()
+                local rock = user_rocks[rock_name]
+                if not rock then
+                    vim.notify(("Rocks update: %s is not installed"):format(rock_name), vim.log.levels.ERROR)
+                    return
+                elseif rock.version == "dev" or rock.version == "scm" then
+                    -- Skip "rock not found" prompt
+                    table.insert(args, rock.version)
+                end
+                require("rocks.operations").add(args, nil, {
+                    skip_prompts = opts.bang,
+                    cmd = "update",
+                })
+            else
+                vim.notify("Rocks update: Too many arguments: " .. vim.inspect(args), vim.log.levels.ERROR)
+            end
+        end,
+        complete = function(query)
+            local outdated_rocks = cache.try_get_outdated_rocks()
+            ---@param spec RockSpec
+            return fuzzy_filter_user_rocks(function(spec)
+                return outdated_rocks[spec.name] ~= nil or spec.version == "dev" or spec.version == "scm"
+            end, query)
         end,
     },
     sync = {
@@ -193,6 +223,7 @@ local rocks_command_tbl = {
             require("rocks.operations").pin(rock_name)
         end,
         complete = function(query)
+            ---@param spec RockSpec
             return fuzzy_filter_user_rocks(function(spec)
                 ---@cast spec RockSpec
                 return not spec.pin
@@ -209,6 +240,7 @@ local rocks_command_tbl = {
             require("rocks.operations").unpin(rock_name)
         end,
         complete = function(query)
+            ---@param spec RockSpec
             return fuzzy_filter_user_rocks(function(spec)
                 ---@cast spec RockSpec
                 return spec.pin

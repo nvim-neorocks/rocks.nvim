@@ -63,6 +63,7 @@ end
 
 ---@class rocks.AddOpts
 ---@field skip_prompts? boolean Whether to skip any "search 'dev' manifest prompts
+---@field cmd? 'install' | 'update' Command used to invoke this function. Default: `'install'`
 
 --- Adds a new rock and updates the `rocks.toml` file
 ---@param arg_list string[] #Argument list, potentially used by external handlers. The first argument is the package, e.g. the rock name
@@ -70,8 +71,10 @@ end
 ---@param opts? rocks.AddOpts
 add.add = function(arg_list, callback, opts)
     opts = opts or {}
+    opts.cmd = opts.cmd or "install"
+    local is_install = opts.cmd == "install"
     local progress_handle = progress.handle.create({
-        title = "Installing",
+        title = is_install and "Installing" or "Updating",
         lsp_client = { name = constants.ROCKS_NVIM },
     })
     local function report_error(message)
@@ -102,10 +105,14 @@ add.add = function(arg_list, callback, opts)
             ---@type rock_name
             local rock_name = arg_list[1]:lower()
             if #(vim.split(rock_name, "/")) ~= 1 then
-                local message = [[
-'Rocks install' does not support {owner/repo} for luarocks packages.
-Use 'Rocks install {rock_name}' or install rocks-git.nvim.
-]]
+                local message = string.format(
+                    [[
+'Rocks %s' does not support {owner/repo} for luarocks packages.
+Use 'Rocks %s {rock_name}' or install rocks-git.nvim.
+]],
+                    opts.cmd,
+                    opts.cmd
+                )
                 report_error(message)
                 return
             end
@@ -114,11 +121,11 @@ Use 'Rocks install {rock_name}' or install rocks-git.nvim.
             local args = #arg_list == 1 and {} or { unpack(arg_list, 2, #arg_list) }
             local parse_result = parser.parse_install_args(args)
             if not vim.tbl_isempty(parse_result.invalid_args) then
-                report_error(("invalid install args: %s"):format(vim.inspect(parse_result.invalid_args)))
+                report_error(("invalid %s args: %s"):format(opts.cmd, vim.inspect(parse_result.invalid_args)))
                 return
             end
             if not vim.tbl_isempty(parse_result.conflicting_args) then
-                report_error(("conflicting install args: %s"):format(vim.inspect(parse_result.conflicting_args)))
+                report_error(("conflicting %s args: %s"):format(opts.cmd, vim.inspect(parse_result.conflicting_args)))
                 return
             end
             local install_spec = parse_result.spec
@@ -126,7 +133,7 @@ Use 'Rocks install {rock_name}' or install rocks-git.nvim.
             local breaking_change = not version and helpers.get_breaking_change(rock_name)
             if breaking_change and not helpers.prompt_for_breaking_intall(breaking_change) then
                 progress_handle:report({
-                    title = "Installation aborted",
+                    title = string.format("%s aborted", is_install and "Installation" or "Update"),
                 })
                 progress_handle:cancel()
             end
@@ -144,13 +151,16 @@ Use 'Rocks install {rock_name}' or install rocks-git.nvim.
                 local stderr = installed_rock
                 ---@cast stderr string
                 local not_found = stderr:match("No results matching query were found") ~= nil
-                local message = ("Installation of %s failed. Run ':Rocks log' for details."):format(rock_name)
+                local message = ("%s %s failed. Run ':Rocks log' for details."):format(
+                    is_install and "Installing" or "Updating",
+                    rock_name
+                )
                 if not_found then
                     message = ("Could not find %s %s"):format(rock_name, version or "")
                 end
                 nio.scheduler()
                 progress_handle:report({
-                    title = "Installation failed",
+                    title = ("%s failed"):format(is_install and "Installation" or "Update"),
                     message = message,
                 })
                 if not_found then
@@ -163,7 +173,7 @@ Use 'Rocks install {rock_name}' or install rocks-git.nvim.
             ---@cast installed_rock Rock
             nio.scheduler()
             progress_handle:report({
-                title = "Installation successful",
+                title = ("%s successful"):format(is_install and "Installation" or "Update"),
                 message = ("%s -> %s"):format(installed_rock.name, installed_rock.version),
                 percentage = 100,
             })
@@ -203,7 +213,7 @@ Use 'Rocks install {rock_name}' or install rocks-git.nvim.
                 user_rocks.plugins[rock_name] = installed_rock.version
             end
             fs.write_file_await(config.config_path, "w", tostring(user_rocks))
-            cache.populate_removable_rock_cache()
+            cache.populate_all_rocks_state_caches()
             vim.schedule(function()
                 -- Re-generate help tags
                 if config.generate_help_pages then

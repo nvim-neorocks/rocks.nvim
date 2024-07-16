@@ -61,7 +61,7 @@ prune.prune = function(rock_name)
             fs.write_file_await(config.config_path, "w", tostring(user_config))
             local user_rocks = config.get_user_rocks()
             handlers.prune_user_rocks(user_rocks, report_progress, report_error)
-            cache.populate_removable_rock_cache()
+            cache.populate_all_rocks_state_caches()
             vim.schedule(function()
                 if success then
                     progress_handle:finish()

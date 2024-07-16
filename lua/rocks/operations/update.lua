@@ -186,7 +186,7 @@ update.update = function(on_complete, opts)
             else
                 progress_handle:finish()
             end
-            cache.populate_removable_rock_cache()
+            cache.populate_all_rocks_state_caches()
 
             -- Re-generate help tags
             if config.generate_help_pages then
