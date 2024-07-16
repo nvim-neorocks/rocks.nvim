@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.36.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.35.2...v2.36.0) (2024-07-16)
+
+
+### Features
+
+* **update:** `:Rocks update {rock}` alias for individual rocks ([#468](https://github.com/nvim-neorocks/rocks.nvim/issues/468)) ([5d0db60](https://github.com/nvim-neorocks/rocks.nvim/commit/5d0db6006f2652d2058731fdc28b45a98e66b64b))
+
 ## [2.35.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.35.1...v2.35.2) (2024-07-14)
 
 
