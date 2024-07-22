@@ -61,48 +61,33 @@ of specifying dependencies and build steps from users to plugin authors.
 ### :grey_question: Why rocks.nvim
 
 The traditional approach to Neovim plugin management often places
-an unjust burden on users.
+an unjust burden on users, by requiring them to declare dependencies and
+build instructions manually.
 
-Consider the following example using lazy.nvim[^2]:
+This comes with several pain points:
 
-```lua
-{
-  'foo/bar.nvim',
-  dependencies = {
-    'nvim-lua/plenary.nvim',
-    'MunifTanjim/nui.nvim',
-  },
-  build = "make install" -- Post-install build step of the main plugin
-}
-```
+- **Breaking changes:**
+  Updates to a plugin's dependencies or build instructions
+  can lead to breaking changes for users.
+- **Platform-specific complexity:**
+  Both dependencies and build instructions may vary by platform,
+  adding complexity for users.
+- **Poor user experience:**
+  Because of this horrible UX, plugin authors have been reluctant to add dependencies,
+  preferring to copy/paste Lua code instead,
+  often reinventing the wheel in a suboptimal manner.
 
-[^2]: Since version `11.0.0`, lazy.nvim has basic support for luarocks.
-      It will install luarocks dependencies if a repository has a `<plugin>-scm-1.rockspec` in its root directory.
+Other more modern approaches rely on plugin authors
+providing this information in their source repositories.
+We have a detailed article explaining why we chose a different approach [here](https://github.com/nvim-neorocks/rocks.nvim/wiki/What-about-packspec-(pkg.json)%3F).
 
-This setup illustrates several pain points in the status quo:
-
-- Manual dependency management:
-  Users are required to specify and manage dependencies.
-- Breaking changes:
-  Updates to a plugin's dependencies can lead to breaking changes for users.
-- Platform-specific instructions:
-  Build instructions and dependencies may vary by platform, adding complexity.
-- Because of this horrible UX, plugin authors have been reluctant to
-  add dependencies, preferring to copy/paste code instead.
-
-rocks.nvim simplifies the above example to:
+With rocks.nvim, installing a plugin is as simple as entering the command:
 
 ```
-:Rocks install bar.nvim
+:Rocks install foo.nvim
 ```
 
 Welcome to a new era of Neovim plugin management - where simplicity meets efficiency!
-
-> [!NOTE]
->
-> ##### What about `packspec`/`pkg.json`?
->
-> We address `packspec` concerns [here](https://github.com/nvim-neorocks/rocks.nvim/wiki/What-about-packspec-(pkg.json)%3F).
 
 ### :milky_way: Philosophy
 
@@ -124,10 +109,10 @@ ensures you're covered even when a plugin isn't directly available on LuaRocks.
 We're revolutionizing the way Neovim users and plugin developers
 interact with tree-sitter parsers.
 With the introduction of the [Neovim User Rocks Repository (NURR)](https://github.com/nvim-neorocks/nurr),
-we have automated the packaging and publishing of many plugins and curated[^3] tree-sitter parsers
+we have automated the packaging and publishing of many plugins and curated[^2] tree-sitter parsers
 for luarocks, ensuring a seamless and efficient user experience.
 
-[^3]: We only upload parsers which we can install in the NURR CI
+[^2]: We only upload parsers which we can install in the NURR CI
       (tested on Linux).
 
 When installing, rocks.nvim will also search our [rocks-binaries (dev)](https://nvim-neorocks.github.io/rocks-binaries-dev/)
@@ -140,9 +125,9 @@ If you need a tree-sitter parser for syntax highlighting or other features,
 you can easily install them with rocks.nvim: `:Rocks install tree-sitter-<lang>`.
 
 They come bundled with queries, so once installed,
-all you need to do is run `vim.treesitter.start()` to enable syntax highlighting[^4].
+all you need to do is run `vim.treesitter.start()` to enable syntax highlighting[^3].
 
-[^4]: You can put this in a `ftplugin/<filetype>.lua`, for example.
+[^3]: You can put this in a `ftplugin/<filetype>.lua`, for example.
 
 Or, you can use our [`rocks-treesitter.nvim`](https://github.com/nvim-neorocks/rocks-treesitter.nvim)
 module, which can automatically install parsers and enable syntax highlighting for you.
@@ -171,11 +156,11 @@ module, which can automatically install parsers and enable syntax highlighting f
 #### Simplifying dependencies
 
 For plugin developers, specifying a tree-sitter parser as a dependency
-is now as straightforward as including it in their project's rockspec[^5].
+is now as straightforward as including it in their project's rockspec[^4].
 This eliminates the need for manual parser management and ensures that
 dependencies are automatically resolved and installed.
 
-[^5]: [example](https://luarocks.org/modules/MrcJkb/neotest-haskell).
+[^4]: [example](https://luarocks.org/modules/MrcJkb/neotest-haskell).
 
 Example rockspec dependency specification:
 
