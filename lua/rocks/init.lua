@@ -56,7 +56,7 @@ local rocks = {}
 ---@deprecated
 function rocks.packadd(rock_name, opts)
     vim.deprecate("rocks.packadd", "Neovim's built-in 'packadd'", "3.0.0", "rocks.nvim")
-    require("rocks.runtime").packadd(rock_name, opts)
+    require("rocks.runtime").packadd({ name = rock_name }, opts)
 end
 
 return rocks

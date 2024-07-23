@@ -51,7 +51,8 @@ end
 ---@return nio.control.Future
 helpers.install = nio.create(function(rock_spec, progress_handle)
     cache.invalidate_removable_rocks()
-    local name = rock_spec.name:lower()
+    rock_spec.name = rock_spec.name:lower()
+    local name = rock_spec.name
     local version = rock_spec.version
     local message = version and ("Installing: %s -> %s"):format(name, version) or ("Installing: %s"):format(name)
     log.info(message)
@@ -112,10 +113,10 @@ helpers.install = nio.create(function(rock_spec, progress_handle)
             nio.run(function()
                 if config.dynamic_rtp and not rock_spec.opt then
                     nio.scheduler()
-                    runtime.packadd(name)
+                    runtime.packadd(rock_spec)
                 else
                     -- Add rock to the rtp, but don't source any scripts
-                    runtime.packadd(name, { bang = true })
+                    runtime.packadd(rock_spec, { bang = true })
                 end
                 future.set(installed_rock)
             end)
