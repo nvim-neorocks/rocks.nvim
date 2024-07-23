@@ -246,7 +246,7 @@ operations.sync = function(user_rocks, on_complete)
                 refresh_rocks_state()
             until vim.tbl_isempty(prunable_rocks)
 
-            adapter.sync_site_symlinks()
+            adapter.synchronise_site_symlinks()
             vim
                 .iter(sync_status.to_install)
                 ---@param rock_name string

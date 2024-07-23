@@ -173,7 +173,7 @@ Use 'Rocks %s {rock_name}' or install rocks-git.nvim.
                 progress_handle:cancel()
                 return
             end
-            adapter.sync_site_symlinks()
+            adapter.synchronise_site_symlinks()
             helpers.dynamic_load(rock_spec).wait()
             ---@cast installed_rock Rock
             nio.scheduler()
