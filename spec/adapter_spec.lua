@@ -10,7 +10,7 @@ local nio = require("nio")
 vim.env.PLENARY_TEST_TIMEOUT = 60000
 local adapter = require("rocks.adapter")
 local config = require("rocks.config.internal")
-local helpers = require("rocks.operations.helpers")
+local operations = require("rocks.operations")
 local mock = require("luassert.mock")
 
 local luarocks_path = {
@@ -26,7 +26,11 @@ describe("rocks.adapter", function()
             check = function(_) end,
         })
         vim.health.ok = mock_health.ok
-        helpers.install({ name = "telescope.nvim", version = "0.1.6" }).wait()
+        local future = nio.control.future()
+        operations.add({ "telescope.nvim", "0.1.6" }, function()
+            future.set(true)
+        end)
+        future.wait()
         assert.is_not_nil(vim.cmd.Telescope)
         nio.scheduler()
         assert.same("function", type(require("telescope.health").check))
