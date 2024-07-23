@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.36.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.36.0...v2.36.1) (2024-07-23)
+
+
+### Bug Fixes
+
+* **sync/update:** plugins not found warnings at startup ([3739621](https://github.com/nvim-neorocks/rocks.nvim/commit/37396210b9124499a615fd96780de76c6b8fe08a))
+
+
+### Performance Improvements
+
+* **sync/update:** redundant site symlink validations ([fcc6463](https://github.com/nvim-neorocks/rocks.nvim/commit/fcc64632de04a4e921de581bba0247ef428b8dc5))
+
 ## [2.36.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.35.2...v2.36.0) (2024-07-16)
 
 
