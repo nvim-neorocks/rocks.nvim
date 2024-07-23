@@ -35,7 +35,7 @@ end
 ---@return boolean success
 ---@return string | nil error_message
 local function init_site_symlink_and_retry_packadd(rock, opts, err)
-    local symlink_created = require("rocks.adapter").init_site_symlink(rock)
+    local symlink_created = require("rocks.adapter").init_site_symlink_sync(rock)
     if symlink_created then
         return pcall(vim.cmd.packadd, { rock.name, bang = opts.bang })
     end
