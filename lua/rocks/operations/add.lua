@@ -142,10 +142,12 @@ Use 'Rocks %s {rock_name}' or install rocks-git.nvim.
             progress_handle:report({
                 message = version and ("%s -> %s"):format(rock_name, version) or rock_name,
             })
-            local future = helpers.install({
+            ---@type RockSpec
+            local rock_spec = {
                 name = rock_name,
                 version = version,
-            })
+            }
+            local future = helpers.install(rock_spec)
             ---@type boolean, Rock | string
             local success, installed_rock = pcall(future.wait)
             if not success then
@@ -172,6 +174,7 @@ Use 'Rocks %s {rock_name}' or install rocks-git.nvim.
                 return
             end
             adapter.sync_site_symlinks()
+            helpers.dynamic_load(rock_spec).wait()
             ---@cast installed_rock Rock
             nio.scheduler()
             progress_handle:report({

@@ -247,6 +247,16 @@ operations.sync = function(user_rocks, on_complete)
             until vim.tbl_isempty(prunable_rocks)
 
             adapter.sync_site_symlinks()
+            vim
+                .iter(sync_status.to_install)
+                ---@param rock_name string
+                :map(function(rock_name)
+                    return user_rocks[rock_name]
+                end)
+                :filter(function(rock_spec)
+                    return rock_spec ~= nil
+                end)
+                :each(helpers.dynamic_load)
 
             -- Re-generate help tags
             if config.generate_help_pages then

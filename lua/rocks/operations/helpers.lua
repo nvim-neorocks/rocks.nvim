@@ -110,22 +110,37 @@ helpers.install = nio.create(function(rock_spec, progress_handle)
                 progress_handle:report({ message = message })
             end
 
-            nio.run(function()
-                if config.dynamic_rtp and not rock_spec.opt then
-                    nio.scheduler()
-                    runtime.packadd(rock_spec)
-                else
-                    -- Add rock to the rtp, but don't source any scripts
-                    runtime.packadd(rock_spec, { bang = true })
-                end
-                future.set(installed_rock)
-            end)
+            future.set(installed_rock)
         end
     end, {
         servers = servers,
     })
     return future
 end, 2)
+
+---Dynamically load a rock (asynchronously) if the `dynamic_rtp` option is enabled
+---Sources non-`opt` rocks' plugin scripts
+---and adds `opt` rocks to the runtimepath.
+---@param rock_spec RockSpec
+---@return nio.control.Future
+function helpers.dynamic_load(rock_spec)
+    local future = nio.control.future()
+    if not config.dynamic_rtp then
+        future.set(true)
+        return future
+    end
+    nio.run(function()
+        if rock_spec.opt then
+            -- Add rock to the rtp, but don't source any scripts
+            runtime.packadd(rock_spec, { bang = true })
+        else
+            nio.scheduler()
+            runtime.packadd(rock_spec)
+        end
+        future.set(true)
+    end)
+    return future
+end
 
 ---Removes a rock
 ---@param name string
