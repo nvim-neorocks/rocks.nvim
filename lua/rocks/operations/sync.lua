@@ -24,6 +24,7 @@ local helpers = require("rocks.operations.helpers")
 local handlers = require("rocks.operations.handlers")
 local nio = require("nio")
 local progress = require("fidget.progress")
+local adapter = require("rocks.adapter")
 
 --- Synchronizes the user rocks with the physical state on the current machine.
 --- - Installs missing rocks
@@ -244,6 +245,8 @@ operations.sync = function(user_rocks, on_complete)
                 end
                 refresh_rocks_state()
             until vim.tbl_isempty(prunable_rocks)
+
+            adapter.sync_site_symlinks()
 
             -- Re-generate help tags
             if config.generate_help_pages then

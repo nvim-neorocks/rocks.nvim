@@ -25,6 +25,7 @@ local helpers = require("rocks.operations.helpers")
 local handlers = require("rocks.operations.handlers")
 local nio = require("nio")
 local progress = require("fidget.progress")
+local adapter = require("rocks.adapter")
 
 ---Uninstall a rock, pruning it from rocks.toml.
 ---@param rock_name string
@@ -61,6 +62,7 @@ prune.prune = function(rock_name)
             fs.write_file_await(config.config_path, "w", tostring(user_config))
             local user_rocks = config.get_user_rocks()
             handlers.prune_user_rocks(user_rocks, report_progress, report_error)
+            adapter.sync_site_symlinks()
             cache.populate_all_rocks_state_caches()
             vim.schedule(function()
                 if success then
