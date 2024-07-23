@@ -126,18 +126,22 @@ end, 2)
 function helpers.dynamic_load(rock_spec)
     local future = nio.control.future()
     if not config.dynamic_rtp then
+        log.trace("Dynamic rtp is disabled.")
         future.set(true)
         return future
     end
     nio.run(function()
-        if rock_spec.opt then
-            -- Add rock to the rtp, but don't source any scripts
-            runtime.packadd(rock_spec, { bang = true })
-        else
-            nio.scheduler()
-            runtime.packadd(rock_spec)
-        end
-        future.set(true)
+        vim.schedule(function()
+            if rock_spec.opt then
+                -- Add rock to the rtp, but don't source any scripts
+                log.trace(("Adding %s to the runtimepath"):format(rock_spec.name))
+                runtime.packadd(rock_spec, { bang = true })
+            else
+                log.trace(("Sourcing %s"):format(rock_spec.name))
+                runtime.packadd(rock_spec)
+            end
+            future.set(true)
+        end)
     end)
     return future
 end
