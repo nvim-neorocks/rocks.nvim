@@ -188,7 +188,7 @@ update.update = function(on_complete, opts)
                 progress_handle:finish()
             end
             cache.populate_all_rocks_state_caches()
-            adapter.sync_site_symlinks()
+            adapter.synchronise_site_symlinks()
 
             -- Re-generate help tags
             if config.generate_help_pages then

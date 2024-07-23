@@ -173,13 +173,13 @@ local function ensure_site_links()
     if not ok then
         return
     end
-    adapter.sync_site_symlinks()
+    adapter.synchronise_site_symlinks()
 end
 
 --- Reinitialise/validate site symlinks so that 'autoload' and 'colors', etc.
 --- are available on the rtp (without sourcing plugins) before rocks.nvim is loaded.
 ---@type async fun()
-adapter.sync_site_symlinks = nio.create(function()
+adapter.synchronise_site_symlinks = nio.create(function()
     validate_site_symlinks_async()
     init_site_symlinks_async()
 end)
