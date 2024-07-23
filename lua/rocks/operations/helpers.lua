@@ -20,7 +20,6 @@ local constants = require("rocks.constants")
 local config = require("rocks.config.internal")
 local fs = require("rocks.fs")
 local runtime = require("rocks.runtime")
-local adapter = require("rocks.adapter")
 local state = require("rocks.state")
 local log = require("rocks.log")
 local cache = require("rocks.cache")
@@ -111,7 +110,6 @@ helpers.install = nio.create(function(rock_spec, progress_handle)
             end
 
             nio.run(function()
-                adapter.init_site_symlinks()
                 if config.dynamic_rtp and not rock_spec.opt then
                     nio.scheduler()
                     runtime.packadd(name)
@@ -145,7 +143,6 @@ helpers.remove = function(name, progress_handle)
         name,
     }, function(sc)
         nio.run(function()
-            adapter.validate_site_symlinks()
             ---@cast sc vim.SystemCompleted
             if sc.code ~= 0 then
                 message = ("Failed to remove %s."):format(name)

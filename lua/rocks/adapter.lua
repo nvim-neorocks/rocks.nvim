@@ -66,7 +66,7 @@ end
 
 --- Check if the site symlinks are valid,
 --- and remove them if they aren't
-function adapter.validate_site_symlinks()
+local function validate_site_symlinks()
     local _, handle = nio.uv.fs_scandir(site_link_dir)
     while handle do
         local name, ty = vim.uv.fs_scandir_next(handle)
@@ -99,7 +99,7 @@ end
 --- Loop over the installed rocks and create symlinks in site/pack/luarocks/opt,
 --- so that rtp paths like 'autoload' and 'color' are available before rocks.nvim
 --- has initialised.
-adapter.init_site_symlinks = nio.create(function()
+local function init_site_symlinks()
     local state = require("rocks.state")
     for _, rock in pairs(state.installed_rocks()) do
         init_site_symlink(rock)
@@ -111,10 +111,10 @@ adapter.init_site_symlinks = nio.create(function()
             log.error(err)
         end
     end
-end)
+end
 
 --- Initialise/validate runtimepath symlinks for tree-sitter parsers and health checks
-local function init_rtp_links()
+local function ensure_rtp_links()
     local ok = fs.mkdir_p(rtp_link_dir)
     if not ok then
         return
@@ -122,20 +122,24 @@ local function init_rtp_links()
     init_checkhealth_symlink()
 end
 
---- Initialise/validate site symlinks so that 'autoload' and 'colors', etc.
---- are available on the rtp (without sourcing plugins) before rocks.nvim is loaded.
-local function init_site_links()
+local function ensure_site_links()
     local ok = fs.mkdir_p(site_link_dir)
     if not ok then
         return
     end
-    adapter.validate_site_symlinks()
-    adapter.init_site_symlinks()
+    adapter.sync_site_symlinks()
 end
 
+--- Reinitialise/validate site symlinks so that 'autoload' and 'colors', etc.
+--- are available on the rtp (without sourcing plugins) before rocks.nvim is loaded.
+adapter.sync_site_symlinks = nio.create(function()
+    validate_site_symlinks()
+    init_site_symlinks()
+end)
+
 adapter.init = nio.create(function()
-    init_rtp_links()
-    init_site_links()
+    ensure_rtp_links()
+    ensure_site_links()
 end)
 
 return adapter

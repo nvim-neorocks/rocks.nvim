@@ -26,6 +26,7 @@ local helpers = require("rocks.operations.helpers")
 local handlers = require("rocks.operations.handlers")
 local nio = require("nio")
 local progress = require("fidget.progress")
+local adapter = require("rocks.adapter")
 
 ---@param counter number
 ---@param total number
@@ -187,6 +188,7 @@ update.update = function(on_complete, opts)
                 progress_handle:finish()
             end
             cache.populate_all_rocks_state_caches()
+            adapter.sync_site_symlinks()
 
             -- Re-generate help tags
             if config.generate_help_pages then

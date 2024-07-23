@@ -26,6 +26,7 @@ local handlers = require("rocks.operations.handlers")
 local parser = require("rocks.operations.parser")
 local nio = require("nio")
 local progress = require("fidget.progress")
+local adapter = require("rocks.adapter")
 
 --- Prompt to retry an installation searching the dev manifest, if the version
 --- is not "dev" or "scm"
@@ -170,6 +171,7 @@ Use 'Rocks %s {rock_name}' or install rocks-git.nvim.
                 progress_handle:cancel()
                 return
             end
+            adapter.sync_site_symlinks()
             ---@cast installed_rock Rock
             nio.scheduler()
             progress_handle:report({
