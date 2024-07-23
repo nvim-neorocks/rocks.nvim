@@ -33,13 +33,14 @@ local site_link_dir = vim.fs.joinpath(data_dir, "site", "pack", "luarocks", "opt
 ---@param symlink_dir_name string
 ---@param dest_dir_path string
 ---@return boolean
-local function create_symlink(symlink_location, symlink_dir_name, dest_dir_path)
+local function create_symlink_sync(symlink_location, symlink_dir_name, dest_dir_path)
     local symlink_dir_path = vim.fs.joinpath(symlink_location, symlink_dir_name)
     local stat = vim.uv.fs_stat(symlink_dir_path)
     if stat then
+        log.debug(("Symlink directory %s exists already."):format(symlink_dir_name))
         return true
     else
-        log.info("Creating symlink directory: " .. symlink_dir_name)
+        log.debug(("Creating symlink directory: %s"):format(symlink_dir_name))
         local success, err = vim.uv.fs_symlink(dest_dir_path, symlink_dir_path)
         if not success then
             log.error(("Error creating symlink directory: %s (%s)"):format(symlink_dir_name, err or "unknown error"))
@@ -47,6 +48,21 @@ local function create_symlink(symlink_location, symlink_dir_name, dest_dir_path)
         return success
     end
 end
+
+----@type async fun(symlink_location: string, symlink_dir_name: string, dest_dir_path: string)
+local create_symlink_async = nio.create(function(symlink_location, symlink_dir_name, dest_dir_path)
+    local symlink_dir_path = vim.fs.joinpath(symlink_location, symlink_dir_name)
+    local _, stat = nio.uv.fs_stat(symlink_dir_path)
+    if stat then
+        log.debug(("Symlink directory %s exists already."):format(symlink_dir_name))
+    else
+        log.debug(("Creating symlink directory: %s"):format(symlink_dir_name))
+        local err, success = nio.uv.fs_symlink(dest_dir_path, symlink_dir_path)
+        if not success then
+            log.error(("Error creating symlink directory: %s (%s)"):format(symlink_dir_name, err or "unknown error"))
+        end
+    end
+end, 3)
 
 ---@param symlink_dir string
 local function validate_symlink_dir(symlink_dir)
@@ -66,13 +82,13 @@ local function init_checkhealth_symlink()
     local rocks_lua_dir = vim.fs.joinpath(config.rocks_path, "share", "lua", "5.1")
     local _, stat = nio.uv.fs_stat(rocks_lua_dir)
     if stat then
-        create_symlink(rtp_link_dir, "lua", rocks_lua_dir)
+        create_symlink_sync(rtp_link_dir, "lua", rocks_lua_dir)
     end
 end
 
 --- Check if the site symlinks are valid,
 --- and remove them if they aren't
-local function validate_site_symlinks()
+local function validate_site_symlinks_async()
     local _, handle = nio.uv.fs_scandir(site_link_dir)
     while handle do
         local name, ty = vim.uv.fs_scandir_next(handle)
@@ -86,9 +102,32 @@ local function validate_site_symlinks()
 end
 
 ---@param rock Rock
+---@return string
+local function get_rock_dir(rock)
+    return vim.fs.joinpath(config.rocks_path, "lib", "luarocks", "rocks-5.1", rock.name)
+end
+
+---@param rock Rock
+local function init_site_symlink_async(rock)
+    local rock_dir = get_rock_dir(rock)
+    local _, handle = nio.uv.fs_scandir(rock_dir)
+    while handle do
+        local dir_name, ty = vim.uv.fs_scandir_next(handle)
+        if not dir_name then
+            return
+        end
+        if ty == "directory" and dir_name:find("^" .. rock.version) ~= nil then
+            local rock_version_dir = vim.fs.joinpath(rock_dir, dir_name)
+            return create_symlink_async(site_link_dir, rock.name, rock_version_dir)
+        end
+    end
+end
+
+---Synchronously initialise a site symlink
+---@param rock Rock
 ---@return boolean created
-function adapter.init_site_symlink(rock)
-    local rock_dir = vim.fs.joinpath(config.rocks_path, "lib", "luarocks", "rocks-5.1", rock.name)
+function adapter.init_site_symlink_sync(rock)
+    local rock_dir = get_rock_dir(rock)
     local handle = vim.uv.fs_scandir(rock_dir)
     while handle do
         local dir_name, ty = vim.uv.fs_scandir_next(handle)
@@ -97,7 +136,7 @@ function adapter.init_site_symlink(rock)
         end
         if ty == "directory" and dir_name:find("^" .. rock.version) ~= nil then
             local rock_version_dir = vim.fs.joinpath(rock_dir, dir_name)
-            return create_symlink(site_link_dir, rock.name, rock_version_dir)
+            return create_symlink_sync(site_link_dir, rock.name, rock_version_dir)
         end
     end
     return false
@@ -106,10 +145,10 @@ end
 --- Loop over the installed rocks and create symlinks in site/pack/luarocks/opt,
 --- so that rtp paths like 'autoload' and 'color' are available before rocks.nvim
 --- has initialised.
-local function init_site_symlinks()
+local function init_site_symlinks_async()
     local state = require("rocks.state")
     for _, rock in pairs(state.installed_rocks()) do
-        adapter.init_site_symlink(rock)
+        init_site_symlink_async(rock)
         -- Since we're invoking this in the :h load-plugins phase of the startup sequence,
         -- this packadd! call won't result in any scripts being sourced.
         nio.scheduler()
@@ -139,11 +178,13 @@ end
 
 --- Reinitialise/validate site symlinks so that 'autoload' and 'colors', etc.
 --- are available on the rtp (without sourcing plugins) before rocks.nvim is loaded.
+---@type async fun()
 adapter.sync_site_symlinks = nio.create(function()
-    validate_site_symlinks()
-    init_site_symlinks()
+    validate_site_symlinks_async()
+    init_site_symlinks_async()
 end)
 
+---@type async fun()
 adapter.init = nio.create(function()
     ensure_rtp_links()
     ensure_site_links()
