@@ -106,6 +106,16 @@ ensures you're covered even when a plugin isn't directly available on LuaRocks.
 
 ### :deciduous_tree: Enhanced tree-sitter support
 
+> [!WARNING]
+>
+> - Tree-sitter is an experimental feature of Neovim.
+>   As is the case with nvim-treesitter,
+>   please consider tree-sitter support in rocks.nvim experimental.
+>
+> - We are not affiliated with the nvim-treesitter maintainers.
+>   If you are facing issues with tree-sitter support in rocks.nvim,
+>   please don't bug them.
+
 We're revolutionizing the way Neovim users and plugin developers
 interact with tree-sitter parsers.
 With the introduction of the [Neovim User Rocks Repository (NURR)](https://github.com/nvim-neorocks/nurr),
@@ -118,6 +128,8 @@ for luarocks, ensuring a seamless and efficient user experience.
 When installing, rocks.nvim will also search our [rocks-binaries (dev)](https://nvim-neorocks.github.io/rocks-binaries-dev/)
 server, which means you don't even need to compile any parsers
 on your machine.
+
+Bonus: With rocks.nvim, you an **pin and roll back each tree-sitter parser individually!**
 
 #### Effortless installation for users
 
@@ -142,16 +154,6 @@ module, which can automatically install parsers and enable syntax highlighting f
 <!-- Or, if you want something that comes with lots of tree-sitter parsers and -->
 <!-- automatically configures nvim-treesitter for you, -->
 <!-- check out our [`rocks-treesiter.nvim` module](https://github.com/nvim-neorocks/rocks-treesitter.nvim). -->
-
-> [!WARNING]
->
-> - Tree-sitter is an experimental feature of Neovim.
->   As is the case with nvim-treesitter,
->   please consider tree-sitter support in rocks.nvim experimental.
->
-> - We are not affiliated with the nvim-treesitter maintainers.
->   If you are facing issues with tree-sitter support in rocks.nvim,
->   please don't bug them.
 
 #### Simplifying dependencies
 
