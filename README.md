@@ -129,10 +129,6 @@ When installing, rocks.nvim will also search our [rocks-binaries (dev)](https://
 server, which means you don't even need to compile any parsers
 on your machine.
 
-> [!TIP]
->
-> Bonus: With rocks.nvim, you an **pin and roll back each tree-sitter parser individually!**
-
 #### Effortless installation for users
 
 If you need a tree-sitter parser for syntax highlighting or other features,
@@ -148,10 +144,7 @@ module, which can automatically install parsers and enable syntax highlighting f
 
 > [!TIP]
 >
-> If you still need [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
-> for tree-sitter based folding, indentation, etc., but want to install parsers
-> from luarocks, we recommend using our [nvim-treesitter-legacy-api](https://luarocks.org/modules/neorocks/nvim-treesitter-legacy-api)
-> package. It does not include queries, which could conflict with the luarocks parsers.
+> Bonus: With rocks.nvim, you an **pin and roll back each tree-sitter parser individually!**
 
 <!-- Or, if you want something that comes with lots of tree-sitter parsers and -->
 <!-- automatically configures nvim-treesitter for you, -->
