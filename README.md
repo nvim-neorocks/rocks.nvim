@@ -112,9 +112,9 @@ ensures you're covered even when a plugin isn't directly available on LuaRocks.
 >   As is the case with nvim-treesitter,
 >   please consider tree-sitter support in rocks.nvim experimental.
 >
-> - We are not affiliated with the nvim-treesitter maintainers.
+> - **We are not affiliated with the nvim-treesitter maintainers.
 >   If you are facing issues with tree-sitter support in rocks.nvim,
->   please don't bug them.
+>   please don't bug them.**
 
 We're revolutionizing the way Neovim users and plugin developers
 interact with tree-sitter parsers.
@@ -129,7 +129,9 @@ When installing, rocks.nvim will also search our [rocks-binaries (dev)](https://
 server, which means you don't even need to compile any parsers
 on your machine.
 
-Bonus: With rocks.nvim, you an **pin and roll back each tree-sitter parser individually!**
+> [!TIP]
+>
+> Bonus: With rocks.nvim, you an **pin and roll back each tree-sitter parser individually!**
 
 #### Effortless installation for users
 
