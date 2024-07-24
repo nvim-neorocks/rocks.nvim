@@ -108,13 +108,9 @@ ensures you're covered even when a plugin isn't directly available on LuaRocks.
 
 > [!WARNING]
 >
-> - Tree-sitter is an experimental feature of Neovim.
->   As is the case with nvim-treesitter,
->   please consider tree-sitter support in rocks.nvim experimental.
->
-> - **We are not affiliated with the nvim-treesitter maintainers.
->   If you are facing issues with tree-sitter support in rocks.nvim,
->   please don't bug them.**
+> **We are not affiliated with the nvim-treesitter maintainers.
+> If you are facing issues with tree-sitter support in rocks.nvim,
+> please don't bug them.**
 
 We're revolutionizing the way Neovim users and plugin developers
 interact with tree-sitter parsers.
