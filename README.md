@@ -460,6 +460,8 @@ Following are some examples:
   Adds the ability to install plugins from git.
 - [`rocks-config.nvim`](https://github.com/nvim-neorocks/rocks-config.nvim):
   Adds an API for safely loading plugin configurations.
+- [`rocks-lazy.nvim`](https://github.com/nvim-neorocks/rocks-lazy.nvim):
+  Adds lazy-loading abstractions and integrates with rocks-config.nvim.
 - [`rocks-dev.nvim`](https://github.com/nvim-neorocks/rocks-dev.nvim):
   Adds an API for developing and testing luarocks plugins locally.
 - [`rocks-treesitter.nvim`](https://github.com/nvim-neorocks/rocks-treesitter.nvim)
