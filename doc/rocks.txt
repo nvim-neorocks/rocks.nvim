@@ -120,6 +120,8 @@ RocksOpts                                                            *RocksOpts*
                                                       (Default: `true` for the best default experience).
         {generate_help_pages?}            (boolean)
                                                       Whether to re-generate plugins help pages after installation/upgrade. (Default: `true`).
+        {update_remote_plugins?}          (boolean)
+                                                      Whether to update remote plugins after installation/upgrade. (Default: `true`).
         {reinstall_dev_rocks_on_update?}  (boolean)
                                                       Whether to reinstall 'dev' rocks on update
                                                       (Default: `true`, as rocks.nvim cannot determine if 'dev' rocks are up to date).
