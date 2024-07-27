@@ -258,10 +258,7 @@ operations.sync = function(user_rocks, on_complete)
                 end)
                 :each(helpers.dynamic_load)
 
-            -- Re-generate help tags
-            if config.generate_help_pages then
-                vim.cmd.helptags("ALL")
-            end
+            helpers.postInstall()
             if not vim.tbl_isempty(error_handles) then
                 local message = "Sync completed with errors! Run ':Rocks log' for details."
                 log.error(message)
