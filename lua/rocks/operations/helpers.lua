@@ -308,4 +308,15 @@ Breaking changes:
     )
 end, 2)
 
+--- Post-install actions
+function helpers.postInstall()
+    if config.update_remote_plugins and type(vim.cmd.UpdateRemotePlugins) == "function" then
+        pcall(vim.cmd.UpdateRemotePlugins)
+    end
+    -- Re-generate help tags
+    if config.generate_help_pages then
+        vim.cmd.helptags("ALL")
+    end
+end
+
 return helpers

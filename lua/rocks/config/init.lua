@@ -39,6 +39,9 @@ local config = {}
 --- Whether to re-generate plugins help pages after installation/upgrade. (Default: `true`).
 ---@field generate_help_pages? boolean
 ---
+--- Whether to update remote plugins after installation/upgrade. (Default: `true`).
+---@field update_remote_plugins? boolean
+---
 --- Whether to reinstall 'dev' rocks on update
 --- (Default: `true`, as rocks.nvim cannot determine if 'dev' rocks are up to date).
 ---@field reinstall_dev_rocks_on_update? boolean

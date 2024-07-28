@@ -190,10 +190,7 @@ update.update = function(on_complete, opts)
             cache.populate_all_rocks_state_caches()
             adapter.synchronise_site_symlinks()
 
-            -- Re-generate help tags
-            if config.generate_help_pages then
-                vim.cmd.helptags("ALL")
-            end
+            helpers.postInstall()
             if on_complete then
                 on_complete()
             end

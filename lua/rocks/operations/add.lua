@@ -220,10 +220,7 @@ Use 'Rocks %s {rock_name}' or install rocks-git.nvim.
             fs.write_file_await(config.config_path, "w", tostring(user_rocks))
             cache.populate_all_rocks_state_caches()
             vim.schedule(function()
-                -- Re-generate help tags
-                if config.generate_help_pages then
-                    vim.cmd.helptags("ALL")
-                end
+                helpers.postInstall()
                 if success then
                     progress_handle:finish()
                     if callback then

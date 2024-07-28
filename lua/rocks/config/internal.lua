@@ -53,6 +53,8 @@ local default_config = {
     dynamic_rtp = true,
     ---@type boolean Whether to re-generate plugins help pages after installation/upgrade
     generate_help_pages = true,
+    ---@type boolean Whether to update remote plugins after installation/upgrade
+    update_remote_plugins = true,
     ---@type boolean Whether to reinstall 'dev' rocks on update
     reinstall_dev_rocks_on_update = true,
     ---@type boolean Whether to use the luarocks loader to support multiple dependencies
