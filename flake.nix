@@ -108,6 +108,13 @@
             stylua.enable = true;
             luacheck.enable = true;
             editorconfig-checker.enable = true;
+            docgen = {
+              enable = true;
+              name = "docgen";
+              entry = "${pkgs.docgen}/bin/docgen";
+              files = "\\.(lua)$";
+              pass_filenames = false;
+            };
           };
         };
 
