@@ -3,12 +3,14 @@ vim.fn.mkdir(tempdir, "p")
 vim.g.rocks_nvim = {
     luarocks_binary = "luarocks",
     rocks_path = tempdir,
+    experimental_features = { "ext_module_dependency_stubs" },
 }
 local nio = require("nio")
 vim.env.PLENARY_TEST_TIMEOUT = 60000
 describe("operations.helpers", function()
     local helpers = require("rocks.operations.helpers")
     local config = require("rocks.config.internal")
+    local state = require("rocks.state")
     vim.system({ "mkdir", "-p", config.rocks_path }):wait()
     nio.tests.it("install/remove", function()
         helpers.install({ name = "plenary.nvim" }).wait()
@@ -47,5 +49,24 @@ describe("operations.helpers", function()
         assert.is_nil(result.bar)
         assert.is_nil(result.baz)
         assert.same("foo 7.0.0 -> 8.0.0", tostring(result.foo))
+    end)
+    nio.tests.it("Install rock stub", function()
+        local installed_rocks = state.installed_rocks()
+        assert.is_nil(installed_rocks["stub.nvim"])
+        helpers.manage_rock_stub({
+            rock = { name = "stub.nvim", version = "1.0.0" },
+            action = "install",
+        })
+        installed_rocks = state.installed_rocks()
+        assert.same({
+            name = "stub.nvim",
+            version = "1.0.0",
+        }, installed_rocks["stub.nvim"])
+        helpers.manage_rock_stub({
+            rock = { name = "stub.nvim", version = "1.0.0" },
+            action = "prune",
+        })
+        installed_rocks = state.installed_rocks()
+        assert.is_nil(installed_rocks["stub.nvim"])
     end)
 end)

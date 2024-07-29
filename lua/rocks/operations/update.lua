@@ -148,7 +148,7 @@ update.update = function(on_complete, opts)
                         message = message,
                     })
                 end
-                handler(report_progress, report_error)
+                handler(report_progress, report_error, helpers.manage_rock_stub)
                 progress_handle:report({
                     percentage = get_percentage(ct, total_update_count),
                 })
