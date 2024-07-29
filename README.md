@@ -140,7 +140,7 @@ module, which can automatically install parsers and enable syntax highlighting f
 
 > [!TIP]
 >
-> Bonus: With rocks.nvim, you can **pin and roll back each tree-sitter parser individually!**
+> Bonus: With rocks.nvim, you can [**pin and roll back each tree-sitter parser individually!**](https://mrcjkb.dev/posts/2024-07-28-tree-sitter.html)
 
 <!-- Or, if you want something that comes with lots of tree-sitter parsers and -->
 <!-- automatically configures nvim-treesitter for you, -->
