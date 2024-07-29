@@ -97,7 +97,7 @@ add.add = function(arg_list, callback, opts)
                         message = message,
                     })
                 end
-                handler(report_progress, report_error)
+                handler(report_progress, report_error, helpers.manage_rock_stub)
                 fs.write_file_await(config.config_path, "w", tostring(user_rocks))
                 nio.scheduler()
                 progress_handle:finish()

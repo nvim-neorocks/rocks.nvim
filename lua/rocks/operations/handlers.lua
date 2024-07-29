@@ -18,6 +18,8 @@
 
 local handlers = {}
 
+local helpers = require("rocks.operations.helpers")
+
 ---@type RockHandler[]
 local _handlers = {}
 
@@ -80,13 +82,13 @@ end
 
 ---Tell external handlers to prune their rocks
 ---@param user_rocks table<rock_name, RockSpec>
----@param report_progress fun(message: string)
----@param report_error fun(message: string)
-handlers.prune_user_rocks = function(user_rocks, report_progress, report_error)
+---@param on_progress fun(message: string)
+---@param on_error fun(message: string)
+handlers.prune_user_rocks = function(user_rocks, on_progress, on_error)
     for _, handler in pairs(_handlers) do
         local callback = type(handler.get_prune_callback) == "function" and handler.get_prune_callback(user_rocks)
         if callback then
-            callback(report_progress, report_error)
+            callback(on_progress, on_error, helpers.manage_rock_stub)
         end
     end
 end

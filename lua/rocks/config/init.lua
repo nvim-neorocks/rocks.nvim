@@ -49,6 +49,11 @@ local config = {}
 --- Whether to use the luarocks loader to support multiple dependencies (Default: `true`).
 ---@field enable_luarocks_loader? boolean
 ---
+--- Whether to install rocks stubs when using extensions like rocks-git.nvim or rocks-dev.nvim
+--- so that luarocks recognises them as dependencies
+--- (Default: `true`).
+---@field install_stubs? boolean
+---
 --- Extra luarocks config options.
 --- rocks.nvim will create a default luarocks config in `rocks_path` and merge it with this table (if set).
 ---@field luarocks_config? table
