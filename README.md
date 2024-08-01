@@ -452,7 +452,7 @@ You can also pin/unpin installed plugins with:
 ## :package: Extending `rocks.nvim`
 
 This plugin provides a Lua API for extensibility.
-See [`:h rocks.api`](./doc/rocks.txt) for details.
+See [`:h rocks-api`](./doc/rocks.txt) for details.
 
 Following are some examples:
 
