@@ -155,6 +155,20 @@ end
 
 ---@return string
 local function mk_luarocks_config()
+    local sysname_map = {
+        Linux = "linux",
+        Darwin = "macosx",
+        Windows_NT = "win32",
+    }
+    local machine_map = {
+        arm64 = "aarch64",
+        aarch64 = "aarch64",
+        x86_64 = "x86_64",
+    }
+    local uname = vim.uv.os_uname()
+    local sysname = sysname_map[uname.sysname]
+    local machine = machine_map[uname.machine] or uname.machine
+    local arch = sysname and machine and ("%s-%s"):format(sysname, machine)
     local default_luarocks_config = {
         lua_version = "5.1",
         rocks_trees = {
@@ -163,6 +177,7 @@ local function mk_luarocks_config()
                 root = config.rocks_path,
             },
         },
+        arch = arch,
     }
     local luarocks_config = vim.tbl_deep_extend("force", default_luarocks_config, opts.luarocks_config or {})
 
