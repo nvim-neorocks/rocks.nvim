@@ -17,7 +17,7 @@
 
 ---@alias rock_name string
 
----@class RockSpec: rocks.toml.RockSpec
+---@class RockSpec: TomlRockSpec
 ---@field name string The name of the rock
 
 ---@class Rock
@@ -142,7 +142,7 @@ function api.register_rocks_subcommand(name, cmd)
     commands.register_subcommand(name, cmd)
 end
 
----@alias rock_config_table table<rock_name, rocks.toml.RockSpec|rock_version>
+---@alias rock_config_table table<rock_name, TomlRockSpec|rock_version>
 
 ---@alias rock_version string
 
