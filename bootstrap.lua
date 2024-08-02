@@ -108,16 +108,35 @@ end
 
 assert(set_up_luarocks(temp_luarocks_path), "failed to install luarocks! Please try again :)")
 
-vim.notify("Installing rocks.nvim...")
+local rocks_binaries_supported_arch_map = {
+    Darwin = {
+        arm64 = "macosx-aarch64",
+        aarch64 = "macosx-aarch64",
+        x86_64 = "macosx-x86_64",
+    },
+    Linux = {
+        x86_64 = "linux-x86_64",
+    },
+    Windows_NT = {
+        x86_64 = "win32-x86_64",
+    },
+}
+local uname = vim.uv.os_uname()
+local supported_arch = rocks_binaries_supported_arch_map[uname.sysname][uname.machine]
 
-local sc = vim.system({
+local install_cmd = {
     luarocks_binary,
     "--lua-version=5.1",
     "--tree=" .. install_path,
-    "--server='https://nvim-neorocks.github.io/rocks-binaries/'",
     "install",
     "rocks.nvim",
-}):wait()
+}
+if supported_arch then
+    table.insert(install_cmd, 4, "--server='https://nvim-neorocks.github.io/rocks-binaries/'")
+end
+vim.notify("Installing rocks.nvim...")
+
+local sc = vim.system(install_cmd):wait()
 
 if sc.code ~= 0 then
     notify_output("Installing rocks.nvim failed:", sc, vim.log.levels.ERROR)
