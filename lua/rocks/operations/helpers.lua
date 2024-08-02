@@ -104,6 +104,17 @@ helpers.install = nio.create(function(rock_spec, progress_handle)
                 -- We also exclude `-<specrev>` from the version match.
                 version = sc.stdout:match(name:gsub("%p", "%%%1") .. "%s+([^-%s]+)"),
             }
+            vim.schedule(function()
+                vim.api.nvim_exec_autocmds("User", {
+                    pattern = "RocksInstallPost",
+                    modeline = false,
+                    ---@type rocks.user-events.data.RocksInstallPost
+                    data = {
+                        spec = rock_spec,
+                        installed = installed_rock,
+                    },
+                })
+            end)
             message = ("Installed: %s -> %s"):format(installed_rock.name, installed_rock.version)
             log.info(message)
             if progress_handle then

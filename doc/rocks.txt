@@ -12,6 +12,7 @@ rocks.nvim ··································�
  ·································································· |rocks-toml|
 rocks.nvim commands ··········································· |rocks-commands|
 rocks.nvim configuration ········································ |rocks-config|
+rocks.nvim |User| |event|s ·································· |rocks.user-event|
 Lua API for rocks.nvim extensions ·································· |rocks-api|
 rocks.nvim API hooks ········································· |rocks-api-hooks|
 rocks.nvim logging API ············································· |rocks-log|
@@ -129,6 +130,34 @@ RocksOpts                                                            *RocksOpts*
         {luarocks_config?}                (table)
                                                       Extra luarocks config options.
                                                       rocks.nvim will create a default luarocks config in `rocks_path` and merge it with this table (if set).
+
+
+==============================================================================
+rocks.nvim |User| |event|s                                    *rocks.user-event*
+
+rocks.user-events.data.RocksInstallPost*rocks.user-events.data.RocksInstallPost*
+    The following |User| |event|s are available:
+
+    RocksInstallPost			Invoked after installing or updating a rock
+                             The `data` is of type
+                             |rocks.user-events.data.RocksInstallPost|.
+
+
+    To create an autocommand for an event:
+    >lua
+            vim.api.nvim_create_autocmd("User", {
+              pattern = "RocksInstallPost",
+              callback = function(ev)
+                 ---@type rocks.user-events.data.RocksInstallPost
+                 local data = ev.data
+                 -- ...
+              end,
+            })
+    <
+
+    Fields: ~
+        {spec}       (RockSpec)
+        {installed}  (Rock)
 
 
 ==============================================================================

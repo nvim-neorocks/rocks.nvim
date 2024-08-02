@@ -449,6 +449,10 @@ You can also pin/unpin installed plugins with:
 :Rocks [pin|unpin] {rock}
 ```
 
+## :calendar: User events
+
+For `:h User` events that rocks.nvim will trigger, see `:h rocks.user-event`.
+
 ## :package: Extending `rocks.nvim`
 
 This plugin provides a Lua API for extensibility.
