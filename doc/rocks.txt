@@ -35,12 +35,11 @@ Example:
      opt = true
 <
 
- For the foll spec, refer to the |RockSpec|.
+ For the foll spec, refer to the |rocks.toml.RockSpec|.
 
-RockSpec                                                              *RockSpec*
+rocks.toml.RockSpec                                        *rocks.toml.RockSpec*
 
     Fields: ~
-        {name}           (string)    The name of the rock
         {version?}       (string)    The rock version
         {opt?}           (boolean)   Set to `true` to prevent rocks from being loaded eagerly
         {pin?}           (boolean)   Pinned rocks will not be updated
@@ -144,6 +143,9 @@ rock_name                                                            *rock_name*
 
     Type: ~
         string
+
+
+RockSpec : rocks                                                      *RockSpec*
 
 
 Rock                                                                      *Rock*
@@ -268,7 +270,7 @@ api.register_rocks_subcommand({name}, {cmd})
 rock_config_table                                            *rock_config_table*
 
     Type: ~
-        table<rock_name,RockSpec|rock_version>
+        table<rock_name,rocks.toml.RockSpec|rock_version>
 
 
 rock_version                                                      *rock_version*
