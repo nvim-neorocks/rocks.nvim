@@ -115,6 +115,8 @@ end
 ---@class RocksToml
 ---@field rocks? table<rock_name, RockSpec> The `[rocks]` entries
 ---@field plugins? table<rock_name, RockSpec> The `[plugins]` entries
+---@field servers? string[]
+---@field dev_servers? string[]
 ---@field [string] unknown Fields that can be added by external modules
 
 ---Returns a table with the parsed rocks.toml file.

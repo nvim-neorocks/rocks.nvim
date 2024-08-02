@@ -120,7 +120,7 @@ luarocks.search_all = nio.create(function(callback, opts)
         future.set(obj)
     end, {
         text = true,
-        servers = opts and opts.servers or constants.ALL_SERVERS,
+        servers = opts and opts.servers or config.get_all_servers(),
     })
     ---@type vim.SystemCompleted
     local obj = future.wait()
