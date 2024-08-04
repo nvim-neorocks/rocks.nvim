@@ -37,11 +37,10 @@
 ---     opt = true
 ---<
 ---
---- For the foll spec, refer to the |RockSpec|.
+--- For the foll spec, refer to |TomlRockSpec|.
 ---@brief ]]
 
----@class RockSpec
----@field name string The name of the rock
+---@class TomlRockSpec
 ---@field version? string The rock version
 ---@field opt? boolean Set to `true` to prevent rocks from being loaded eagerly
 ---@field pin? boolean Pinned rocks will not be updated
