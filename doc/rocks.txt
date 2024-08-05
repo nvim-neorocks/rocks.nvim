@@ -183,7 +183,7 @@ api.try_get_cached_outdated_rocks()          *api.try_get_cached_outdated_rocks*
     if it is not ready.
 
     Returns: ~
-        (table<rock_name,OutdatedRock[]>)  rocks
+        (table<rock_name,OutdatedRock>)  rocks
 
 
 api.query_luarocks_rocks({callback})                  *api.query_luarocks_rocks*
