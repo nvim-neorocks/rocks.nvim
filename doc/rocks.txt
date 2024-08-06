@@ -158,12 +158,24 @@ Rock                                                                      *Rock*
         {version}  (string)
 
 
-api.try_get_cached_rocks()                            *api.try_get_cached_rocks*
+rocks.get_cached.Opts                                    *rocks.get_cached.Opts*
+
+    Fields: ~
+        {query_fallback}  (boolean)
+                                     Whether to fall back to a synchronous query if the cache
+                                     has not been populated, instead of the default behaviour
+                                     of returning an empty list.
+
+
+api.try_get_cached_rocks({opts?})                     *api.try_get_cached_rocks*
     Tries to get the cached rocks.
     Returns an empty list if the cache has not been populated
     or no connection to luarocks.org can be established.
     Will spawn an async task to attempt to populate the cache
     if it is not ready.
+
+    Parameters: ~
+        {opts?}  (rocks.get_cached.Opts)
 
     Returns: ~
         (table<rock_name,Rock[]>)  rocks
@@ -175,12 +187,16 @@ OutdatedRock : Rock                                               *OutdatedRock*
         {target_version}  (string)
 
 
-api.try_get_cached_outdated_rocks()          *api.try_get_cached_outdated_rocks*
+                                             *api.try_get_cached_outdated_rocks*
+api.try_get_cached_outdated_rocks({opts?})
     Tries to get the cached outdated rocks.
     Returns an empty list if the cache has not been populated
     or no connection to luarocks.org can be established.
     Will spawn an async task to attempt to populate the cache
     if it is not ready.
+
+    Parameters: ~
+        {opts?}  (rocks.get_cached.Opts)
 
     Returns: ~
         (table<rock_name,OutdatedRock>)  rocks

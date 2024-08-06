@@ -35,14 +35,22 @@ local nio = require("nio")
 local state = require("rocks.state")
 local operations = require("rocks.operations")
 
+---@class rocks.get_cached.Opts
+---
+---Whether to fall back to a synchronous query if the cache
+---has not been populated, instead of the default behaviour
+---of returning an empty list.
+---@field query_fallback boolean
+
 ---Tries to get the cached rocks.
 ---Returns an empty list if the cache has not been populated
 ---or no connection to luarocks.org can be established.
 ---Will spawn an async task to attempt to populate the cache
 ---if it is not ready.
+---@param opts? rocks.get_cached.Opts
 ---@return table<rock_name, Rock[]> rocks
-function api.try_get_cached_rocks()
-    return cache.try_get_rocks()
+function api.try_get_cached_rocks(opts)
+    return cache.try_get_rocks(opts)
 end
 
 ---@class OutdatedRock: Rock
@@ -53,9 +61,10 @@ end
 ---or no connection to luarocks.org can be established.
 ---Will spawn an async task to attempt to populate the cache
 ---if it is not ready.
+---@param opts? rocks.get_cached.Opts
 ---@return table<rock_name, OutdatedRock> rocks
-function api.try_get_cached_outdated_rocks()
-    return cache.try_get_outdated_rocks()
+function api.try_get_cached_outdated_rocks(opts)
+    return cache.try_get_outdated_rocks(opts)
 end
 
 ---Queries luarocks.org for rocks and passes the rocks

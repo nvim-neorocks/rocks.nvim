@@ -42,20 +42,24 @@ local _outdated_rock_cache = nil
 ---
 ---@generic T
 ---@param cache_ref T
----@param populate async fun():T Stateul
+---@param populate async fun():T Function that populates the cache asynchronously
+---@param populate_sync? fun():T Function that populates the cache synchronously
 ---@return table<string, T> result indexed by name
-local function try_get_unsafe(cache_ref, populate)
+local function try_get_unsafe(cache_ref, populate, populate_sync)
     if not cache_ref then
-        nio.run(populate)
+        if type(populate_sync) == "function" then
+            populate_sync()
+            return cache_ref
+        else
+            nio.run(populate)
+        end
         local result = vim.empty_dict()
         return result
     end
     return cache_ref
 end
 
----Query luarocks packages and populate the cache.
----@type async fun()
-cache.populate_cached_rocks = nio.create(function()
+local function populate_cached_rocks_sync()
     if _cached_rocks then
         return
     end
@@ -66,32 +70,50 @@ cache.populate_cached_rocks = nio.create(function()
     end, {
         dev = true,
     })
-end)
+end
+
+---Query luarocks packages and populate the cache.
+---@type async fun()
+cache.populate_cached_rocks = nio.create(populate_cached_rocks_sync)
 
 ---Tries to get the cached rocks.
 ---Returns an empty list if the cache is not ready,
 ---and triggers an async task to populate the cache.
+---@param opts? rocks.get_cached.Opts
 ---@return table<string, Rock[]> rocks indexed by name
-function cache.try_get_rocks()
-    return try_get_unsafe(_cached_rocks, cache.populate_cached_rocks)
+function cache.try_get_rocks(opts)
+    opts = opts or {}
+    return try_get_unsafe(
+        _cached_rocks,
+        cache.populate_cached_rocks,
+        opts.query_fallback and populate_cached_rocks_sync or nil
+    )
+end
+
+local function populate_removable_rock_cache_sync()
+    if _removable_rock_cache then
+        return
+    end
+    _removable_rock_cache = state.query_removable_rocks()
 end
 
 ---Query the state for rocks that can be removed
 ---and populate the cache.
 ---@type async fun()
-cache.populate_removable_rock_cache = nio.create(function()
-    if _removable_rock_cache then
-        return
-    end
-    _removable_rock_cache = state.query_removable_rocks()
-end)
+cache.populate_removable_rock_cache = nio.create(populate_removable_rock_cache_sync)
 
 ---Tries to get the cached removable rocks.
 ---Returns an empty list if the cache is not ready,
 ---and triggers an async task to populate the cache.
+---@param opts? rocks.get_cached.Opts
 ---@return table<string, Rock[]> rocks indexed by name
-function cache.try_get_removable_rocks()
-    return try_get_unsafe(_removable_rock_cache, cache.populate_removable_rock_cache)
+function cache.try_get_removable_rocks(opts)
+    opts = opts or {}
+    return try_get_unsafe(
+        _removable_rock_cache,
+        cache.populate_removable_rock_cache,
+        opts.query_fallback and populate_removable_rock_cache_sync or nil
+    )
 end
 
 ---Invalidate the removable rocks cache
@@ -99,15 +121,17 @@ cache.invalidate_removable_rocks = function()
     _removable_rock_cache = nil
 end
 
----Query the state for rocks that can be removed
----and populate the cache.
----@type async fun()
-cache.populate_outdated_rock_cache = nio.create(function()
+local function populate_outdated_rock_cache_sync()
     if _outdated_rock_cache then
         return
     end
     _outdated_rock_cache = state.outdated_rocks()
-end)
+end
+
+---Query the state for rocks that can be removed
+---and populate the cache.
+---@type async fun()
+cache.populate_outdated_rock_cache = nio.create(populate_outdated_rock_cache_sync)
 
 ---Populate all rocks state caches
 cache.populate_all_rocks_state_caches = nio.create(function()
@@ -117,9 +141,15 @@ end)
 ---Tries to get the cached removable rocks.
 ---Returns an empty list if the cache is not ready,
 ---and triggers an async task to populate the cache.
+---@param opts? rocks.get_cached.Opts
 ---@return table<string, OutdatedRock> rocks indexed by name
-function cache.try_get_outdated_rocks()
-    return try_get_unsafe(_outdated_rock_cache, cache.populate_outdated_rock_cache)
+function cache.try_get_outdated_rocks(opts)
+    opts = opts or {}
+    return try_get_unsafe(
+        _outdated_rock_cache,
+        cache.populate_outdated_rock_cache,
+        opts.query_fallback and populate_outdated_rock_cache_sync or nil
+    )
 end
 
 ---Search the cache for rocks-binaries-dev rocks.
