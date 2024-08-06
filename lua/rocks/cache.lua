@@ -62,6 +62,17 @@ cache.populate_cached_rocks = nio.create(function()
     luarocks.search_all(function(rocks)
         if not vim.tbl_isempty(rocks) then
             _cached_rocks = rocks
+            vim.schedule(function()
+                vim.api.nvim_exec_autocmds("User", {
+                    pattern = "RocksCachePopulated",
+                    modeline = false,
+                    ---@type rocks.user-events.data.luarocks.RocksCachePopulated
+                    data = {
+                        type = "luarocks",
+                        cache = vim.deepcopy(_cached_rocks),
+                    },
+                })
+            end)
         end
     end, {
         dev = true,
@@ -107,6 +118,17 @@ cache.populate_outdated_rock_cache = nio.create(function()
         return
     end
     _outdated_rock_cache = state.outdated_rocks()
+    vim.schedule(function()
+        vim.api.nvim_exec_autocmds("User", {
+            pattern = "RocksCachePopulated",
+            modeline = false,
+            ---@type rocks.user-events.data.outdated_rocks.RocksCachePopulated
+            data = {
+                type = "outdated_rocks",
+                cache = vim.deepcopy(_outdated_rock_cache),
+            },
+        })
+    end)
 end)
 
 ---Populate all rocks state caches

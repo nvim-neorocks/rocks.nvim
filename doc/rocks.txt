@@ -135,29 +135,55 @@ RocksOpts                                                            *RocksOpts*
 ==============================================================================
 rocks.nvim |User| |event|s                                    *rocks.user-event*
 
+The following |User| |event|s are available:
+
+RocksInstallPost			            Invoked after installing or updating a rock
+                                     The `data` is of type
+                                     |rocks.user-events.data.RocksInstallPost|.
+
+RocksCachePopulated                  Invoked when the luarocks rocks cache has been populated.
+                                     The `data` is of type `rocks.user-events.data.RocksCachePopulated`
+
+To create an autocommand for an event:
+>lua
+        vim.api.nvim_create_autocmd("User", {
+          pattern = "RocksInstallPost",
+          callback = function(ev)
+             ---@type rocks.user-events.data.RocksInstallPost
+             local data = ev.data
+             -- ...
+          end,
+        })
+<
+
 rocks.user-events.data.RocksInstallPost*rocks.user-events.data.RocksInstallPost*
-    The following |User| |event|s are available:
-
-    RocksInstallPost			Invoked after installing or updating a rock
-                             The `data` is of type
-                             |rocks.user-events.data.RocksInstallPost|.
-
-
-    To create an autocommand for an event:
-    >lua
-            vim.api.nvim_create_autocmd("User", {
-              pattern = "RocksInstallPost",
-              callback = function(ev)
-                 ---@type rocks.user-events.data.RocksInstallPost
-                 local data = ev.data
-                 -- ...
-              end,
-            })
-    <
 
     Fields: ~
         {spec}       (RockSpec)
         {installed}  (Rock)
+
+
+                                    *rocks.user-events.data.RocksCachePopulated*
+rocks.user-events.data.RocksCachePopulated
+
+    Type: ~
+        rocks.user-events.data.luarocks.RocksCachePopulated|rocks.user-events.data.outdated_rocks.RocksCachePopulated
+
+
+                           *rocks.user-events.data.luarocks.RocksCachePopulated*
+rocks.user-events.data.luarocks.RocksCachePopulated
+
+    Fields: ~
+        {type}   ("luarocks")
+        {cache}  (table<rock_name,Rock[]>)
+
+
+                     *rocks.user-events.data.outdated_rocks.RocksCachePopulated*
+rocks.user-events.data.outdated_rocks.RocksCachePopulated
+
+    Fields: ~
+        {type}   ("outdated_rocks")
+        {cache}  (table<rock_name,OutdatedRock>)
 
 
 ==============================================================================
