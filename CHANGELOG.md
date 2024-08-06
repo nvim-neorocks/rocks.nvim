@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.37.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.36.1...v2.37.0) (2024-08-06)
+
+
+### Features
+
+* update remote plugins after install/update ([#485](https://github.com/nvim-neorocks/rocks.nvim/issues/485)) ([3218e4f](https://github.com/nvim-neorocks/rocks.nvim/commit/3218e4f9b980f0831fd93f6006cc5a1e0af87473))
+
 ## [2.36.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.36.0...v2.36.1) (2024-07-23)
 
 
