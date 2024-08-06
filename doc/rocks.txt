@@ -126,6 +126,10 @@ RocksOpts                                                            *RocksOpts*
                                                       (Default: `true`, as rocks.nvim cannot determine if 'dev' rocks are up to date).
         {enable_luarocks_loader?}         (boolean)
                                                       Whether to use the luarocks loader to support multiple dependencies (Default: `true`).
+        {install_stubs?}                  (boolean)
+                                                      Whether to install rocks stubs when using extensions like rocks-git.nvim or rocks-dev.nvim
+                                                      so that luarocks recognises them as dependencies
+                                                      (Default: `true`).
         {luarocks_config?}                (table)
                                                       Extra luarocks config options.
                                                       rocks.nvim will create a default luarocks config in `rocks_path` and merge it with this table (if set).
@@ -291,13 +295,22 @@ MutRocksTomlRef                                                *MutRocksTomlRef*
         {string}    (unknown)
 
 
+rock_handler.on_success.Opts                      *rock_handler.on_success.Opts*
+
+    Fields: ~
+        {action}  ("install"|"prune")
+        {rock}    (Rock)
+
+
 rock_handler_callback                                    *rock_handler_callback*
 
     Type: ~
-        fun(report_progress:fun(message:string),report_error:fun(message:string))
+        fun(on_progress:fun(message:string),on_error:fun(message:string),on_success?:fun(opts:rock_handler.on_success.Opts))
 
 
 An async callback that handles an operation on a rock.
+
+  - The `on_success` callback is optional for backward compatibility.
 
 RockHandler                                                        *RockHandler*
 

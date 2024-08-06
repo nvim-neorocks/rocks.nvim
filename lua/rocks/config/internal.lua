@@ -59,6 +59,10 @@ local default_config = {
     reinstall_dev_rocks_on_update = true,
     ---@type boolean Whether to use the luarocks loader to support multiple dependencies
     enable_luarocks_loader = true,
+    --- Whether to install rocks stubs when using extensions like rocks-git.nvim or rocks-dev.nvim
+    --- so that luarocks recognises them as dependencies.
+    ---@type boolean
+    install_stubs = true,
 
     -- Internal configs
     ---@type string
