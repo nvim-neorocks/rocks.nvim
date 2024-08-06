@@ -12,16 +12,29 @@ describe("install/update", function()
     local operations = require("rocks.operations")
     local state = require("rocks.state")
     nio.tests.it("install and update rocks", function()
+        local autocmd_future = nio.control.future()
+        vim.api.nvim_create_autocmd("User", {
+            pattern = "RocksInstallPost",
+            callback = function(ev)
+                if not autocmd_future.is_set() then
+                    autocmd_future.set(ev.data)
+                end
+            end,
+        })
         local future = nio.control.future()
         operations.add({ "Neorg", "7.0.0" }, function() -- ensure lower case
             future.set(true)
         end)
         future.wait()
-        local installed_rocks = state.installed_rocks()
-        assert.same({
+        local neorg_expected = {
             name = "neorg",
             version = "7.0.0",
-        }, installed_rocks.neorg)
+        }
+        local installed_rocks = state.installed_rocks()
+        assert.same(neorg_expected, installed_rocks.neorg)
+        local data = autocmd_future.wait()
+        assert.same(neorg_expected, data.installed)
+        assert.same(neorg_expected, data.spec)
         local user_rocks = require("rocks.config.internal").get_user_rocks()
         assert.same({
             name = "neorg",
