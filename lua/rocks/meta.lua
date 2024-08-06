@@ -11,9 +11,21 @@
 ---@brief [[
 ---The following |User| |event|s are available:
 ---
----RocksInstallPost			Invoked after installing or updating a rock
----                         The `data` is of type
----                         |rocks.user-events.data.RocksInstallPost|.
+---RocksInstallPost			            Invoked after installing or updating a rock
+---                                     The `data` is of type
+---                                     |rocks.user-events.data.RocksInstallPost|.
+---
+---RocksCachePopulated                  Invoked when the luarocks rocks cache has been populated.
+---                                     The `data` is a reference to the cached rocks,
+---                                     of type `table<rock_name, Rock[]>`
+---
+---RocksRemovableRocksCachePopulated    Invoked when the removable rocks cache has been populated.
+---                                     The `data` is a reference to the rock names,
+---                                     of type `string[]`
+---
+---RocksOutdatedRocksCachePopulated     Invoked when the outdated rocks cache has been populated.
+---                                     The `data` is a reference to the outdated rocks,
+---                                     of type `table<rock_name, OutdatedRock>`.
 ---
 ---
 ---To create an autocommand for an event:
@@ -27,6 +39,7 @@
 ---          end,
 ---        })
 ---<
+---@brief ]]
 
 ---@class rocks.user-events.data.RocksInstallPost
 ---@field spec RockSpec
