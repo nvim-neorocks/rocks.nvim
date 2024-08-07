@@ -11,10 +11,12 @@
 ---@brief [[
 ---The following |User| |event|s are available:
 ---
----RocksInstallPost			Invoked after installing or updating a rock
----                         The `data` is of type
----                         |rocks.user-events.data.RocksInstallPost|.
+---RocksInstallPost			            Invoked after installing or updating a rock
+---                                     The `data` is of type
+---                                     |rocks.user-events.data.RocksInstallPost|.
 ---
+---RocksCachePopulated                  Invoked when the luarocks rocks cache has been populated.
+---                                     The `data` is of type `rocks.user-events.data.RocksCachePopulated`
 ---
 ---To create an autocommand for an event:
 --->lua
@@ -27,10 +29,21 @@
 ---          end,
 ---        })
 ---<
+---@brief ]]
 
 ---@class rocks.user-events.data.RocksInstallPost
 ---@field spec RockSpec
 ---@field installed Rock
+
+---@alias rocks.user-events.data.RocksCachePopulated rocks.user-events.data.luarocks.RocksCachePopulated | rocks.user-events.data.outdated_rocks.RocksCachePopulated
+
+---@class rocks.user-events.data.luarocks.RocksCachePopulated
+---@field type 'luarocks'
+---@field cache table<rock_name, Rock[]>
+
+---@class rocks.user-events.data.outdated_rocks.RocksCachePopulated
+---@field type 'outdated_rocks'
+---@field cache table<rock_name, OutdatedRock>
 
 error("can't require a meta module")
 local meta = {}
