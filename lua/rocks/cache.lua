@@ -32,7 +32,7 @@ local _cached_dev_binaries = nil
 ---@type string[] | nil
 local _removable_rock_cache = nil
 
----@type table<rock_name, OutdatedRock[]> | nil
+---@type table<rock_name, OutdatedRock> | nil
 local _outdated_rock_cache = nil
 
 ---Tries to get the cached value
@@ -117,7 +117,7 @@ end)
 ---Tries to get the cached removable rocks.
 ---Returns an empty list if the cache is not ready,
 ---and triggers an async task to populate the cache.
----@return table<string, Rock[]> rocks indexed by name
+---@return table<string, OutdatedRock> rocks indexed by name
 function cache.try_get_outdated_rocks()
     return try_get_unsafe(_outdated_rock_cache, cache.populate_outdated_rock_cache)
 end
