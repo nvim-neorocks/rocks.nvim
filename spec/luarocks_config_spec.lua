@@ -29,6 +29,7 @@ describe("luarocks config", function()
             rocks_trees = {
                 { name = "rocks.nvim", root = tempdir },
             },
+            arch = "linux-x86_64",
         }, luarocks_config)
     end)
 end)

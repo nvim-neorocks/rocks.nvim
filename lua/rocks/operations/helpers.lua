@@ -66,13 +66,13 @@ helpers.install = nio.create(function(rock_spec, progress_handle)
         name,
     }
     local servers = {}
-    vim.list_extend(servers, constants.ROCKS_SERVERS)
+    vim.list_extend(servers, config.get_servers())
     if version then
         -- If specified version is dev then install the `scm-1` version of the rock
         if version == "dev" or version == "scm" then
             if cache.search_binary_dev_rocks(rock_spec.name, version) then
                 -- Rock found on rocks-binaries-dev
-                table.insert(servers, constants.ROCKS_BINARIES_DEV)
+                vim.list_extend(servers, config.get_dev_servers())
             else
                 -- Search dev manifest
                 table.insert(install_cmd, 2, "--dev")

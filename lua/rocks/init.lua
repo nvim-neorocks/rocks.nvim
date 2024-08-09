@@ -18,6 +18,8 @@
 
 ---@mod rocks-toml
 ---
+---@mod rocks-toml.plugins
+---
 ---@brief [[
 ---rocks.nvim stores information about installed plugins in the
 ---`[plugins]` or `[rocks]` entries.
@@ -47,6 +49,35 @@
 
 ---@brief [[
 --- NOTE: Currently, all options except for `install_args` can be passed to `:Rocks install`.
+---@brief ]]
+---
+---@mod rocks-toml.luarocks
+---
+---@brief [[
+---You can configure how rocks.nvim interacts with luarocks using the `[luarocks]` setting.
+---
+---Configuration options:
+---
+--- - `servers`: List of binary servers.
+---   Default: `[ "https://luarocks.org/manifests/neorocks/", "https://nvim-neorocks.github.io/rocks-binaries/" ]`
+--- - `dev_servers`: List of dev binary servers.
+---   Default: `[ "https://nvim-neorocks.github.io/rocks-binaries-dev/" ]`
+---
+--- You can disable the default binary servers by setting these to empty lists.
+---
+---Example:
+---
+--->toml
+---     [luarocks]
+---     servers = [
+---         "https://luarocks.org/manifests/neorocks/",
+---         "https://nvim-neorocks.github.io/rocks-binaries/"
+---     ]
+---     dev_servers = [
+---         "https://nvim-neorocks.github.io/rocks-binaries-dev/"
+---     ]
+---<
+---
 ---@brief ]]
 
 local rocks = {}
