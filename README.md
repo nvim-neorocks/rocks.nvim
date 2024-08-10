@@ -169,8 +169,13 @@ dependencies = {
 - An up-to-date `Neovim >= 0.10` installation.
 - The `git` command line utility.
 - `wget` or `curl` (if running on a UNIX system) - required for the remote `:source` command to work.
+- `make` and `unzip`
+  (if you want the install/bootstrap script to install luarocks).
 - `netrw` enabled in your Neovim configuration - enabled by default but some configurations manually disable the plugin.
-- A `lua 5.1` or `luajit` installation (for luarocks).
+- A `lua 5.1` or `luajit` installation,
+  including headers (for luarocks).
+  Note that Lua must be executable using
+  the `lua` command.
 
 > [!IMPORTANT]
 >
