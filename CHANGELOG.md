@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.37.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.36.1...v2.37.0) (2024-08-11)
+
+
+### Features
+
+* trigger `RocksInstallPost` user event after install/update ([#498](https://github.com/nvim-neorocks/rocks.nvim/issues/498)) ([7994116](https://github.com/nvim-neorocks/rocks.nvim/commit/7994116fa8510aa399b6abf248a4abc1ead5c608))
+* update remote plugins after install/update ([#485](https://github.com/nvim-neorocks/rocks.nvim/issues/485)) ([3218e4f](https://github.com/nvim-neorocks/rocks.nvim/commit/3218e4f9b980f0831fd93f6006cc5a1e0af87473))
+
 ## [2.36.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.36.0...v2.36.1) (2024-07-23)
 
 
