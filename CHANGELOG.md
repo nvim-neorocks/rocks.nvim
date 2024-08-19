@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.37.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.37.0...v2.37.1) (2024-08-19)
+
+
+### Bug Fixes
+
+* **windows:** use junctions instead of symlinks ([#509](https://github.com/nvim-neorocks/rocks.nvim/issues/509)) ([9374140](https://github.com/nvim-neorocks/rocks.nvim/commit/9374140ce429850b61df29e6597a1af835f2eea8))
+
 ## [2.37.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.36.1...v2.37.0) (2024-08-11)
 
 
