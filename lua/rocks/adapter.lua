@@ -15,6 +15,8 @@
 -- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 
+-- NOTE: On Windows, we must create junctions, because NTFS symlinks require admin privileges.
+
 local adapter = {}
 
 local nio = require("nio")
@@ -41,11 +43,11 @@ local function create_symlink_sync(symlink_location, symlink_dir_name, dest_dir_
         return true
     else
         log.debug(("Creating symlink directory: %s"):format(symlink_dir_name))
-        local success, err = vim.uv.fs_symlink(dest_dir_path, symlink_dir_path)
+        local success, err = vim.uv.fs_symlink(dest_dir_path, symlink_dir_path, { junction = true })
         if not success then
             log.error(("Error creating symlink directory: %s (%s)"):format(symlink_dir_name, err or "unknown error"))
         end
-        return success
+        return success or false
     end
 end
 
@@ -57,7 +59,8 @@ local create_symlink_async = nio.create(function(symlink_location, symlink_dir_n
         log.debug(("Symlink directory %s exists already."):format(symlink_dir_name))
     else
         log.debug(("Creating symlink directory: %s"):format(symlink_dir_name))
-        local err, success = nio.uv.fs_symlink(dest_dir_path, symlink_dir_path)
+        ---@diagnostic disable-next-line: param-type-mismatch
+        local err, success = nio.uv.fs_symlink(dest_dir_path, symlink_dir_path, { junction = true })
         if not success then
             log.error(("Error creating symlink directory: %s (%s)"):format(symlink_dir_name, err or "unknown error"))
         end
