@@ -19,7 +19,7 @@ local cache = {}
 
 local luarocks = require("rocks.luarocks")
 local state = require("rocks.state")
-local constants = require("rocks.constants")
+local config = require("rocks.config.internal")
 local nio = require("nio")
 
 ---@type table<rock_name, Rock[]> | nil
@@ -153,7 +153,7 @@ cache.search_binary_dev_rocks = nio.create(function(rock_name, version)
         end
         future.set(true)
     end, {
-        servers = constants.ROCKS_BINARIES_DEV,
+        servers = config.get_dev_servers(),
     })
     future.wait()
     return search_cache()

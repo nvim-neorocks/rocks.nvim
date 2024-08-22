@@ -91,6 +91,22 @@ local default_config = {
         end
         return rocks_toml
     end,
+    ---@return server_url[]
+    get_servers = function()
+        local luarocks_opts = config.get_rocks_toml().luarocks
+        return luarocks_opts and type(luarocks_opts.servers) == "table" and luarocks_opts.servers
+            or constants.DEFAULT_ROCKS_SERVERS
+    end,
+    ---@return server_url[]
+    get_dev_servers = function()
+        local luarocks_opts = config.get_rocks_toml().luarocks
+        return luarocks_opts and type(luarocks_opts.dev_servers) == "table" and luarocks_opts.dev_servers
+            or constants.DEFAULT_DEV_SERVERS
+    end,
+    ---@return server_url[]
+    get_all_servers = function()
+        return vim.list_extend(config.get_servers(), config.get_dev_servers())
+    end,
     ---@param user_rocks table<rock_name, RockSpec>
     ---@return table<rock_name, RockSpec>
     apply_rock_spec_modifiers = function(user_rocks)
@@ -155,6 +171,20 @@ end
 
 ---@return string
 local function mk_luarocks_config()
+    local sysname_map = {
+        Linux = "linux",
+        Darwin = "macosx",
+        Windows_NT = "win32",
+    }
+    local machine_map = {
+        arm64 = "aarch64",
+        aarch64 = "aarch64",
+        x86_64 = "x86_64",
+    }
+    local uname = vim.uv.os_uname()
+    local sysname = sysname_map[uname.sysname]
+    local machine = machine_map[uname.machine] or uname.machine
+    local arch = sysname and machine and ("%s-%s"):format(sysname, machine)
     local default_luarocks_config = {
         lua_version = "5.1",
         rocks_trees = {
@@ -163,6 +193,7 @@ local function mk_luarocks_config()
                 root = config.rocks_path,
             },
         },
+        arch = arch,
     }
     local luarocks_config = vim.tbl_deep_extend("force", default_luarocks_config, opts.luarocks_config or {})
 

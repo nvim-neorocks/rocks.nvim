@@ -10,6 +10,8 @@ Table of Contents                                               *rocks-contents*
 
 rocks.nvim ························································ |rocks-nvim|
  ·································································· |rocks-toml|
+ ·························································· |rocks-toml.plugins|
+ ························································· |rocks-toml.luarocks|
 rocks.nvim commands ··········································· |rocks-commands|
 rocks.nvim configuration ········································ |rocks-config|
 rocks.nvim |User| |event|s ·································· |rocks.user-event|
@@ -19,6 +21,9 @@ rocks.nvim logging API ····························�
 
 ==============================================================================
                                                                     *rocks-toml*
+
+==============================================================================
+                                                            *rocks-toml.plugins*
 
 rocks.nvim stores information about installed plugins in the
 `[plugins]` or `[rocks]` entries.
@@ -49,6 +54,34 @@ TomlRockSpec                                                      *TomlRockSpec*
 
 
  NOTE: Currently, all options except for `install_args` can be passed to `:Rocks install`.
+
+==============================================================================
+                                                           *rocks-toml.luarocks*
+
+You can configure how rocks.nvim interacts with luarocks using the `[luarocks]` setting.
+
+Configuration options:
+
+ - `servers`: List of binary servers.
+   Default: `[ "https://luarocks.org/manifests/neorocks/", "https://nvim-neorocks.github.io/rocks-binaries/" ]`
+ - `dev_servers`: List of dev binary servers.
+   Default: `[ "https://nvim-neorocks.github.io/rocks-binaries-dev/" ]`
+
+ You can disable the default binary servers by setting these to empty lists.
+
+Example:
+
+>toml
+     [luarocks]
+     servers = [
+         "https://luarocks.org/manifests/neorocks/",
+         "https://nvim-neorocks.github.io/rocks-binaries/"
+     ]
+     dev_servers = [
+         "https://nvim-neorocks.github.io/rocks-binaries-dev/"
+     ]
+<
+
 
 ==============================================================================
 rocks.nvim commands                                             *rocks-commands*
@@ -262,9 +295,11 @@ api.get_rocks_toml_path()                              *api.get_rocks_toml_path*
 RocksToml                                                            *RocksToml*
 
     Fields: ~
-        {rocks?}    (table<rock_name,RockSpec>)  The `[rocks]` entries
-        {plugins?}  (table<rock_name,RockSpec>)  The `[plugins]` entries
-        {string}    (unknown)                    Fields that can be added by external modules
+        {rocks?}        (table<rock_name,RockSpec>)  The `[rocks]` entries
+        {plugins?}      (table<rock_name,RockSpec>)  The `[plugins]` entries
+        {servers?}      (string[])
+        {dev_servers?}  (string[])
+        {string}        (unknown)                    Fields that can be added by external modules
 
 
 api.get_rocks_toml()                                        *api.get_rocks_toml*
