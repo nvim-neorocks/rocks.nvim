@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.38.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.37.1...v2.38.0) (2024-08-22)
+
+
+### Features
+
+* **api:** emit user events for cache updates ([#500](https://github.com/nvim-neorocks/rocks.nvim/issues/500)) ([4b56808](https://github.com/nvim-neorocks/rocks.nvim/commit/4b5680804dd1dee521616ae3575aa08a04155279))
+
 ## [2.37.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.37.0...v2.37.1) (2024-08-19)
 
 
