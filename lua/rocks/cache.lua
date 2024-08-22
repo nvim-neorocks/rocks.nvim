@@ -62,6 +62,13 @@ cache.populate_cached_rocks = nio.create(function()
     luarocks.search_all(function(rocks)
         if not vim.tbl_isempty(rocks) then
             _cached_rocks = rocks
+            vim.schedule(function()
+                vim.api.nvim_exec_autocmds("User", {
+                    pattern = "RocksCachePopulated",
+                    modeline = false,
+                    data = _cached_rocks,
+                })
+            end)
         end
     end, {
         dev = true,
@@ -84,6 +91,13 @@ cache.populate_removable_rock_cache = nio.create(function()
         return
     end
     _removable_rock_cache = state.query_removable_rocks()
+    vim.schedule(function()
+        vim.api.nvim_exec_autocmds("User", {
+            pattern = "RocksRemovableRocksCachePopulated",
+            modeline = false,
+            data = _removable_rock_cache,
+        })
+    end)
 end)
 
 ---Tries to get the cached removable rocks.
@@ -107,6 +121,13 @@ cache.populate_outdated_rock_cache = nio.create(function()
         return
     end
     _outdated_rock_cache = state.outdated_rocks()
+    vim.schedule(function()
+        vim.api.nvim_exec_autocmds("User", {
+            pattern = "RocksOutdatedRocksCachePopulated",
+            modeline = false,
+            data = _outdated_rock_cache,
+        })
+    end)
 end)
 
 ---Populate all rocks state caches

@@ -168,25 +168,38 @@ RocksOpts                                                            *RocksOpts*
 ==============================================================================
 rocks.nvim |User| |event|s                                    *rocks.user-event*
 
+The following |User| |event|s are available:
+
+RocksInstallPost			            Invoked after installing or updating a rock
+                                     The `data` is of type
+                                     |rocks.user-events.data.RocksInstallPost|.
+
+RocksCachePopulated                  Invoked when the luarocks rocks cache has been populated.
+                                     The `data` is a reference to the cached rocks,
+                                     of type `table<rock_name, Rock[]>`
+
+RocksRemovableRocksCachePopulated    Invoked when the removable rocks cache has been populated.
+                                     The `data` is a reference to the rock names,
+                                     of type `string[]`
+
+RocksOutdatedRocksCachePopulated     Invoked when the outdated rocks cache has been populated.
+                                     The `data` is a reference to the outdated rocks,
+                                     of type `table<rock_name, OutdatedRock>`.
+
+
+To create an autocommand for an event:
+>lua
+        vim.api.nvim_create_autocmd("User", {
+          pattern = "RocksInstallPost",
+          callback = function(ev)
+             ---@type rocks.user-events.data.RocksInstallPost
+             local data = ev.data
+             -- ...
+          end,
+        })
+<
+
 rocks.user-events.data.RocksInstallPost*rocks.user-events.data.RocksInstallPost*
-    The following |User| |event|s are available:
-
-    RocksInstallPost			Invoked after installing or updating a rock
-                             The `data` is of type
-                             |rocks.user-events.data.RocksInstallPost|.
-
-
-    To create an autocommand for an event:
-    >lua
-            vim.api.nvim_create_autocmd("User", {
-              pattern = "RocksInstallPost",
-              callback = function(ev)
-                 ---@type rocks.user-events.data.RocksInstallPost
-                 local data = ev.data
-                 -- ...
-              end,
-            })
-    <
 
     Fields: ~
         {spec}       (RockSpec)
