@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.38.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.38.0...v2.38.1) (2024-08-24)
+
+
+### Bug Fixes
+
+* **windows:** several terminal windows popping up ([#514](https://github.com/nvim-neorocks/rocks.nvim/issues/514)) ([a1c4beb](https://github.com/nvim-neorocks/rocks.nvim/commit/a1c4beb985fc6f3dfe8e320e79a07bed5900a52c))
+
 ## [2.38.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.37.1...v2.38.0) (2024-08-22)
 
 
