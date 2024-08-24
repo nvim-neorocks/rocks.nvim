@@ -54,8 +54,6 @@ luarocks.cli = nio.create(function(args, on_exit, opts)
     opts = opts or {}
     ---@cast opts LuarocksCliOpts
     opts.synchronized = opts.synchronized ~= nil and opts.synchronized or true
-    -- Make sure no operations are aborted on nvim exit
-    opts.detach = true
     local on_exit_wrapped = vim.schedule_wrap(function(sc)
         if opts.synchronized then
             semaphore.release()
@@ -87,7 +85,9 @@ luarocks.cli = nio.create(function(args, on_exit, opts)
     luarocks_cmd = vim.list_extend(luarocks_cmd, mk_server_args(opts.servers))
     luarocks_cmd = vim.list_extend(luarocks_cmd, args)
     log.info(luarocks_cmd)
-    opts.detach = true -- Prevent luarocks from exiting uncleanly
+    -- Prevent luarocks from exiting uncleanly
+    -- NOTE: detach spawns new terminal windows on Windows.
+    opts.detach = vim.uv.os_uname().sysname:lower():find("windows") == nil
     local ok, err = pcall(vim.system, luarocks_cmd, opts, on_exit_wrapped)
     if not ok then
         ---@type vim.SystemCompleted
