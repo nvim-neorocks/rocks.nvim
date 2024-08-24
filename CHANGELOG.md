@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.38.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.38.1...v2.38.2) (2024-08-24)
+
+
+### Bug Fixes
+
+* **windows:** rocks.toml getting wiped ([#517](https://github.com/nvim-neorocks/rocks.nvim/issues/517)) ([8d6b6e5](https://github.com/nvim-neorocks/rocks.nvim/commit/8d6b6e502d18d3606b6e188f4ce9ff092d2f3de4))
+
 ## [2.38.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.38.0...v2.38.1) (2024-08-24)
 
 
