@@ -48,10 +48,7 @@ function fs.write_file(location, mode, contents, callback)
     -- mode for the group and others
     uv.fs_open(location, mode, tonumber("644", 8), function(err, file)
         if file and not err then
-            local file_pipe = uv.new_pipe(false)
-            ---@cast file_pipe uv_pipe_t
-            uv.pipe_open(file_pipe, file)
-            uv.write(file_pipe, contents, function(write_err)
+            uv.fs_write(file, contents, function(write_err)
                 if write_err then
                     local msg = ("Error writing %s: %s"):format(location, err)
                     log.error(msg)
