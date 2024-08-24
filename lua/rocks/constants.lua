@@ -24,7 +24,7 @@ constants.LUA_VERSION = "5.1"
 
 --- Rocks.nvim version
 ---@type string
-constants.ROCKS_VERSION = "2.38.0"
+constants.ROCKS_VERSION = "2.38.1"
 
 --- Default configuration file contents
 ---@type string
