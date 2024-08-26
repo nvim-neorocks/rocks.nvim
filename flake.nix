@@ -16,7 +16,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    cats-doc.url = "github:mrcjkb/cats-doc";
+    vimcats.url = "github:mrcjkb/vimcats";
 
     flake-parts.url = "github:hercules-ci/flake-parts";
 

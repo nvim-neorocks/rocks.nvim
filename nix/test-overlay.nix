@@ -35,11 +35,11 @@
   docgen = final.writeShellApplication {
     name = "docgen";
     runtimeInputs = [
-      inputs.cats-doc.packages.${final.system}.default
+      inputs.vimcats.packages.${final.system}.default
     ];
     text = ''
       mkdir -p doc
-      lemmy-help lua/rocks/{init,commands,config/init,meta,api/{init,hooks},log}.lua > doc/rocks.txt
+      vimcats lua/rocks/{init,commands,config/init,meta,api/{init,hooks},log}.lua > doc/rocks.txt
     '';
   };
 in {
