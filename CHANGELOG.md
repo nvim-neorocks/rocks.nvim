@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.38.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.38.2...v2.38.3) (2024-08-31)
+
+
+### Bug Fixes
+
+* adapt to nvim 0.11 breaking `vim.version.parse` change ([#523](https://github.com/nvim-neorocks/rocks.nvim/issues/523)) ([303a2a9](https://github.com/nvim-neorocks/rocks.nvim/commit/303a2a902124a2b5db37ac9f7202533ed07ec271))
+
 ## [2.38.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.38.1...v2.38.2) (2024-08-24)
 
 
