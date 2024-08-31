@@ -152,12 +152,13 @@ operations.sync = function(user_rocks, on_complete)
             end
 
             for _, key in ipairs(sync_status.to_updowngrade) do
-                local is_installed_version_semver, installed_version =
+                local parse_installed_version_success, installed_version =
                     pcall(vim.version.parse, installed_rocks[key].version)
                 -- in nvim < 0.11, vim.version.parse throws an error on non-semver args
-                is_installed_version_semver = is_installed_version_semver and installed_version ~= nil
-                local is_user_version_semver, user_version = pcall(vim.version.parse, user_rocks[key].version or "dev")
-                is_user_version_semver = is_user_version_semver and installed_version ~= nil
+                local is_installed_version_semver = parse_installed_version_success and installed_version ~= nil
+                local parse_user_version_success, user_version =
+                    pcall(vim.version.parse, user_rocks[key].version or "dev")
+                local is_user_version_semver = parse_user_version_success and installed_version ~= nil
                 local is_downgrading = not is_installed_version_semver and is_user_version_semver
                     or is_user_version_semver and is_installed_version_semver and user_version < installed_version
 
