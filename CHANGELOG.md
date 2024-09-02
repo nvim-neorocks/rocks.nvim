@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.39.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.38.3...v2.39.0) (2024-09-02)
+
+
+### Features
+
+* **experimental:** a way to recognise plugins managed by extensions as dependencies ([#492](https://github.com/nvim-neorocks/rocks.nvim/issues/492)) ([79123d6](https://github.com/nvim-neorocks/rocks.nvim/commit/79123d6d6acc14a0388738e194a9c8d1f1948aff))
+
 ## [2.38.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.38.2...v2.38.3) (2024-08-31)
 
 
