@@ -154,9 +154,15 @@ end
 ---@field plugins? rock_config_table
 ---@field [string] unknown
 
----@alias rock_handler_callback fun(report_progress: fun(message: string), report_error: fun(message: string))
+---@class rock_handler.on_success.Opts
+---@field action 'install' | 'prune'
+---@field rock Rock
+
+---@alias rock_handler_callback fun(on_progress: fun(message: string), on_error: fun(message: string), on_success?: fun(opts: rock_handler.on_success.Opts))
 ---@brief [[
 ---An async callback that handles an operation on a rock.
+---
+---  - The `on_success` callback is optional for backward compatibility.
 ---@brief ]]
 
 ---@class RockHandler

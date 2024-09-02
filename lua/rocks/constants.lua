@@ -70,6 +70,21 @@ constants.DEFAULT_DEV_SERVERS = {
     constants.ROCKS_BINARIES_DEV,
 }
 
+constants.STUB_ROCKSPEC_TEMPLATE = [==[
+package = "%s"
+version = "%s-1"
+
+source = {
+    url = 'https://github.com/nvim-neorocks/luarocks-stub/archive/548853648d7cff7e0d959ff95209e8aa97a793bc.zip',
+    dir = 'luarocks-stub-548853648d7cff7e0d959ff95209e8aa97a793bc',
+}
+
+build = {
+    type = "builtin",
+    modules = {}
+}
+]==]
+
 return constants
 
 --- constants.lua

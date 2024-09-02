@@ -52,6 +52,37 @@ local config = {}
 --- Extra luarocks config options.
 --- rocks.nvim will create a default luarocks config in `rocks_path` and merge it with this table (if set).
 ---@field luarocks_config? table
+---
+--- List of experimental features to enable.
+--- See |rocks.experimental|.
+---@field experimental_features? rocks.ExperimentalFeature[]
+
+---@mod rocks.experimental experimental features
+---
+---@brief [[
+---WARNING: Experimental features may change or be removed
+---without a major SemVer version bump.
+---@brief ]]
+
+-- TODO(mrcjkb): Remove this when https://github.com/mrcjkb/vimcats/pull/18 is completed
+---@brief [[
+---rocks.ExperimentalFeature
+---     *rocks.ExperimentalFeature*
+---
+---     Values:
+---         "ext_module_dependency_stubs"
+---             Install rocks stubs when using extensions
+---             like rocks-git.nvim or rocks-dev.nvim
+---             so that luarocks recognises them as dependencies.
+---@brief ]]
+
+---@enum rocks.ExperimentalFeature
+config.ExperimentalFeature = {
+    --- Install rocks stubs when using extensions
+    --- like rocks-git.nvim or rocks-dev.nvim
+    --- so that luarocks recognises them as dependencies.
+    ext_module_dependency_stubs = "ext_module_dependency_stubs",
+}
 
 ---@type RocksOpts | fun():RocksOpts
 vim.g.rocks_nvim = vim.g.rocks_nvim

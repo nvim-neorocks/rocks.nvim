@@ -135,7 +135,7 @@ operations.sync = function(user_rocks, on_complete)
             -- Sync actions handled by external modules that have registered handlers
             for _, callback in pairs(sync_status.external_actions) do
                 ct = ct + 1
-                callback(report_progress, report_error)
+                callback(report_progress, report_error, helpers.manage_rock_stub)
             end
 
             -- rocks.nvim sync handlers should be installed now.
@@ -145,7 +145,7 @@ operations.sync = function(user_rocks, on_complete)
                 ct = ct + 1
                 local callback = handlers.get_sync_handler_callback(spec)
                 if callback then
-                    callback(report_progress, report_error)
+                    callback(report_progress, report_error, helpers.manage_rock_stub)
                 else
                     report_error(("Failed to install %s: %s"):format(spec.name, skipped_rock.reason))
                 end

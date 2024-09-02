@@ -14,6 +14,7 @@ rocks.nvim ··································�
  ························································· |rocks-toml.luarocks|
 rocks.nvim commands ··········································· |rocks-commands|
 rocks.nvim configuration ········································ |rocks-config|
+experimental features ····································· |rocks.experimental|
 rocks.nvim |User| |event|s ·································· |rocks.user-event|
 Lua API for rocks.nvim extensions ·································· |rocks-api|
 rocks.nvim API hooks ········································· |rocks-api-hooks|
@@ -138,32 +139,50 @@ RocksOpts                                                            *RocksOpts*
 
     Fields: ~
         {rocks_path?}                     (string)
-                                                      Local path in your file system to install rocks
-                                                      (Default: a `rocks` directory in `vim.fn.stdpath("data")`).
+                                                                          Local path in your file system to install rocks
+                                                                          (Default: a `rocks` directory in `vim.fn.stdpath("data")`).
         {config_path?}                    (string)
-                                                      Rocks declaration file path (Default: `rocks.toml`) in `vim.fn.stdpath("config")`.
+                                                                          Rocks declaration file path (Default: `rocks.toml`) in `vim.fn.stdpath("config")`.
         {luarocks_binary?}                (string)
-                                                      Luarocks binary path. Defaults to the bundled installation if executable.
+                                                                          Luarocks binary path. Defaults to the bundled installation if executable.
         {lazy?}                           (boolean)
-                                                      Whether to query luarocks.org lazily (Default: `false`).
-                                                      Setting this to `true` may improve startup time,
-                                                      but features like auto-completion will lag initially.
+                                                                          Whether to query luarocks.org lazily (Default: `false`).
+                                                                          Setting this to `true` may improve startup time,
+                                                                          but features like auto-completion will lag initially.
         {dynamic_rtp?}                    (boolean)
-                                                      Whether to automatically add freshly installed plugins to the 'runtimepath'.
-                                                      (Default: `true` for the best default experience).
+                                                                          Whether to automatically add freshly installed plugins to the 'runtimepath'.
+                                                                          (Default: `true` for the best default experience).
         {generate_help_pages?}            (boolean)
-                                                      Whether to re-generate plugins help pages after installation/upgrade. (Default: `true`).
+                                                                          Whether to re-generate plugins help pages after installation/upgrade. (Default: `true`).
         {update_remote_plugins?}          (boolean)
-                                                      Whether to update remote plugins after installation/upgrade. (Default: `true`).
+                                                                          Whether to update remote plugins after installation/upgrade. (Default: `true`).
         {reinstall_dev_rocks_on_update?}  (boolean)
-                                                      Whether to reinstall 'dev' rocks on update
-                                                      (Default: `true`, as rocks.nvim cannot determine if 'dev' rocks are up to date).
+                                                                          Whether to reinstall 'dev' rocks on update
+                                                                          (Default: `true`, as rocks.nvim cannot determine if 'dev' rocks are up to date).
         {enable_luarocks_loader?}         (boolean)
-                                                      Whether to use the luarocks loader to support multiple dependencies (Default: `true`).
+                                                                          Whether to use the luarocks loader to support multiple dependencies (Default: `true`).
         {luarocks_config?}                (table)
-                                                      Extra luarocks config options.
-                                                      rocks.nvim will create a default luarocks config in `rocks_path` and merge it with this table (if set).
+                                                                          Extra luarocks config options.
+                                                                          rocks.nvim will create a default luarocks config in `rocks_path` and merge it with this table (if set).
+        {experimental_features?}          (rocks.ExperimentalFeature[])
+                                                                          List of experimental features to enable.
+                                                                          See |rocks.experimental|.
 
+
+==============================================================================
+experimental features                                       *rocks.experimental*
+
+WARNING: Experimental features may change or be removed
+without a major SemVer version bump.
+
+rocks.ExperimentalFeature
+     *rocks.ExperimentalFeature*
+
+     Values:
+         "ext_module_dependency_stubs"
+             Install rocks stubs when using extensions
+             like rocks-git.nvim or rocks-dev.nvim
+             so that luarocks recognises them as dependencies.
 
 ==============================================================================
 rocks.nvim |User| |event|s                                    *rocks.user-event*
@@ -368,13 +387,22 @@ MutRocksTomlRef                                                *MutRocksTomlRef*
         {string}    (unknown)
 
 
+rock_handler.on_success.Opts                      *rock_handler.on_success.Opts*
+
+    Fields: ~
+        {action}  ("install"|"prune")
+        {rock}    (Rock)
+
+
 rock_handler_callback                                    *rock_handler_callback*
 
     Type: ~
-        fun(report_progress:fun(message:string),report_error:fun(message:string))
+        fun(on_progress:fun(message:string),on_error:fun(message:string),on_success?:fun(opts:rock_handler.on_success.Opts))
 
 
 An async callback that handles an operation on a rock.
+
+  - The `on_success` callback is optional for backward compatibility.
 
 RockHandler                                                        *RockHandler*
 

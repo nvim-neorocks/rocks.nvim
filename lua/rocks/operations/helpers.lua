@@ -330,4 +330,46 @@ function helpers.postInstall()
     end
 end
 
+---Installs or removes a rock stub so that luarocks will recognise rocks installed by
+---extensions like rocks-git and rocks-dev as dependencies
+---@param opts rock_handler.on_success.Opts
+helpers.manage_rock_stub = nio.create(function(opts)
+    if not config.experimental_features.ext_module_dependency_stubs then
+        log.debug("Installing stubs is disabled")
+        return
+    end
+    if opts.action == "install" then
+        local rock = opts.rock
+        log.info(("Installing stub %s"):format(vim.inspect(rock)))
+        local rockspec_content = constants.STUB_ROCKSPEC_TEMPLATE:format(rock.name, rock.version)
+        nio.scheduler()
+        local tempdir = vim.fn.tempname()
+        local ok = fs.mkdir_p(tempdir)
+        if not ok then
+            log.error(("Could not create temp directory for rock stub %s rockspec"):format(vim.inspect(rock)))
+            return
+        end
+        local rockspec_file = ("%s-%s-1.rockspec"):format(rock.name, rock.version)
+        local rockspec_path = vim.fs.joinpath(tempdir, rockspec_file)
+        fs.write_file_await(rockspec_path, "w", rockspec_content)
+        -- XXX For now, we ignore failures and only log them
+        local future = nio.control.future()
+        luarocks.cli(
+            { "install", rockspec_file },
+            ---@param sc vim.SystemCompleted
+            function(sc)
+                if sc.code ~= 0 then
+                    log.error(("Failed to install stub from rockspec %s"):format(rockspec_path))
+                end
+                future.set(true)
+            end,
+            { cwd = tempdir }
+        )
+        future.wait()
+    elseif opts.action == "prune" then
+        local future = helpers.remove(opts.rock.name)
+        pcall(future.wait)
+    end
+end)
+
 return helpers

@@ -135,7 +135,13 @@ local default_config = {
     end,
     ---@type fun():string
     luarocks_config_path = nil,
+
+    ---@type rocks.ExperimentalFeatureFlags
+    experimental_features = {},
 }
+
+---@class rocks.ExperimentalFeatureFlags
+---@field [rocks.ExperimentalFeature] boolean
 
 ---@type RocksOpts
 local opts = type(vim.g.rocks_nvim) == "function" and vim.g.rocks_nvim() or vim.g.rocks_nvim or {}
@@ -249,6 +255,18 @@ if not opts.luarocks_config or type(opts.luarocks_config) == "table" then
         ---@diagnostic disable-next-line: inject-field
         return ("%s"):format(luarocks_config_path)
     end
+end
+
+if type(opts.experimental_features) == "table" then
+    config.experimental_features = vim.iter(opts.experimental_features):fold(
+        {},
+        ---@param acc table<rocks.ExperimentalFeature, boolean>
+        ---@param feature rocks.ExperimentalFeature
+        function(acc, feature)
+            acc[feature] = true
+            return acc
+        end
+    )
 end
 
 return config
