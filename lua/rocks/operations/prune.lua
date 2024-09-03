@@ -45,10 +45,7 @@ prune.prune = function(rock_name)
             end
             local success = true -- initialised for handlers
             if helpers.is_installed(rock_name) then
-                local user_rock_names =
-                    ---@diagnostic disable-next-line: invisible
-                    nio.fn.keys(vim.tbl_deep_extend("force", user_config.rocks or {}, user_config.plugins or {}))
-                success = helpers.remove_recursive(rock_name, user_rock_names, progress_handle)
+                success = helpers.remove_recursive(rock_name, nil, progress_handle)
             end
             -- NOTE: We always delegate to handlers, even if the rock is installed,
             -- so we can allow them to manage luarocks packages.

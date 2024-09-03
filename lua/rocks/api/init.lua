@@ -156,7 +156,12 @@ end
 
 ---@class rock_handler.on_success.Opts
 ---@field action 'install' | 'prune'
+---
+---The rock stub to install or prune.
 ---@field rock Rock
+---
+---The dependency constraints (e.g. { 'foo >= 1.0.0', }).
+---@field dependencies? string[]
 
 ---@alias rock_handler_callback fun(on_progress: fun(message: string), on_error: fun(message: string), on_success?: fun(opts: rock_handler.on_success.Opts))
 ---@brief [[

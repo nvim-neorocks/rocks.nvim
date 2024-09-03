@@ -192,8 +192,10 @@ end
 
 ---Removes a rock, and recursively removes its dependencies
 ---if they are no longer needed.
----@type async fun(name: string, keep: string[], progress_handle?: ProgressHandle): boolean
+---@type async fun(name: string, keep?: string[], progress_handle?: ProgressHandle): boolean
 helpers.remove_recursive = nio.create(function(name, keep, progress_handle)
+    ---@diagnostic disable-next-line: invisible
+    keep = keep or nio.fn.keys(config.get_user_rocks())
     ---@cast name string
     local dependencies = state.rock_dependencies(name)
     local future = helpers.remove(name, progress_handle)
@@ -202,16 +204,24 @@ helpers.remove_recursive = nio.create(function(name, keep, progress_handle)
         return false
     end
     local removable_rocks = state.query_removable_rocks()
-    local removable_dependencies = vim.iter(dependencies)
-        :filter(function(rock_name)
-            return vim.list_contains(removable_rocks, rock_name) and not vim.list_contains(keep, rock_name)
-        end)
-        :totable()
-    for _, dep in pairs(removable_dependencies) do
-        if vim.list_contains(removable_rocks, dep.name) then
-            success = success and helpers.remove_recursive(dep.name, keep, progress_handle)
+    ---@type rock_name[]
+    local removable_dependencies = vim.iter(dependencies):fold({}, function(acc, rock_name)
+        if vim.list_contains(removable_rocks, rock_name) and not vim.list_contains(keep, rock_name) then
+            table.insert(acc, rock_name)
         end
-    end
+        return acc
+    end)
+    success = vim.iter(removable_dependencies):fold(
+        true,
+        ---@param acc boolean
+        ---@param dep rock_name
+        function(acc, dep)
+            if vim.list_contains(removable_rocks, dep) then
+                acc = acc and helpers.remove_recursive(dep, keep, progress_handle)
+            end
+            return acc
+        end
+    )
     return success
 end, 3)
 
@@ -341,7 +351,11 @@ helpers.manage_rock_stub = nio.create(function(opts)
     if opts.action == "install" then
         local rock = opts.rock
         log.info(("Installing stub %s"):format(vim.inspect(rock)))
-        local rockspec_content = constants.STUB_ROCKSPEC_TEMPLATE:format(rock.name, rock.version)
+        local rockspec_content = constants.STUB_ROCKSPEC_TEMPLATE:format(
+            rock.name,
+            rock.version,
+            opts.dependencies and vim.inspect(opts.dependencies) or "{}"
+        )
         nio.scheduler()
         local tempdir = vim.fn.tempname()
         local ok = fs.mkdir_p(tempdir)
@@ -367,8 +381,7 @@ helpers.manage_rock_stub = nio.create(function(opts)
         )
         future.wait()
     elseif opts.action == "prune" then
-        local future = helpers.remove(opts.rock.name)
-        pcall(future.wait)
+        helpers.remove_recursive(opts.rock.name)
     end
 end)
 
