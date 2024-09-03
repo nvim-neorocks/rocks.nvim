@@ -56,17 +56,23 @@ describe("operations.helpers", function()
         helpers.manage_rock_stub({
             rock = { name = "stub.nvim", version = "1.0.0" },
             action = "install",
+            dependencies = { "pathlib.nvim == 2.2.3" },
         })
         installed_rocks = state.installed_rocks()
         assert.same({
             name = "stub.nvim",
             version = "1.0.0",
         }, installed_rocks["stub.nvim"])
+        assert.same({
+            name = "pathlib.nvim",
+            version = "2.2.3",
+        }, installed_rocks["pathlib.nvim"])
         helpers.manage_rock_stub({
             rock = { name = "stub.nvim", version = "1.0.0" },
             action = "prune",
         })
         installed_rocks = state.installed_rocks()
         assert.is_nil(installed_rocks["stub.nvim"])
+        assert.is_nil(installed_rocks["pathlib.nvim"])
     end)
 end)

@@ -79,6 +79,8 @@ source = {
     dir = 'luarocks-stub-548853648d7cff7e0d959ff95209e8aa97a793bc',
 }
 
+dependencies = %s
+
 build = {
     type = "builtin",
     modules = {}
