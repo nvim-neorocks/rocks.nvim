@@ -64,18 +64,6 @@ local config = {}
 ---without a major SemVer version bump.
 ---@brief ]]
 
--- TODO(mrcjkb): Remove this when https://github.com/mrcjkb/vimcats/pull/18 is completed
----@brief [[
----rocks.ExperimentalFeature
----     *rocks.ExperimentalFeature*
----
----     Values:
----         "ext_module_dependency_stubs"
----             Install rocks stubs when using extensions
----             like rocks-git.nvim or rocks-dev.nvim
----             so that luarocks recognises them as dependencies.
----@brief ]]
-
 ---@enum rocks.ExperimentalFeature
 config.ExperimentalFeature = {
     --- Install rocks stubs when using extensions
