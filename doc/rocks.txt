@@ -175,14 +175,13 @@ experimental features                                       *rocks.experimental*
 WARNING: Experimental features may change or be removed
 without a major SemVer version bump.
 
-rocks.ExperimentalFeature
-     *rocks.ExperimentalFeature*
+rocks.ExperimentalFeature                            *rocks.ExperimentalFeature*
 
-     Values:
-         "ext_module_dependency_stubs"
-             Install rocks stubs when using extensions
-             like rocks-git.nvim or rocks-dev.nvim
-             so that luarocks recognises them as dependencies.
+    Values: ~
+        ext_module_dependency_stubs   Install rocks stubs when using extensions
+                                      like rocks-git.nvim or rocks-dev.nvim
+                                      so that luarocks recognises them as dependencies.
+
 
 ==============================================================================
 rocks.nvim |User| |event|s                                    *rocks.user-event*
