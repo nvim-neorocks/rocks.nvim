@@ -66,7 +66,7 @@ state.outdated_rocks = nio.create(function()
         else
             future.set(obj.stdout)
         end
-    end, { text = true, servers = config.get_all_servers() })
+    end, { text = true, servers = config.get_servers() })
 
     local installed_rock_list = future.wait()
 
