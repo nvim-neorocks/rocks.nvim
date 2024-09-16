@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.40.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.40.0...v2.40.1) (2024-09-16)
+
+
+### Bug Fixes
+
+* don't include dev servers when querying outdated rocks ([#537](https://github.com/nvim-neorocks/rocks.nvim/issues/537)) ([a130ede](https://github.com/nvim-neorocks/rocks.nvim/commit/a130eded59413146d788de25aa87d9c61d8db451))
+
 ## [2.40.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.39.0...v2.40.0) (2024-09-03)
 
 
