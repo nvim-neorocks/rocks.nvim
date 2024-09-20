@@ -94,14 +94,16 @@ local default_config = {
     ---@return server_url[]
     get_servers = function()
         local luarocks_opts = config.get_rocks_toml().luarocks
+        -- WARNING: Return a copy of the constant table so it can't be modified by the caller
         return luarocks_opts and type(luarocks_opts.servers) == "table" and luarocks_opts.servers
-            or constants.DEFAULT_ROCKS_SERVERS
+            or vim.deepcopy(constants.DEFAULT_ROCKS_SERVERS)
     end,
     ---@return server_url[]
     get_dev_servers = function()
         local luarocks_opts = config.get_rocks_toml().luarocks
+        -- WARNING: Return a copy of the constant table so it can't be modified by the caller
         return luarocks_opts and type(luarocks_opts.dev_servers) == "table" and luarocks_opts.dev_servers
-            or constants.DEFAULT_DEV_SERVERS
+            or vim.deepcopy(constants.DEFAULT_DEV_SERVERS)
     end,
     ---@return server_url[]
     get_all_servers = function()
