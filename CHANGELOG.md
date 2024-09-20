@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.40.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.40.1...v2.40.2) (2024-09-20)
+
+
+### Bug Fixes
+
+* stop luarocks server list from being overwritten ([#542](https://github.com/nvim-neorocks/rocks.nvim/issues/542)) ([39ac8f0](https://github.com/nvim-neorocks/rocks.nvim/commit/39ac8f00b0370d1369c5c776ae9a70a00cb49dbe))
+
 ## [2.40.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.40.0...v2.40.1) (2024-09-16)
 
 
