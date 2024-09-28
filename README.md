@@ -173,9 +173,9 @@ dependencies = {
   (if you want the install/bootstrap script to install luarocks).
 - `netrw` enabled in your Neovim configuration - enabled by default but some configurations manually disable the plugin.
 - A `lua 5.1` or `luajit` installation,
-  including headers (for luarocks).
-  Note that Lua must be executable using
-  the `lua` command.
+  including headers (for installing native libraries).
+  Note that luarocks expects to be able to run Lua(jit)
+  using the `lua` command.
 
 > [!IMPORTANT]
 >
