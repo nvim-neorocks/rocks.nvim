@@ -158,6 +158,27 @@ local function notify_output(msg, sc, level)
     )
 end
 
+---@param cmd string[]
+---@param opts? vim.SystemOpts
+---@return vim.SystemCompleted
+local function exec(cmd, opts)
+    ---@type boolean, vim.SystemObj | string
+    local ok, so_or_err = pcall(vim.system, cmd, opts)
+    if not ok then
+        ---@cast so_or_err string
+        return {
+            code = 1,
+            signal = 0,
+            stderr = ([[
+Failed to execute:
+%s
+%s]]):format(table.concat(cmd, " "), so_or_err),
+        }
+    end
+    ---@cast so_or_err vim.SystemObj
+    return so_or_err:wait()
+end
+
 --- Sets up luarocks for use with rocks.nvim
 ---@param install_path string
 ---@return boolean success
@@ -174,13 +195,13 @@ local function set_up_luarocks(install_path)
 
     vim.notify("Downloading luarocks...")
 
-    local sc = vim.system({
+    local sc = exec({
         "git",
         "clone",
         "--filter=blob:none",
         "https://github.com/luarocks/luarocks.git",
         tempdir,
-    }):wait()
+    })
 
     if sc.code ~= 0 then
         notify_output("Cloning luarocks failed.", sc, vim.log.levels.ERROR)
@@ -189,7 +210,7 @@ local function set_up_luarocks(install_path)
 
     vim.notify("Configuring luarocks...")
 
-    sc = vim.system({
+    sc = exec({
         "sh",
         "configure",
         "--prefix=" .. install_path,
@@ -197,7 +218,7 @@ local function set_up_luarocks(install_path)
         "--force-config",
     }, {
         cwd = tempdir,
-    }):wait()
+    })
 
     if sc.code ~= 0 then
         notify_output("Configuring luarocks failed.", sc, vim.log.levels.ERROR)
@@ -206,12 +227,12 @@ local function set_up_luarocks(install_path)
 
     vim.notify("Installing luarocks...")
 
-    sc = vim.system({
+    sc = exec({
         "make",
         "install",
     }, {
         cwd = tempdir,
-    }):wait()
+    })
 
     if sc.code ~= 0 then
         notify_output("Installing luarocks failed.", sc, vim.log.levels.ERROR)
@@ -396,7 +417,7 @@ local function install()
                 table.insert(install_cmd, 4, "--server='https://nvim-neorocks.github.io/rocks-binaries/'")
             end
             vim.notify("Installing rocks.nvim...")
-            local sc = vim.system(install_cmd):wait()
+            local sc = exec(install_cmd)
 
             if sc.code ~= 0 then
                 notify_output("Installing rocks.nvim failed:", sc, vim.log.levels.ERROR)
