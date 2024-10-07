@@ -176,9 +176,7 @@ in {
     prev.vimPlugins
     // {
       rocks-nvim = final.neovimUtils.buildNeovimPlugin {
-        pname = name;
-        version = "dev";
-        src = self;
+        luaAttr = luajitPackages.rocks-nvim;
       };
     };
 
