@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.40.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.40.2...v2.40.3) (2024-10-15)
+
+
+### Bug Fixes
+
+* handle packadd failing without an error message ([#556](https://github.com/nvim-neorocks/rocks.nvim/issues/556)) ([f1ec104](https://github.com/nvim-neorocks/rocks.nvim/commit/f1ec1045d0eb59d92ee3e1d86287b5821a746269))
+
 ## [2.40.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.40.1...v2.40.2) (2024-09-20)
 
 
