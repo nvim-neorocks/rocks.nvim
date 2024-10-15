@@ -18,6 +18,7 @@ local runtime = {}
 
 local constants = require("rocks.constants")
 local log = require("rocks.log")
+local adapter = require("rocks.adapter")
 
 ---@alias rock_pattern "*" | rock_name
 
@@ -30,19 +31,6 @@ local function is_not_found(err_msg)
     return err_msg and err_msg:find("Directory not found in 'packpath'") ~= nil
 end
 
----@param rock Rock
----@param opts rocks.PackaddOpts
----@param err string The previous error message
----@return boolean success
----@return string | nil error_message
-local function init_site_symlink_and_retry_packadd(rock, opts, err)
-    local symlink_created = require("rocks.adapter").init_site_symlink_sync(rock)
-    if symlink_created then
-        return pcall(vim.cmd.packadd, { rock.name, bang = opts.bang })
-    end
-    return false, err
-end
-
 ---@param rock_spec RockSpec
 ---@param opts? rocks.PackaddOpts
 ---@return boolean found
@@ -50,14 +38,12 @@ function runtime.packadd(rock_spec, opts)
     opts = vim.tbl_deep_extend("force", {
         bang = false,
     }, opts or {})
-    local ok, err = pcall(vim.cmd.packadd, { rock_spec.name, bang = opts.bang })
-    if is_not_found(err) and rock_spec.version then
-        ok, err = init_site_symlink_and_retry_packadd({
-            name = rock_spec.name,
-            version = rock_spec.version, --[[ @as string ]]
-        }, opts, err)
+    if not adapter.has_site_symlink(rock_spec) and not adapter.init_site_symlink_sync(rock_spec) then
+        log.warn(("Rock %s does not appear to be installed."):format(rock_spec.name))
+        return false
     end
-    if not ok and err and not is_not_found(err) then
+    local ok, err = pcall(vim.cmd.packadd, { rock_spec.name, bang = opts.bang })
+    if not ok and not is_not_found(err) then
         vim.schedule(function()
             vim.notify(err, vim.log.levels.ERROR)
         end)

@@ -104,7 +104,7 @@ local function validate_site_symlinks_async()
     end
 end
 
----@param rock Rock
+---@param rock RockSpec | Rock
 ---@return string
 local function get_rock_dir(rock)
     return vim.fs.joinpath(config.rocks_path, "lib", "luarocks", "rocks-5.1", rock.name)
@@ -126,8 +126,16 @@ local function init_site_symlink_async(rock)
     end
 end
 
+---Check if a site symlink exists for a rock
+---@param rock RockSpec | Rock
+---@return boolean exists
+function adapter.has_site_symlink(rock)
+    local symlink_dir_path = vim.fs.joinpath(site_link_dir, rock.name)
+    return vim.uv.fs_stat(symlink_dir_path) ~= nil
+end
+
 ---Synchronously initialise a site symlink
----@param rock Rock
+---@param rock RockSpec | Rock
 ---@return boolean created
 function adapter.init_site_symlink_sync(rock)
     local rock_dir = get_rock_dir(rock)
