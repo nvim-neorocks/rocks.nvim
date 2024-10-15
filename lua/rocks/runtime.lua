@@ -24,9 +24,10 @@ local log = require("rocks.log")
 ---@class rocks.PackaddOpts
 ---@field bang? boolean
 
----@param err_msg string
+---@param err_msg? string
+---@return nil | boolean
 local function is_not_found(err_msg)
-    return err_msg:find("Directory not found in 'packpath'") ~= nil
+    return err_msg and err_msg:find("Directory not found in 'packpath'") ~= nil
 end
 
 ---@param rock Rock
