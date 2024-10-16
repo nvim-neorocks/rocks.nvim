@@ -22,7 +22,7 @@ local config = require("rocks.config.internal")
 local log = require("rocks.log")
 local nio = require("nio")
 
----@class LuarocksCliOpts: vim.SystemOpts
+---@class rocks.LuarocksCliOpts: vim.SystemOpts
 ---@field servers? server_url[] | only_server_url
 ---@field synchronized? boolean Whether to wait for and acquire a lock (recommended for file system IO, default: `true`)
 
@@ -48,11 +48,13 @@ end
 ---@param args string[] luarocks CLI arguments
 ---@param on_exit fun(sc: vim.SystemCompleted)|nil Called asynchronously when the luarocks command exits.
 ---   asynchronously. Receives SystemCompleted object, see return of SystemObj:wait().
----@param opts? LuarocksCliOpts
+---@param opts? rocks.LuarocksCliOpts
 ---@see vim.system
 luarocks.cli = nio.create(function(args, on_exit, opts)
     opts = opts or {}
-    ---@cast opts LuarocksCliOpts
+    -- This should prevent issues like #312 and #554
+    opts.cwd = opts.cwd or config.rocks_path
+    ---@cast opts rocks.LuarocksCliOpts
     opts.synchronized = opts.synchronized ~= nil and opts.synchronized or true
     local on_exit_wrapped = vim.schedule_wrap(function(sc)
         if opts.synchronized then
