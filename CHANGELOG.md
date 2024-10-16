@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.40.4](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.40.3...v2.40.4) (2024-10-16)
+
+
+### Bug Fixes
+
+* more robust initialisation of site symlinks ([#558](https://github.com/nvim-neorocks/rocks.nvim/issues/558)) ([1b9fa01](https://github.com/nvim-neorocks/rocks.nvim/commit/1b9fa01eb0e673f01bb8dbe35b7a52b0d0b5f975))
+* run luarocks commands with `cwd` set to `rocks_dir` ([#560](https://github.com/nvim-neorocks/rocks.nvim/issues/560)) ([2d6bb8e](https://github.com/nvim-neorocks/rocks.nvim/commit/2d6bb8eb40fd724b6e4257e31b6d098b5d9f7ed5))
+
 ## [2.40.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.40.2...v2.40.3) (2024-10-15)
 
 
