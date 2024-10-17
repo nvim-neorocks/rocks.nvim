@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.40.5](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.40.4...v2.40.5) (2024-10-17)
+
+
+### Bug Fixes
+
+* add tree-sitter parsers to the runtimepath asap ([#562](https://github.com/nvim-neorocks/rocks.nvim/issues/562)) ([752cecf](https://github.com/nvim-neorocks/rocks.nvim/commit/752cecf367358dde33da1b0df6413e274da0acab))
+
 ## [2.40.4](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.40.3...v2.40.4) (2024-10-16)
 
 
