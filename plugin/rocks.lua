@@ -57,6 +57,10 @@ nio.run(function()
     adapter.init()
 end)
 
+-- Make sure all tree-sitter parsers are on the rtp as soon as possible
+local rocks_tree = vim.fs.joinpath(config.rocks_path, "lib", "luarocks", "rocks-5.1")
+vim.opt.runtimepath:append(vim.fs.joinpath(rocks_tree, "tree-sitter-*", "*"))
+
 --- We don't want to run this async, to ensure proper initialisation order
 local user_rocks = require("rocks.api.hooks").run_preload_hooks(config.get_user_rocks())
 require("rocks.runtime").source_start_plugins(user_rocks)

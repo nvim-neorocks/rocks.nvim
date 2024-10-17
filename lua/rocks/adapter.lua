@@ -154,20 +154,28 @@ function adapter.init_site_symlink_sync(rock)
 end
 
 --- Loop over the installed rocks and create symlinks in site/pack/luarocks/opt,
---- so that rtp paths like 'autoload' and 'color' are available before rocks.nvim
+--- so that colorschemes are available before rocks.nvim
 --- has initialised.
 local function init_site_symlinks_async()
     local state = require("rocks.state")
-    for _, rock in pairs(state.installed_rocks()) do
-        init_site_symlink_async(rock)
-        -- Since we're invoking this in the :h load-plugins phase of the startup sequence,
-        -- this packadd! call won't result in any scripts being sourced.
-        nio.scheduler()
-        local ok, err = pcall(vim.cmd.packadd, { rock.name, bang = true })
-        if not ok then
-            log.error(err)
-        end
-    end
+    vim
+        .iter(state.installed_rocks())
+        ---@param rock Rock
+        :filter(function(_, rock)
+            return not vim.startswith(rock.name, "tree-sitter-")
+        end)
+        ---@param rock Rock
+        :each(function(_, rock)
+            init_site_symlink_async(rock)
+            -- Make autoload scripts available
+            -- Since we're invoking this in the :h load-plugins phase of the startup sequence,
+            -- this packadd! call won't result in any scripts being sourced.
+            nio.scheduler()
+            local ok, err = pcall(vim.cmd.packadd, { rock.name, bang = true })
+            if not ok then
+                log.error(err)
+            end
+        end)
 end
 
 --- Initialise/validate runtimepath symlinks for tree-sitter parsers and health checks
