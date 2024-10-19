@@ -38,6 +38,8 @@ end
 
 local default_luarocks_binary = get_default_luarocks_binary(default_rocks_path)
 
+local notified_recursive_imports = {}
+
 --- rocks.nvim default configuration
 ---@class RocksConfig
 local default_config = {
@@ -70,26 +72,79 @@ local default_config = {
         ---@type string[]
         unrecognized_configs = {},
     },
+    ---@type fun(path: string): string[]
+    get_imports = function(path)
+        local config_file = fs.read_or_create(path, constants.DEFAULT_CONFIG)
+        local rocks_toml = require("toml_edit").parse_as_tbl(config_file)
+        if rocks_toml.import ~= nil and type(rocks_toml.import) == "table" then
+            return rocks_toml.import
+        end
+        return {}
+    end,
+    ---@type fun(parse_func: (fun(file_str: string, file_path: string): table, string[]), process_func: fun(config: table, file_path))
+    read_rocks_toml = function(parse_func, process_func)
+        local visited = {}
+
+        local function parse(file_path, default)
+            -- Don't allow recursive includes
+            if visited[file_path] then
+                if not notified_recursive_imports[file_path] then
+                    vim.defer_fn(function()
+                        vim.notify("Recursive import detected: " .. file_path, vim.log.levels.WARN)
+                    end, 1000)
+                    notified_recursive_imports[file_path] = true
+                end
+                return nil
+            end
+            visited[file_path] = true
+
+            -- Read config
+            local file_str = fs.read_or_create(file_path, default)
+            -- Parse and retrieve imports list
+            local rocks_toml, imports = parse_func(file_str, file_path)
+            -- Follow import paths (giving preference to imported config)
+            if imports then
+                for _, path in ipairs(imports) do
+                    parse(fs.get_absolute_path(config.config_path, path), "")
+                end
+            end
+            -- Process result
+            process_func(rocks_toml, file_path)
+        end
+        parse(config.config_path, constants.DEFAULT_CONFIG)
+    end,
     ---@type fun():RocksToml
     get_rocks_toml = function()
-        local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
-        local rocks_toml = require("toml_edit").parse_as_tbl(config_file)
-        for key, tbl in pairs(rocks_toml) do
-            if key == "rocks" or key == "plugins" then
-                for name, data in pairs(tbl) do
-                    if type(data) == "string" then
-                        ---@type RockSpec
-                        rocks_toml[key][name] = {
-                            name = name,
-                            version = data,
-                        }
-                    else
-                        rocks_toml[key][name].name = name
+        local rocks_toml_merged = {}
+        config.read_rocks_toml(function(file_str, _)
+            -- Parse
+            local rocks_toml = require("toml_edit").parse_as_tbl(file_str)
+            local imports = rocks_toml.import
+            rocks_toml.import = nil
+            return rocks_toml, imports
+        end, function(rocks_toml, _)
+            -- Setup rockspec for rocks/plugins
+            for key, tbl in pairs(rocks_toml) do
+                if key == "rocks" or key == "plugins" then
+                    for name, data in pairs(tbl) do
+                        if type(data) == "string" then
+                            ---@type RockSpec
+                            rocks_toml[key][name] = {
+                                name = name,
+                                version = data,
+                            }
+                        else
+                            rocks_toml[key][name].name = name
+                        end
                     end
                 end
             end
-        end
-        return rocks_toml
+            -- Merge into configuration, in the order of preference returned by the read function
+            rocks_toml_merged = vim.tbl_deep_extend("keep", rocks_toml_merged, rocks_toml)
+        end)
+        rocks_toml_merged.import = nil -- Remove import field since we merged
+
+        return rocks_toml_merged
     end,
     ---@return server_url[]
     get_servers = function()

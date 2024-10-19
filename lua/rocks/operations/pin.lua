@@ -16,8 +16,6 @@
 
 local pin = {}
 
-local fs = require("rocks.fs")
-local config = require("rocks.config.internal")
 local helpers = require("rocks.operations.helpers")
 local nio = require("nio")
 
@@ -40,7 +38,7 @@ pin.pin = function(rock_name)
             end
             user_config[rocks_key][rock_name].pin = true
             local version = user_config[rocks_key][rock_name].version
-            fs.write_file_await(config.config_path, "w", tostring(user_config))
+            user_config:write()
             vim.schedule(function()
                 vim.notify(("%s pinned to version %s"):format(rock_name, version), vim.log.levels.INFO)
             end)
