@@ -18,8 +18,6 @@ local add = {}
 
 local constants = require("rocks.constants")
 local log = require("rocks.log")
-local fs = require("rocks.fs")
-local config = require("rocks.config.internal")
 local cache = require("rocks.cache")
 local helpers = require("rocks.operations.helpers")
 local handlers = require("rocks.operations.handlers")
@@ -98,7 +96,7 @@ add.add = function(arg_list, callback, opts)
                     })
                 end
                 handler(report_progress, report_error, helpers.manage_rock_stub)
-                fs.write_file_await(config.config_path, "w", tostring(user_rocks))
+                user_rocks:write()
                 nio.scheduler()
                 progress_handle:finish()
                 return
@@ -217,7 +215,7 @@ Use 'Rocks %s {rock_name}' or install rocks-git.nvim.
             else
                 user_rocks.plugins[rock_name] = installed_rock.version
             end
-            fs.write_file_await(config.config_path, "w", tostring(user_rocks))
+            user_rocks:write()
             cache.populate_all_rocks_state_caches()
             vim.schedule(function()
                 helpers.postInstall()
