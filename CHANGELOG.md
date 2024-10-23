@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.40.6](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.40.5...v2.40.6) (2024-10-23)
+
+
+### Bug Fixes
+
+* **installer/bootstrap:** pin luarocks to v3.11.1 ([#569](https://github.com/nvim-neorocks/rocks.nvim/issues/569)) ([259dee5](https://github.com/nvim-neorocks/rocks.nvim/commit/259dee5fef46e61b49755b6610b6539d0d346e1f))
+
 ## [2.40.5](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.40.4...v2.40.5) (2024-10-17)
 
 
