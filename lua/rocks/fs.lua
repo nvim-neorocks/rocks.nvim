@@ -53,14 +53,14 @@ function fs.expand_path(path_str)
 end
 
 --- Expand path string and get the absolute path if it a relative path string
----@param base_path string base path to use if path_str is relative
+---@param base_path string base directory path to use if path_str is relative
 ---@param path_str string the path string to expand
 ---@return string
 function fs.get_absolute_path(base_path, path_str)
     local path = fs.expand_path(path_str)
     -- If path is not an absolute path, set it relative to the base
     if path:sub(1, 1) ~= "/" then
-        path = vim.fs.joinpath(fs.expand_path(vim.fs.dirname(base_path)), path)
+        path = vim.fs.joinpath(fs.expand_path(base_path), path)
     end
     return path
 end

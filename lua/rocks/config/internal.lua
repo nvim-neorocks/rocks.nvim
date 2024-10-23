@@ -105,7 +105,7 @@ local default_config = {
             -- Follow import paths (giving preference to imported config)
             if imports then
                 for _, path in ipairs(imports) do
-                    parse(fs.get_absolute_path(config.config_path, path), "")
+                    parse(fs.get_absolute_path(vim.fs.dirname(config.config_path), path), "")
                 end
             end
             -- Process result

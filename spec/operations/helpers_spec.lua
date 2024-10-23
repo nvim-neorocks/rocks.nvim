@@ -76,3 +76,119 @@ describe("operations.helpers", function()
         assert.is_nil(installed_rocks["pathlib.nvim"])
     end)
 end)
+
+describe("operations.helpers.multi_mut_rocks_toml_wrapper", function()
+    local multi_mut_rocks_toml_wrapper = require("rocks.operations.helpers.multi_mut_rocks_toml_wrapper")
+    it("Create new with no config", function()
+        assert.error(function()
+            local _ = multi_mut_rocks_toml_wrapper.new({})
+        end)
+    end)
+    it("Item retrival", function()
+        local table1 = {
+            a = "table1_a",
+            b = "table1_b",
+            c = {
+                a = "table1_c_a",
+                b = "table1_c_b",
+                c = "table1_c_c",
+            }
+        }
+        local table2 = {
+            b = "table2_b",
+            c = {
+                d = "table2_c_d",
+            },
+            d = "table2_d",
+        }
+        local m = multi_mut_rocks_toml_wrapper.new({
+            {
+                config = table1,
+                path = "path1",
+            },
+            {
+                config = table2,
+                path = "path2",
+            },
+        })
+        assert.same("table1_a", m.a) -- Only in table1
+        assert.same("table1_b", m.b) -- Prefer table1 since it is first
+        local c = m.c                -- Nested table, prefer table1 values since first
+        assert.same("table1_c_a", c.a)
+        assert.same("table1_c_b", c.b)
+        assert.same("table1_c_c", c.c)
+        assert.same("table2_c_d", m.c.d) -- Nested table value, only in table2
+        assert.same("table2_d", m.d)     -- Only in table2
+    end)
+    it("Item modification", function()
+        local table1 = {
+            a = "table1_a",
+            b = "table1_b",
+            c = {
+                a = "table1_c_a",
+                b = "table1_c_b",
+                c = "table1_c_c",
+            }
+        }
+        local table2 = {
+            b = "table2_b",
+            c = {
+                d = "table2_c_d",
+            },
+            d = "table2_d",
+        }
+        local m = multi_mut_rocks_toml_wrapper.new({
+            {
+                config = table1,
+                path = "path1",
+            },
+            {
+                config = table2,
+                path = "path2",
+            },
+        })
+
+        -- Table1 modified
+        m.a = "foo"
+        assert.same("foo", table1.a)
+        assert.same(nil, table2.a)
+
+        -- Table1 modified since first
+        m.b = "foo"
+        assert.same("foo", table1.b)
+        assert.same("table2_b", table2.b)
+    end)
+    it("Item insertion", function()
+        local table1 = {
+            a = "table1_a",
+            b = "table1_b",
+            c = {
+                a = "table1_c_a",
+                b = "table1_c_b",
+                c = "table1_c_c",
+            }
+        }
+        local table2 = {
+            b = "table2_b",
+            c = {
+                d = "table2_c_d",
+            },
+            d = "table2_d",
+        }
+        local m = multi_mut_rocks_toml_wrapper.new({
+            {
+                config = table1,
+                path = "path1",
+            },
+            {
+                config = table2,
+                path = "path2",
+            },
+        })
+
+        -- Table1 modified since first
+        m.z = "new_z_value"
+        assert.same("new_z_value", table1.z)
+        assert.same(nil, table2.z)
+    end)
+end)
