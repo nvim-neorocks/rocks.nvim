@@ -15,15 +15,15 @@
       }:
         buildLuarocksPackage {
           pname = "toml-edit";
-          version = "0.4.1-1";
+          version = "0.5.0-1";
           knownRockspec =
             (fetchurl {
-              url = "mirror://luarocks/toml-edit-0.4.1-1.rockspec";
+              url = "mirror://luarocks/toml-edit-0.5.0-1.rockspec";
               sha256 = "180zdqrzffr7jr9xls895gj5hrx6pfs98rlxwzg71382jy1n79qi";
             })
             .outPath;
           src = fetchzip {
-            url = "https://github.com/vhyrro/toml-edit.lua/archive/v0.4.1.zip";
+            url = "https://github.com/vhyrro/toml-edit.lua/archive/v0.5.0.zip";
             sha256 = "1322p490p6yza3lczfzmwf5nkfj4ra6m9g6hvr2qgay405wnpgy7";
           };
 

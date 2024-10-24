@@ -36,6 +36,35 @@ function fs.file_exists(location)
     return false
 end
 
+--- Expand environment variables and tilde in the path string
+---@param path_str string
+---@return string
+function fs.expand_path(path_str)
+    -- Expand environment variables
+    local path = path_str:gsub("%$([%w_]+)", function(var)
+        return os.getenv(var) or ""
+    end)
+    -- Expand tilde to home directory
+    local home = os.getenv("HOME")
+    if home then
+        path = path:gsub("^~", home)
+    end
+    return path
+end
+
+--- Expand path string and get the absolute path if it a relative path string
+---@param base_path string base directory path to use if path_str is relative
+---@param path_str string the path string to expand
+---@return string
+function fs.get_absolute_path(base_path, path_str)
+    local path = fs.expand_path(path_str)
+    -- If path is not an absolute path, set it relative to the base
+    if path:sub(1, 1) ~= "/" then
+        path = vim.fs.joinpath(fs.expand_path(base_path), path)
+    end
+    return path
+end
+
 --- Write `contents` to a file asynchronously
 ---@param location string file path
 ---@param mode string mode to open the file for
@@ -66,7 +95,9 @@ function fs.write_file(location, mode, contents, callback)
         else
             local msg = ("Error opening %s for writing: %s"):format(location, err)
             log.error(msg)
-            vim.notify(msg, vim.log.levels.ERROR)
+            vim.schedule(function()
+                vim.notify(msg, vim.log.levels.ERROR)
+            end)
             if callback then
                 callback()
             end
