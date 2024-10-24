@@ -83,8 +83,8 @@ servers = []
                 },
             },
             luarocks = {
-                servers = {}
-            }
+                servers = {},
+            },
         }, rocks_toml)
     end)
     it("get config with imports", function()
@@ -113,8 +113,10 @@ pin = true
         local fh = assert(io.open(config.config_path, "w"), "Could not open rocks.toml for writing")
         fh:write(config_content)
         fh:close()
-        fh = assert(io.open(vim.fs.joinpath(tempdir, "local-rocks.toml"), "w"),
-            "Could not open local rocks.toml for writing")
+        fh = assert(
+            io.open(vim.fs.joinpath(tempdir, "local-rocks.toml"), "w"),
+            "Could not open local rocks.toml for writing"
+        )
         fh:write(config_content2)
         fh:close()
         local rocks_toml = config.get_rocks_toml()
@@ -137,8 +139,8 @@ pin = true
                 },
             },
             luarocks = {
-                servers = {}
-            }
+                servers = {},
+            },
         }, rocks_toml)
     end)
 end)

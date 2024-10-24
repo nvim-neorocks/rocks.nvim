@@ -15,23 +15,24 @@ MultiMutRocksTomlWrapper.__index = function(self, key)
         return MultiMutRocksTomlWrapper[key]
     end
     -- Find the key within the config tables
-    local nested_tables = {}
     for _, tbl in ipairs(self.configs) do
         if tbl.config[key] ~= nil then
             if type(tbl.config[key]) == "table" then
-                table.insert(nested_tables, { config = tbl.config[key], path = tbl.path })
+                if not self.cache[key] then
+                    self.cache[key] = MultiMutRocksTomlWrapper.new(vim.iter(self.configs)
+                        :filter(function(v)
+                            return type(v.config[key]) == "table"
+                        end)
+                        :fold({}, function(acc, v)
+                            table.insert(acc, { config = v.config[key], path = v.path })
+                            return acc
+                        end))
+                end
+                return self.cache[key]
             else
                 return tbl.config[key]
             end
         end
-    end
-    -- If the value is a table, setup a nested metatable that uses the
-    -- inner tables of the config tables
-    if #nested_tables > 0 then
-        if not self.cache[key] then
-            self.cache[key] = MultiMutRocksTomlWrapper.new(nested_tables)
-        end
-        return self.cache[key]
     end
     return nil
 end

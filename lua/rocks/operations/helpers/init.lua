@@ -36,11 +36,7 @@ function helpers.parse_rocks_toml()
     local rocks_toml_configs = {}
     config.read_rocks_toml(function(file_str, file_path)
         -- Parse
-        local rocks_toml = require("toml_edit").parse(file_str)
-        -- TODO: Remove call to get_imports, this is needed because toml_edit.lua doesn't
-        -- seem to support toml Arrays
-        local imports = config.get_imports(file_path)
-        return rocks_toml, imports
+        return require("toml_edit").parse(file_str)
     end, function(rocks_toml, file_path)
         ---@type MutRocksTomlRefWithPath
         local rocks_toml_config = { config = rocks_toml, path = file_path }

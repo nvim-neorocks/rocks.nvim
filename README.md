@@ -472,6 +472,11 @@ import = [
 
 ```
 
+
+> [!NOTE]
+>
+> - Imported config will have higher priority
+
 ## :calendar: User events
 
 For `:h User` events that rocks.nvim will trigger, see `:h rocks.user-event`.

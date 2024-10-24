@@ -72,16 +72,7 @@ local default_config = {
         ---@type string[]
         unrecognized_configs = {},
     },
-    ---@type fun(path: string): string[]
-    get_imports = function(path)
-        local config_file = fs.read_or_create(path, constants.DEFAULT_CONFIG)
-        local rocks_toml = require("toml_edit").parse_as_tbl(config_file)
-        if rocks_toml.import ~= nil and type(rocks_toml.import) == "table" then
-            return rocks_toml.import
-        end
-        return {}
-    end,
-    ---@type fun(parse_func: (fun(file_str: string, file_path: string): table, string[]), process_func: fun(config: table, file_path))
+    ---@type fun(parse_func: (fun(file_str: string, file_path: string): table), process_func: fun(config: table, file_path))
     read_rocks_toml = function(parse_func, process_func)
         local visited = {}
 
@@ -100,12 +91,19 @@ local default_config = {
 
             -- Read config
             local file_str = fs.read_or_create(file_path, default)
-            -- Parse and retrieve imports list
-            local rocks_toml, imports = parse_func(file_str, file_path)
+            -- Parse
+            local rocks_toml = parse_func(file_str, file_path)
             -- Follow import paths (giving preference to imported config)
-            if imports then
-                for _, path in ipairs(imports) do
-                    parse(fs.get_absolute_path(vim.fs.dirname(config.config_path), path), "")
+            if rocks_toml.import then
+                -- NOTE: using a while loop as the imports may be a metatable
+                local i, import_path = 0, nil
+                while true do
+                    i = i + 1
+                    import_path = rocks_toml.import[i]
+                    if import_path == nil then
+                        break
+                    end
+                    parse(fs.get_absolute_path(vim.fs.dirname(config.config_path), import_path), "")
                 end
             end
             -- Process result
@@ -118,10 +116,7 @@ local default_config = {
         local rocks_toml_merged = {}
         config.read_rocks_toml(function(file_str, _)
             -- Parse
-            local rocks_toml = require("toml_edit").parse_as_tbl(file_str)
-            local imports = rocks_toml.import
-            rocks_toml.import = nil
-            return rocks_toml, imports
+            return require("toml_edit").parse_as_tbl(file_str)
         end, function(rocks_toml, _)
             -- Setup rockspec for rocks/plugins
             for key, tbl in pairs(rocks_toml) do
