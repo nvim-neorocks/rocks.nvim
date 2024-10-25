@@ -93,6 +93,18 @@ local function set_up_luarocks(path)
         return false
     end
 
+    local luarocks_version = "v3.11.1"
+    sc = exec({
+        "git",
+        "checkout",
+        luarocks_version,
+    }, {
+        cwd = tempdir,
+    })
+    if sc.code ~= 0 then
+        notify_output(("Checking out luarocks %s failed."):format(luarocks_version), sc, vim.log.levels.WARN)
+    end
+
     vim.notify("Configuring luarocks...")
 
     sc = exec({
