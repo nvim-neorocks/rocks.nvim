@@ -72,10 +72,12 @@ local default_config = {
         ---@type string[]
         unrecognized_configs = {},
     },
-    ---@type fun(parse_func: (fun(file_str: string, file_path: string): table), process_func: fun(config: table, file_path))
-    read_rocks_toml = function(parse_func, process_func)
+    ---@type fun(parse_func: (fun(file_str: string, file_path: string): table), process_func: fun(config: table, file_path: string) | nil)
+    read_rocks_toml = function(parse_func, process_result)
         local visited = {}
 
+        ---@param file_path string
+        ---@param default string
         local function parse(file_path, default)
             -- Don't allow recursive includes
             if visited[file_path] then
@@ -96,7 +98,8 @@ local default_config = {
             -- Follow import paths (giving preference to imported config)
             if rocks_toml.import then
                 -- NOTE: using a while loop as the imports may be a metatable
-                local i, import_path = 0, nil
+                local i = 0
+                local import_path
                 while true do
                     i = i + 1
                     import_path = rocks_toml.import[i]
@@ -106,15 +109,16 @@ local default_config = {
                     parse(fs.get_absolute_path(vim.fs.dirname(config.config_path), import_path), "")
                 end
             end
-            -- Process result
-            process_func(rocks_toml, file_path)
+            if process_result then
+                process_result(rocks_toml, file_path)
+            end
         end
         parse(config.config_path, constants.DEFAULT_CONFIG)
     end,
     ---@type fun():RocksToml
     get_rocks_toml = function()
         local rocks_toml_merged = {}
-        config.read_rocks_toml(function(file_str, _)
+        config.read_rocks_toml(function(file_str)
             -- Parse
             return require("toml_edit").parse_as_tbl(file_str)
         end, function(rocks_toml, _)

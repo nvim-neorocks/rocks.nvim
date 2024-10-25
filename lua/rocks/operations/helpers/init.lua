@@ -34,7 +34,7 @@ helpers.semaphore = nio.control.semaphore(1)
 ---@return MutRocksTomlRef
 function helpers.parse_rocks_toml()
     local rocks_toml_configs = {}
-    config.read_rocks_toml(function(file_str, file_path)
+    config.read_rocks_toml(function(file_str)
         -- Parse
         return require("toml_edit").parse(file_str)
     end, function(rocks_toml, file_path)

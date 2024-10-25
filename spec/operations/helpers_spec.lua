@@ -158,13 +158,18 @@ describe("operations.helpers.multi_mut_rocks_toml_wrapper", function()
                 path = "path2",
             },
         })
+        ---@diagnostic disable-next-line: undefined-field
         assert.same("table1_a", m.a) -- Only in table1
+        ---@diagnostic disable-next-line: undefined-field
         assert.same("table1_b", m.b) -- Prefer table1 since it is first
+        ---@diagnostic disable-next-line: undefined-field
         local c = m.c -- Nested table, prefer table1 values since first
         assert.same("table1_c_a", c.a)
         assert.same("table1_c_b", c.b)
         assert.same("table1_c_c", c.c)
+        ---@diagnostic disable-next-line: undefined-field
         assert.same("table2_c_d", m.c.d) -- Nested table value, only in table2
+        ---@diagnostic disable-next-line: undefined-field
         assert.same("table2_d", m.d) -- Only in table2
     end)
     it("Item modification", function()
@@ -196,11 +201,13 @@ describe("operations.helpers.multi_mut_rocks_toml_wrapper", function()
         })
 
         -- Table1 modified
+        ---@diagnostic disable-next-line: inject-field
         m.a = "foo"
         assert.same("foo", table1.a)
         assert.same(nil, table2.a)
 
         -- Table1 modified since first
+        ---@diagnostic disable-next-line: inject-field
         m.b = "foo"
         assert.same("foo", table1.b)
         assert.same("table2_b", table2.b)
@@ -234,6 +241,7 @@ describe("operations.helpers.multi_mut_rocks_toml_wrapper", function()
         })
 
         -- Table1 modified since first
+        ---@diagnostic disable-next-line: inject-field
         m.z = "new_z_value"
         assert.same("new_z_value", table1.z)
         assert.same(nil, table2.z)
