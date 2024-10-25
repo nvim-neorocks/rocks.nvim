@@ -66,7 +66,7 @@ end
 ---@param configs MutRocksTomlRefWithPath[] A list of rocks toml configs
 ---@return MultiMutRocksTomlWrapper
 function MultiMutRocksTomlWrapper.new(configs)
-    assert(#configs > 0, "Must provide atleast one rocks toml config")
+    assert(#configs > 0, "Must provide at least one rocks toml config")
     local self = { cache = {}, configs = configs }
     setmetatable(self, MultiMutRocksTomlWrapper)
     return self
