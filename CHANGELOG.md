@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.41.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.40.5...v2.41.0) (2024-10-25)
+
+
+### Features
+
+* **config:** `import` option for splitting rocks toml configs ([#565](https://github.com/nvim-neorocks/rocks.nvim/issues/565)) ([#573](https://github.com/nvim-neorocks/rocks.nvim/issues/573)) ([15b2387](https://github.com/nvim-neorocks/rocks.nvim/commit/15b2387c723ac640ab5760e2e0e527dc97e73dc5))
+
+
+### Bug Fixes
+
+* **installer/bootstrap:** pin luarocks to v3.11.1 ([#569](https://github.com/nvim-neorocks/rocks.nvim/issues/569)) ([259dee5](https://github.com/nvim-neorocks/rocks.nvim/commit/259dee5fef46e61b49755b6610b6539d0d346e1f))
+
 ## [2.40.5](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.40.4...v2.40.5) (2024-10-17)
 
 
