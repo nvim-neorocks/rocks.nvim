@@ -1,9 +1,11 @@
 local tempdir = vim.fn.tempname()
-vim.fn.mkdir(tempdir, "p")
+vim.system({ "rm", "-r", tempdir }):wait()
+vim.system({ "mkdir", "-p", tempdir }):wait()
 vim.g.rocks_nvim = {
     luarocks_binary = "luarocks",
     rocks_path = tempdir,
     experimental_features = { "ext_module_dependency_stubs" },
+    config_path = vim.fs.joinpath(tempdir, "rocks.toml"),
 }
 local nio = require("nio")
 vim.env.PLENARY_TEST_TIMEOUT = 60000
@@ -74,5 +76,166 @@ describe("operations.helpers", function()
         installed_rocks = state.installed_rocks()
         assert.is_nil(installed_rocks["stub.nvim"])
         assert.is_nil(installed_rocks["pathlib.nvim"])
+    end)
+    it("Parse rocks toml", function()
+        local config_content = [[
+import = [
+  "local-rocks.toml",
+]
+[rocks]
+myrock = "1.0.0"
+
+[plugins]
+myplugin = "1.0.0"
+
+[luarocks]
+servers = ["server1", "server2"]
+]]
+        local config_content2 = [[
+import = [
+  "rocks.toml", # SHOULD IGNORE CIRCULAR IMPORT
+]
+[plugins."myplugin"]
+version = "2.0.0"
+pin = true
+]]
+
+        local fh = assert(io.open(config.config_path, "w"), "Could not open rocks.toml for writing")
+        fh:write(config_content)
+        fh:close()
+        fh = assert(
+            io.open(vim.fs.joinpath(tempdir, "local-rocks.toml"), "w"),
+            "Could not open local rocks.toml for writing"
+        )
+        fh:write(config_content2)
+        fh:close()
+
+        local rocks_toml = helpers.parse_rocks_toml()
+        assert.is_not_nil(rocks_toml.rocks)
+        assert.same("1.0.0", rocks_toml.rocks.myrock)
+        assert.is_not_nil(rocks_toml.plugins)
+        assert.same("2.0.0", rocks_toml.plugins.myplugin.version) -- local overrides base
+        assert.same(true, rocks_toml.plugins.myplugin.pin)
+        assert.is_not_nil(rocks_toml.luarocks)
+        assert.same("server1", rocks_toml.luarocks.servers[1])
+        assert.same("server2", rocks_toml.luarocks.servers[2])
+        assert.same(nil, rocks_toml.luarocks.servers[3])
+        assert.is_not_nil(rocks_toml.import)
+    end)
+end)
+
+describe("operations.helpers.multi_mut_rocks_toml_wrapper", function()
+    local multi_mut_rocks_toml_wrapper = require("rocks.operations.helpers.multi_mut_rocks_toml_wrapper")
+    it("Create new with no config", function()
+        assert.error(function()
+            local _ = multi_mut_rocks_toml_wrapper.new({})
+        end)
+    end)
+    it("Item retrival", function()
+        local table1 = {
+            a = "table1_a",
+            b = "table1_b",
+            c = {
+                a = "table1_c_a",
+                b = "table1_c_b",
+                c = "table1_c_c",
+            },
+        }
+        local table2 = {
+            b = "table2_b",
+            c = {
+                d = "table2_c_d",
+            },
+            d = "table2_d",
+        }
+        local m = multi_mut_rocks_toml_wrapper.new({
+            {
+                config = table1,
+                path = "path1",
+            },
+            {
+                config = table2,
+                path = "path2",
+            },
+        })
+        assert.same("table1_a", m.a) -- Only in table1
+        assert.same("table1_b", m.b) -- Prefer table1 since it is first
+        local c = m.c -- Nested table, prefer table1 values since first
+        assert.same("table1_c_a", c.a)
+        assert.same("table1_c_b", c.b)
+        assert.same("table1_c_c", c.c)
+        assert.same("table2_c_d", m.c.d) -- Nested table value, only in table2
+        assert.same("table2_d", m.d) -- Only in table2
+    end)
+    it("Item modification", function()
+        local table1 = {
+            a = "table1_a",
+            b = "table1_b",
+            c = {
+                a = "table1_c_a",
+                b = "table1_c_b",
+                c = "table1_c_c",
+            },
+        }
+        local table2 = {
+            b = "table2_b",
+            c = {
+                d = "table2_c_d",
+            },
+            d = "table2_d",
+        }
+        local m = multi_mut_rocks_toml_wrapper.new({
+            {
+                config = table1,
+                path = "path1",
+            },
+            {
+                config = table2,
+                path = "path2",
+            },
+        })
+
+        -- Table1 modified
+        m.a = "foo"
+        assert.same("foo", table1.a)
+        assert.same(nil, table2.a)
+
+        -- Table1 modified since first
+        m.b = "foo"
+        assert.same("foo", table1.b)
+        assert.same("table2_b", table2.b)
+    end)
+    it("Item insertion", function()
+        local table1 = {
+            a = "table1_a",
+            b = "table1_b",
+            c = {
+                a = "table1_c_a",
+                b = "table1_c_b",
+                c = "table1_c_c",
+            },
+        }
+        local table2 = {
+            b = "table2_b",
+            c = {
+                d = "table2_c_d",
+            },
+            d = "table2_d",
+        }
+        local m = multi_mut_rocks_toml_wrapper.new({
+            {
+                config = table1,
+                path = "path1",
+            },
+            {
+                config = table2,
+                path = "path2",
+            },
+        })
+
+        -- Table1 modified since first
+        m.z = "new_z_value"
+        assert.same("new_z_value", table1.z)
+        assert.same(nil, table2.z)
     end)
 end)

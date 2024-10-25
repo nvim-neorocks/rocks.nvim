@@ -18,7 +18,6 @@ local prune = {}
 
 local constants = require("rocks.constants")
 local log = require("rocks.log")
-local fs = require("rocks.fs")
 local config = require("rocks.config.internal")
 local cache = require("rocks.cache")
 local helpers = require("rocks.operations.helpers")
@@ -56,7 +55,7 @@ prune.prune = function(rock_name)
                 progress_handle:report({ message = message, title = "Error" })
                 success = false
             end
-            fs.write_file_await(config.config_path, "w", tostring(user_config))
+            user_config:write()
             local user_rocks = config.get_user_rocks()
             handlers.prune_user_rocks(user_rocks, report_progress, report_error)
             adapter.synchronise_site_symlinks()

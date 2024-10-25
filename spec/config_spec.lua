@@ -45,4 +45,102 @@ dev_servers = []
         fh:close()
         assert.same({}, config.get_dev_servers())
     end)
+    it("get config basic", function()
+        local config_content = [[
+[rocks]
+myrock = "1.0.0"
+
+[plugins]
+myplugin = "1.0.0"
+
+[plugins."myotherplugin"]
+version = "2.0.0"
+pin = true
+
+[luarocks]
+servers = []
+]]
+        local fh = assert(io.open(config.config_path, "w"), "Could not open rocks.toml for writing")
+        fh:write(config_content)
+        fh:close()
+        local rocks_toml = config.get_rocks_toml()
+        assert.same({
+            rocks = {
+                myrock = {
+                    name = "myrock",
+                    version = "1.0.0",
+                },
+            },
+            plugins = {
+                myplugin = {
+                    name = "myplugin",
+                    version = "1.0.0",
+                },
+                myotherplugin = {
+                    name = "myotherplugin",
+                    version = "2.0.0",
+                    pin = true,
+                },
+            },
+            luarocks = {
+                servers = {},
+            },
+        }, rocks_toml)
+    end)
+    it("get config with imports", function()
+        local config_content = [[
+import = [
+  "local-rocks.toml",
+]
+[rocks]
+myrock = "1.0.0"
+
+[plugins]
+myplugin = "1.0.0"
+
+[luarocks]
+servers = []
+]]
+        local config_content2 = [[
+import = [
+  "rocks.toml", # SHOULD IGNORE CIRCULAR IMPORT
+]
+[plugins."myotherplugin"]
+version = "2.0.0"
+pin = true
+]]
+
+        local fh = assert(io.open(config.config_path, "w"), "Could not open rocks.toml for writing")
+        fh:write(config_content)
+        fh:close()
+        fh = assert(
+            io.open(vim.fs.joinpath(tempdir, "local-rocks.toml"), "w"),
+            "Could not open local rocks.toml for writing"
+        )
+        fh:write(config_content2)
+        fh:close()
+        local rocks_toml = config.get_rocks_toml()
+        assert.same({
+            rocks = {
+                myrock = {
+                    name = "myrock",
+                    version = "1.0.0",
+                },
+            },
+            plugins = {
+                myplugin = {
+                    name = "myplugin",
+                    version = "1.0.0",
+                },
+                myotherplugin = {
+                    name = "myotherplugin",
+                    version = "2.0.0",
+                    pin = true,
+                },
+            },
+            luarocks = {
+                servers = {},
+            },
+        }, rocks_toml)
+    end)
 end)

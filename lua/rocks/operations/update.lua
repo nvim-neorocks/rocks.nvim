@@ -18,7 +18,6 @@ local update = {}
 
 local constants = require("rocks.constants")
 local log = require("rocks.log")
-local fs = require("rocks.fs")
 local config = require("rocks.config.internal")
 local state = require("rocks.state")
 local cache = require("rocks.cache")
@@ -170,7 +169,7 @@ update.update = function(on_complete, opts)
                     user_rocks[rocks_key][rock_name] = installed_rock.version
                 end
             end
-            fs.write_file_await(config.config_path, "w", tostring(user_rocks))
+            user_rocks:write()
             nio.scheduler()
             if not vim.tbl_isempty(error_handles) then
                 local message = "Update completed with errors! Run ':Rocks log' for details."

@@ -454,6 +454,28 @@ You can also pin/unpin installed plugins with:
 :Rocks [pin|unpin] {rock}
 ```
 
+### Importing rocks toml files
+
+You can break up your rocks configuration into different modules that
+can then be imported into your main configuration. This can be useful
+for modularity or simply for the purpose of supporting local
+configuration files that you can keep outside of version control.
+
+For example:
+
+```toml
+import = [
+  "rocks-local.toml", # Paths are relative to the rocks.toml file directory by default
+  "~/my-rocks.toml", # Path expansion is supported through vim.fn.expand
+  "/home/user/my-rocks.toml", # Absolute paths are supported
+]
+
+```
+
+> [!NOTE]
+>
+> - Imported config will have higher priority
+
 ## :calendar: User events
 
 For `:h User` events that rocks.nvim will trigger, see `:h rocks.user-event`.

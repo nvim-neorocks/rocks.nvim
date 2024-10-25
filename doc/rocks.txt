@@ -330,6 +330,7 @@ RocksToml                                                            *RocksToml*
         {plugins?}      (table<rock_name,RockSpec>)  The `[plugins]` entries
         {servers?}      (string[])
         {dev_servers?}  (string[])
+        {import?}       (string[])
         {string}        (unknown)                    Fields that can be added by external modules
 
 

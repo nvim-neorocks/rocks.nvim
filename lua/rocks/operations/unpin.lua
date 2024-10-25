@@ -16,8 +16,6 @@
 
 local unpin = {}
 
-local fs = require("rocks.fs")
-local config = require("rocks.config.internal")
 local helpers = require("rocks.operations.helpers")
 local nio = require("nio")
 
@@ -41,7 +39,7 @@ unpin.unpin = function(rock_name)
             else
                 user_config[rocks_key][rock_name].pin = nil
             end
-            fs.write_file_await(config.config_path, "w", tostring(user_config))
+            user_config:write()
             vim.schedule(function()
                 vim.notify(("%s unpinned"):format(rock_name), vim.log.levels.INFO)
             end)
