@@ -472,7 +472,6 @@ import = [
 
 ```
 
-
 > [!NOTE]
 >
 > - Imported config will have higher priority
