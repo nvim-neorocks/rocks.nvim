@@ -4,40 +4,6 @@
 }: final: prev: let
   lib = final.lib;
   luaPackage-override = luaself: luaprev: {
-    toml-edit =
-      (luaself.callPackage ({
-        buildLuarocksPackage,
-        fetchzip,
-        fetchurl,
-        lua,
-        luaOlder,
-        luarocks-build-rust-mlua,
-      }:
-        buildLuarocksPackage {
-          pname = "toml-edit";
-          version = "0.5.0-1";
-          knownRockspec =
-            (fetchurl {
-              url = "mirror://luarocks/toml-edit-0.5.0-1.rockspec";
-              sha256 = "1d80s6jcdw7ny52vda7lx4xccmavnl7sji1bcchmbc7krbf6s7v0";
-            })
-            .outPath;
-          src = fetchzip {
-            url = "https://github.com/nvim-neorocks/toml-edit.lua/archive/v0.5.0.zip";
-            sha256 = "0cfsp9h7kjm52mrjf42jrp3np7akql8ynlnvq32m2ayshjdsdx6q";
-          };
-
-          disabled = luaOlder "5.1";
-          propagatedBuildInputs = [lua luarocks-build-rust-mlua];
-        }) {})
-      .overrideAttrs (oa: {
-        cargoDeps = final.rustPlatform.fetchCargoTarball {
-          src = oa.src;
-          hash = "sha256-2WN5RoM1G2SE6H3g5pmEQvOoSCoaw3xMG8cDdfU2DAo=";
-        };
-        nativeBuildInputs = with final; [cargo rustPlatform.cargoSetupHook] ++ oa.nativeBuildInputs;
-      });
-
     rtp-nvim = luaself.callPackage ({
       buildLuarocksPackage,
       fetchzip,

@@ -24,6 +24,7 @@ local state = require("rocks.state")
 local log = require("rocks.log")
 local cache = require("rocks.cache")
 local nio = require("nio")
+local multi_mut_rocks_toml_wrapper = require("rocks.operations.helpers.multi_mut_rocks_toml_wrapper")
 
 local helpers = {}
 
@@ -32,8 +33,18 @@ helpers.semaphore = nio.control.semaphore(1)
 ---Decode the user rocks from rocks.toml, creating a default config file if it does not exist
 ---@return MutRocksTomlRef
 function helpers.parse_rocks_toml()
-    local config_file = fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG)
-    return require("toml_edit").parse(config_file)
+    local rocks_toml_configs = {}
+    config.read_rocks_toml(function(file_str)
+        -- Parse
+        return require("toml_edit").parse(file_str)
+    end, function(rocks_toml, file_path)
+        ---@type MutRocksTomlRefWithPath
+        local rocks_toml_config = { config = rocks_toml, path = file_path }
+        -- Append to config list in order of preference returned by the read function
+        table.insert(rocks_toml_configs, rocks_toml_config)
+    end)
+
+    return multi_mut_rocks_toml_wrapper.new(rocks_toml_configs) --[[@as MutRocksTomlRef]]
 end
 
 ---@param rocks_toml MutRocksTomlRef
