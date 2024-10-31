@@ -30,23 +30,63 @@ local helpers = {}
 
 helpers.semaphore = nio.control.semaphore(1)
 
----Decode the user rocks from rocks.toml, creating a default config file if it does not exist
----@return MutRocksTomlRef
-function helpers.parse_rocks_toml()
+---Decode the user rocks from rocks.toml, creating a default config file if it does not exist.
+---A config path can be provided to only the return the config for a specific file. This path can
+---be relative to the config_path directory or absolute with path expansion supported.
+---@param config_path? string
+---@return MultiMutRocksTomlWrapper
+function helpers.parse_rocks_toml(config_path)
+    if config_path then
+        local absolute_config_path = fs.get_absolute_path(vim.fs.dirname(config.config_path), config_path)
+        local base_rocks_toml =
+            require("toml_edit").parse(fs.read_or_create(config.config_path, constants.DEFAULT_CONFIG))
+        -- Check to see if the path provided was the base config path, if so, just return that
+        if absolute_config_path == config.config_path then
+            return multi_mut_rocks_toml_wrapper.new({ { config = base_rocks_toml, path = config.config_path } })
+        end
+
+        -- For non-base configs, add it to the list of imports in the base config
+        if base_rocks_toml.import then
+            local i = 0
+            local import_path
+            repeat
+                i = i + 1
+                import_path = base_rocks_toml.import[i]
+            until import_path == nil or import_path == config_path
+            base_rocks_toml.import[i] = config_path
+        else
+            base_rocks_toml.import = { config_path }
+        end
+
+        -- For non-base configs, return a combined config with the imported config having preference over the base.
+        -- Since we modified the base also, it will also need to be written, hence, we return it to allow the
+        -- caller to write the config when all other modifications are done/successful.
+        return multi_mut_rocks_toml_wrapper.new({
+            {
+                config = require("toml_edit").parse(fs.read_or_create(absolute_config_path, "")),
+                path = absolute_config_path,
+            },
+            {
+                config = base_rocks_toml,
+                path = config.config_path,
+            },
+        })
+    end
+
     local rocks_toml_configs = {}
     config.read_rocks_toml(function(file_str)
         -- Parse
         return require("toml_edit").parse(file_str)
     end, function(rocks_toml, file_path)
-        ---@type MutRocksTomlRefWithPath
-        local rocks_toml_config = { config = rocks_toml, path = file_path }
         -- Append to config list in order of preference returned by the read function
-        table.insert(rocks_toml_configs, rocks_toml_config)
+        table.insert(rocks_toml_configs, { config = rocks_toml, path = file_path })
     end)
 
-    return multi_mut_rocks_toml_wrapper.new(rocks_toml_configs) --[[@as MutRocksTomlRef]]
+    return multi_mut_rocks_toml_wrapper.new(rocks_toml_configs)
 end
 
+---@overload fun(rocks_toml: MultiMutRocksTomlWrapper, rock_name: rock_name): "plugins"|"rocks"|nil
+---@overload fun(rocks_toml: MultiMutRocksTomlWrapper, rock_name: rock_name): rock_config_table|nil
 ---@param rocks_toml MutRocksTomlRef
 ---@param rock_name rock_name
 ---@return "plugins"|"rocks"|nil rocks_key The key of the table containing the rock entry

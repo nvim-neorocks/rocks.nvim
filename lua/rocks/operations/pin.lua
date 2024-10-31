@@ -38,7 +38,7 @@ pin.pin = function(rock_name)
             end
             user_config[rocks_key][rock_name].pin = true
             local version = user_config[rocks_key][rock_name].version
-            user_config:write()
+            user_config:_write_await()
             vim.schedule(function()
                 vim.notify(("%s pinned to version %s"):format(rock_name, version), vim.log.levels.INFO)
             end)

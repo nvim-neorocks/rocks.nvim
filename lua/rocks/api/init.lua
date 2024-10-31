@@ -188,12 +188,27 @@ function api.source_runtime_dir(dir)
     require("rtp_nvim").source_rtp_dir(dir)
 end
 
----Invoke ':Rocks install' with a callback
+---@class rocks.InstallOpts
+---@field skip_prompts? boolean Whether to skip any "search 'dev' manifest prompts
+---@field cmd? 'install' | 'update' Command used to invoke this function. Default: `'install'`
+---@field config_path? string Config file path to use for installing the rock relative to the base config file
+---@field callback? fun(rock: Rock) Invoked upon successful completion
+
+---Invoke ':Rocks install'
 ---@param rock_name rock_name #The rock name
 ---@param version? string The version of the rock to use
----@param callback? fun(rock: Rock) Invoked upon successful completion
-function api.install(rock_name, version, callback)
-    operations.add({ rock_name, version }, callback)
+---@param opts? rocks.InstallOpts  Installation options
+function api.install(rock_name, version, opts)
+    if type(opts) == "function" then
+        vim.deprecate(
+            "rocks.api.install(rock_name, version, callback)",
+            "rocks.api.install(rocks_name, version, { callback = cb })",
+            "3.0.0",
+            "rocks.nvim"
+        )
+        opts = { callback = opts }
+    end
+    operations.add({ rock_name, version }, opts --[[@as rocks.AddOpts]])
 end
 
 return api

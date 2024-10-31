@@ -122,6 +122,51 @@ pin = true
         assert.same(nil, rocks_toml.luarocks.servers[3])
         assert.is_not_nil(rocks_toml.import)
     end)
+    it("Parse rocks toml passing base config path", function()
+        local config_content = [[
+[rocks]
+myrock = "1.0.0"
+]]
+
+        local fh = assert(io.open(config.config_path, "w"), "Could not open rocks.toml for writing")
+        fh:write(config_content)
+        fh:close()
+
+        local rocks_toml = helpers.parse_rocks_toml(config.config_path)
+        assert.is_not_nil(rocks_toml.rocks)
+        assert.same("1.0.0", rocks_toml.rocks.myrock)
+    end)
+    it("Parse rocks toml passing new import path", function()
+        local config_content = [[
+[rocks]
+myrock = "1.0.0"
+]]
+
+        local fh = assert(io.open(config.config_path, "w"), "Could not open rocks.toml for writing")
+        fh:write(config_content)
+        fh:close()
+
+        local _, _ = os.remove(vim.fs.joinpath(tempdir, "local-rocks.toml"))
+        local rocks_toml = helpers.parse_rocks_toml("local-rocks.toml")
+        assert.same("local-rocks.toml", rocks_toml.import[1])
+    end)
+    it("Parse rocks toml passing new import path, append to imports", function()
+        local config_content = [[
+import = ["other-rocks.toml"]
+
+[rocks]
+myrock = "1.0.0"
+]]
+
+        local fh = assert(io.open(config.config_path, "w"), "Could not open rocks.toml for writing")
+        fh:write(config_content)
+        fh:close()
+
+        local _, _ = os.remove(vim.fs.joinpath(tempdir, "local-rocks.toml"))
+        local rocks_toml = helpers.parse_rocks_toml("local-rocks.toml")
+        assert.same("other-rocks.toml", rocks_toml.import[1])
+        assert.same("local-rocks.toml", rocks_toml.import[2])
+    end)
 end)
 
 describe("operations.helpers.multi_mut_rocks_toml_wrapper", function()

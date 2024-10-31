@@ -55,7 +55,7 @@ prune.prune = function(rock_name)
                 progress_handle:report({ message = message, title = "Error" })
                 success = false
             end
-            user_config:write()
+            user_config:_write_await()
             local user_rocks = config.get_user_rocks()
             handlers.prune_user_rocks(user_rocks, report_progress, report_error)
             adapter.synchronise_site_symlinks()

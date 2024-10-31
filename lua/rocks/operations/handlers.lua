@@ -28,6 +28,7 @@ function handlers.register_handler(handler)
     table.insert(_handlers, handler)
 end
 
+---@overload fun(rocks_toml_ref: MultiMutRocksTomlWrapper, arg_list: string[]): rock_handler_callback | nil
 ---@param rocks_toml_ref MutRocksTomlRef
 ---@param arg_list string[]
 ---@return rock_handler_callback | nil
@@ -64,6 +65,7 @@ function handlers.get_sync_handler_callback(spec)
         end)
 end
 
+---@overload fun(rocks_toml_ref: MultiMutRocksTomlWrapper): rock_handler_callback[]
 ---@param rocks_toml_ref MutRocksTomlRef
 ---@return rock_handler_callback[]
 function handlers.get_update_handler_callbacks(rocks_toml_ref)

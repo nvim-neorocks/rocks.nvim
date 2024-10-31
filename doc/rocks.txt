@@ -426,14 +426,23 @@ api.source_runtime_dir()                                *api.source_runtime_dir*
     @deprecated Use the rtp.nvim luarock
 
 
+rocks.InstallOpts                                            *rocks.InstallOpts*
+
+    Fields: ~
+        {skip_prompts?}  (boolean)             Whether to skip any "search 'dev' manifest prompts
+        {cmd?}           ("install"|"update")  Command used to invoke this function. Default: `'install'`
+        {config_path?}   (string)              Config file path to use for installing the rock relative to the base config file
+        {callback?}      (fun(rock:Rock))      Invoked upon successful completion
+
+
                                                                    *api.install*
-api.install({rock_name}, {version?}, {callback?})
-    Invoke ':Rocks install' with a callback
+api.install({rock_name}, {version?}, {opts?})
+    Invoke ':Rocks install'
 
     Parameters: ~
-        {rock_name}  (rock_name)       #The rock name
-        {version?}   (string)          The version of the rock to use
-        {callback?}  (fun(rock:Rock))  Invoked upon successful completion
+        {rock_name}  (rock_name)          #The rock name
+        {version?}   (string)             The version of the rock to use
+        {opts?}      (rocks.InstallOpts)  Installation options
 
 
 ==============================================================================

@@ -22,9 +22,11 @@ describe("install/update", function()
             end,
         })
         local future = nio.control.future()
-        operations.add({ "Neorg", "7.0.0" }, function() -- ensure lower case
-            future.set(true)
-        end)
+        operations.add({ "Neorg", "7.0.0" }, {
+            callback = function() -- ensure lower case
+                future.set(true)
+            end,
+        })
         future.wait()
         local neorg_expected = {
             name = "neorg",
