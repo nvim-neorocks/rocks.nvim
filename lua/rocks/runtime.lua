@@ -38,7 +38,11 @@ function runtime.packadd(rock_spec, opts)
     opts = vim.tbl_deep_extend("force", {
         bang = false,
     }, opts or {})
-    if not adapter.has_site_symlink(rock_spec) and not adapter.init_site_symlink_sync(rock_spec) then
+    if
+        rock_spec.version
+        and not adapter.has_site_symlink(rock_spec)
+        and not adapter.init_site_symlink_sync(rock_spec)
+    then
         log.warn(("Rock %s does not appear to be installed."):format(rock_spec.name))
         return false
     end

@@ -154,14 +154,16 @@ function helpers.dynamic_load(rock_spec)
     end
     nio.run(function()
         vim.schedule(function()
-            if rock_spec.opt then
-                -- Add rock to the rtp, but don't source any scripts
-                log.trace(("Adding %s to the runtimepath"):format(rock_spec.name))
-                runtime.packadd(rock_spec, { bang = true })
-            else
-                log.trace(("Sourcing %s"):format(rock_spec.name))
-                runtime.packadd(rock_spec)
-            end
+            pcall(function()
+                if rock_spec.opt then
+                    -- Add rock to the rtp, but don't source any scripts
+                    log.trace(("Adding %s to the runtimepath"):format(rock_spec.name))
+                    runtime.packadd(rock_spec, { bang = true })
+                else
+                    log.trace(("Sourcing %s"):format(rock_spec.name))
+                    runtime.packadd(rock_spec)
+                end
+            end)
             future.set(true)
         end)
     end)
