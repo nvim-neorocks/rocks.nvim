@@ -138,6 +138,10 @@ end
 ---@param rock RockSpec | Rock
 ---@return boolean created
 function adapter.init_site_symlink_sync(rock)
+    if not rock.version then
+        log.info("Cannot init site symlink without rock version")
+        return false
+    end
     local rock_dir = get_rock_dir(rock)
     local handle = vim.uv.fs_scandir(rock_dir)
     while handle do
