@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.41.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.41.0...v2.41.1) (2024-11-01)
+
+
+### Bug Fixes
+
+* attempt to concatenate field version (a `nil` value) when installing ([#581](https://github.com/nvim-neorocks/rocks.nvim/issues/581)) ([0b10e0c](https://github.com/nvim-neorocks/rocks.nvim/commit/0b10e0c4776d3dd982ace97cbe8593cc23588058))
+
 ## [2.41.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.40.5...v2.41.0) (2024-10-25)
 
 
