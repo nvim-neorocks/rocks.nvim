@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.41.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.41.1...v2.41.2) (2024-11-07)
+
+
+### Bug Fixes
+
+* pin toml-edit to 0.5.0 until 0.6.0 bug is fixed ([912196b](https://github.com/nvim-neorocks/rocks.nvim/commit/912196b81d7b3ba068037fba95a3322a52fe22bb))
+
 ## [2.41.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.41.0...v2.41.1) (2024-11-01)
 
 
