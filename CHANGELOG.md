@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.41.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.41.2...v2.41.3) (2024-11-10)
+
+
+### Bug Fixes
+
+* **dependencies:** `toml-edit == 0.5.0` -&gt; `>= 0.6.1` ([3d15172](https://github.com/nvim-neorocks/rocks.nvim/commit/3d15172050783268131650292f3cd190ec3becde))
+
 ## [2.41.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.41.1...v2.41.2) (2024-11-07)
 
 
