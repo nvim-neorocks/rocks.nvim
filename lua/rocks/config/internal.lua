@@ -270,6 +270,9 @@ local function mk_luarocks_config()
 end
 
 if type(opts.luarocks_config) == "string" then
+    local luarocks_config = opts.luarocks_config
+    ---@diagnostic disable-next-line: cast-type-mismatch
+    ---@cast luarocks_config string
     vim.deprecate(
         "g:rocks_nvim.luarocks_config (string)",
         "g:rocks_nvim.luarocks_config (table)",
@@ -277,8 +280,8 @@ if type(opts.luarocks_config) == "string" then
         "rocks.nvim"
     )
     -- luarocks_config override
-    if vim.uv.fs_stat(opts.luarocks_config) then
-        local luarocks_config_path = ("%s"):format(opts.luarocks_config)
+    if vim.uv.fs_stat(luarocks_config) then
+        local luarocks_config_path = ("%s"):format(luarocks_config)
         ---@diagnostic disable-next-line: inject-field
         config.luarocks_config_path = function()
             return luarocks_config_path
