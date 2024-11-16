@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.42.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.42.0...v2.42.1) (2024-11-16)
+
+
+### Bug Fixes
+
+* **constants.lua:** update version variable ([2ae1c99](https://github.com/nvim-neorocks/rocks.nvim/commit/2ae1c9938c9b0258e4b8de54e7334c1ff586c4e7))
+
 ## [2.42.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.41.3...v2.42.0) (2024-11-16)
 
 
