@@ -27,9 +27,11 @@ describe("rocks.adapter", function()
         })
         vim.health.ok = mock_health.ok
         local future = nio.control.future()
-        operations.add({ "telescope.nvim", "0.1.6" }, function()
-            future.set(true)
-        end)
+        operations.add({ "telescope.nvim", "0.1.6" }, {
+            callback = function()
+                future.set(true)
+            end,
+        })
         future.wait()
         assert.is_not_nil(vim.cmd.Telescope)
         nio.scheduler()

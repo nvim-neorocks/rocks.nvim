@@ -39,7 +39,7 @@ unpin.unpin = function(rock_name)
             else
                 user_config[rocks_key][rock_name].pin = nil
             end
-            user_config:write()
+            user_config:_write_await()
             vim.schedule(function()
                 vim.notify(("%s unpinned"):format(rock_name), vim.log.levels.INFO)
             end)

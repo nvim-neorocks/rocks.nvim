@@ -63,12 +63,13 @@ end
 ---@class rocks.AddOpts
 ---@field skip_prompts? boolean Whether to skip any "search 'dev' manifest prompts
 ---@field cmd? 'install' | 'update' Command used to invoke this function. Default: `'install'`
+---@field config_path? string Config file path to use for installing the rock relative to the base config file
+---@field callback? fun(rock: Rock) Invoked upon successful completion
 
 --- Adds a new rock and updates the `rocks.toml` file
 ---@param arg_list string[] #Argument list, potentially used by external handlers. The first argument is the package, e.g. the rock name
----@param callback? fun(rock: Rock)
 ---@param opts? rocks.AddOpts
-add.add = function(arg_list, callback, opts)
+add.add = function(arg_list, opts)
     opts = opts or {}
     opts.cmd = opts.cmd or "install"
     local is_install = opts.cmd == "install"
@@ -87,7 +88,7 @@ add.add = function(arg_list, callback, opts)
 
     nio.run(function()
         helpers.semaphore.with(function()
-            local user_rocks = helpers.parse_rocks_toml()
+            local user_rocks = helpers.parse_rocks_toml(opts.config_path)
             local handler = handlers.get_install_handler_callback(user_rocks, arg_list)
             if type(handler) == "function" then
                 local function report_progress(message)
@@ -96,7 +97,7 @@ add.add = function(arg_list, callback, opts)
                     })
                 end
                 handler(report_progress, report_error, helpers.manage_rock_stub)
-                user_rocks:write()
+                user_rocks:_write_await()
                 nio.scheduler()
                 progress_handle:finish()
                 return
@@ -215,14 +216,14 @@ Use 'Rocks %s {rock_name}' or install rocks-git.nvim.
             else
                 user_rocks.plugins[rock_name] = installed_rock.version
             end
-            user_rocks:write()
+            user_rocks:_write_await()
             cache.populate_all_rocks_state_caches()
             vim.schedule(function()
                 helpers.postInstall()
                 if success then
                     progress_handle:finish()
-                    if callback then
-                        callback(installed_rock)
+                    if opts.callback then
+                        opts.callback(installed_rock)
                     end
                 else
                     progress_handle:cancel()

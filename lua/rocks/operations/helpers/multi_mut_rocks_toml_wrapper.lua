@@ -5,10 +5,13 @@ local fs = require("rocks.fs")
 ---@field config MutRocksTomlRef Config metatable
 ---@field path? string The path to the configuration
 
----@class MultiMutRocksTomlWrapper
----@field cache table<string, MultiMutRocksTomlWrapper> Cache for nested metatables
----@field configs MutRocksTomlRefWithPath[] A list of rocks toml configs
+---@class MultiMutRocksTomlWrapper: MutRocksTomlRef
 local MultiMutRocksTomlWrapper = {}
+
+--- Table accessor: Retrieve the value of the key from the first matching inner table
+---@param self MultiMutRocksTomlWrapper
+---@param key string|integer
+---@return any
 MultiMutRocksTomlWrapper.__index = function(self, key)
     -- Give preference to class methods/fields
     if MultiMutRocksTomlWrapper[key] then
@@ -36,6 +39,12 @@ MultiMutRocksTomlWrapper.__index = function(self, key)
     end
     return nil
 end
+
+--- Table field assignment: Set value of the key from the first matching inner
+--- table or the first table if not found in any
+---@param self MultiMutRocksTomlWrapper
+---@param key string|integer
+---@param value any
 MultiMutRocksTomlWrapper.__newindex = function(self, key, value)
     local insert_index = 1
     for i, tbl in ipairs(self.configs) do
@@ -52,9 +61,16 @@ MultiMutRocksTomlWrapper.__newindex = function(self, key, value)
     self.configs[insert_index].config[key] = value
 end
 
---- Write to all rocks toml config files in an async context
+--- Run a function against the config tables
+---@param self MultiMutRocksTomlWrapper
+---@param func fun(configs: MutRocksTomlRefWithPath[])
+MultiMutRocksTomlWrapper.__call = function(self, func)
+    func(self.configs)
+end
+
+--- Write the config tables to their appropriate paths in an async context
 ---@type async fun(self: MultiMutRocksTomlWrapper)
-function MultiMutRocksTomlWrapper:write()
+MultiMutRocksTomlWrapper._write_await = function(self)
     for _, tbl in ipairs(self.configs) do
         if tbl.path ~= nil then
             fs.write_file_await(tbl.path, "w", tostring(tbl.config))

@@ -169,7 +169,7 @@ update.update = function(on_complete, opts)
                     user_rocks[rocks_key][rock_name] = installed_rock.version
                 end
             end
-            user_rocks:write()
+            user_rocks:_write_await()
             nio.scheduler()
             if not vim.tbl_isempty(error_handles) then
                 local message = "Update completed with errors! Run ':Rocks log' for details."

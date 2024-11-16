@@ -13,9 +13,11 @@ describe("install/pin/update", function()
     local state = require("rocks.state")
     nio.tests.it("update skips pinned install", function()
         local future = nio.control.future()
-        operations.add({ "neorg", "7.0.0", "pin=true" }, function()
-            future.set(true)
-        end)
+        operations.add({ "neorg", "7.0.0", "pin=true" }, {
+            callback = function()
+                future.set(true)
+            end,
+        })
         future.wait()
         local installed_rocks = state.installed_rocks()
         assert.same({

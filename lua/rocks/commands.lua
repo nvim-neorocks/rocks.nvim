@@ -142,7 +142,7 @@ local rocks_command_tbl = {
                     -- Skip "rock not found" prompt
                     table.insert(args, rock.version)
                 end
-                require("rocks.operations").add(args, nil, {
+                require("rocks.operations").add(args, {
                     skip_prompts = opts.bang,
                     cmd = "update",
                 })
@@ -169,7 +169,7 @@ local rocks_command_tbl = {
                 vim.notify("Rocks install: Called without required package argument.", vim.log.levels.ERROR)
                 return
             end
-            require("rocks.operations").add(args, nil, {
+            require("rocks.operations").add(args, {
                 skip_prompts = opts.bang,
             })
         end,
