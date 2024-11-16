@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.42.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.41.3...v2.42.0) (2024-11-16)
+
+
+### Features
+
+* **api:** Add support for install options ([#577](https://github.com/nvim-neorocks/rocks.nvim/issues/577)) ([e3fb716](https://github.com/nvim-neorocks/rocks.nvim/commit/e3fb7163cfcd920674bcd8049e2f6ef0420d01c6))
+
 ## [2.41.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.41.2...v2.41.3) (2024-11-10)
 
 
