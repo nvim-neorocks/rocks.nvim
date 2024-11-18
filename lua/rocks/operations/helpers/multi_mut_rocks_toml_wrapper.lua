@@ -1,4 +1,3 @@
-local config = require("rocks.config.internal")
 local fs = require("rocks.fs")
 
 ---@class MutRocksTomlRefWithPath
@@ -46,19 +45,14 @@ end
 ---@param key string|integer
 ---@param value any
 MultiMutRocksTomlWrapper.__newindex = function(self, key, value)
-    local insert_index = 1
-    for i, tbl in ipairs(self.configs) do
-        -- Insert into base config by default
-        if tbl.path == config.config_path then
-            insert_index = i
-        end
+    for _, tbl in ipairs(self.configs) do
         if tbl.config[key] ~= nil then
             tbl.config[key] = value
             return
         end
     end
-    -- If key not found in any table, add it to the first table
-    self.configs[insert_index].config[key] = value
+    -- If key not found in any table, add it to the last table which should the base config
+    self.configs[#self.configs].config[key] = value
 end
 
 --- Run a function against the config tables
