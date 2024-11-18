@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.42.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.42.1...v2.42.2) (2024-11-18)
+
+
+### Bug Fixes
+
+* make sure config_path option for installs updates correct config ([#590](https://github.com/nvim-neorocks/rocks.nvim/issues/590)) ([47872af](https://github.com/nvim-neorocks/rocks.nvim/commit/47872afe6621c92fb3e90e888c977345b13f9781))
+
 ## [2.42.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.42.0...v2.42.1) (2024-11-16)
 
 
