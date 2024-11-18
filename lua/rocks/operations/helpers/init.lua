@@ -45,7 +45,7 @@ function helpers.parse_rocks_toml(config_path)
             return multi_mut_rocks_toml_wrapper.new({ { config = base_rocks_toml, path = config.config_path } })
         end
 
-        -- For non-base configs, add it to the list of imports in the base config
+        -- For non-base configs, add it to the list of imports in the base config and write async
         if base_rocks_toml.import then
             local i = 0
             local import_path
@@ -57,18 +57,12 @@ function helpers.parse_rocks_toml(config_path)
         else
             base_rocks_toml.import = { config_path }
         end
+        fs.write_file(config.config_path, "w", tostring(base_rocks_toml))
 
-        -- For non-base configs, return a combined config with the imported config having preference over the base.
-        -- Since we modified the base also, it will also need to be written, hence, we return it to allow the
-        -- caller to write the config when all other modifications are done/successful.
         return multi_mut_rocks_toml_wrapper.new({
             {
                 config = require("toml_edit").parse(fs.read_or_create(absolute_config_path, "")),
                 path = absolute_config_path,
-            },
-            {
-                config = base_rocks_toml,
-                path = config.config_path,
             },
         })
     end

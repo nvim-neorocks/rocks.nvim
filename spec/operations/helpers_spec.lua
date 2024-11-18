@@ -100,6 +100,7 @@ version = "2.0.0"
 pin = true
 ]]
 
+        local _, _ = os.remove(vim.fs.joinpath(tempdir, "local-rocks.toml"))
         local fh = assert(io.open(config.config_path, "w"), "Could not open rocks.toml for writing")
         fh:write(config_content)
         fh:close()
@@ -142,30 +143,40 @@ myrock = "1.0.0"
 myrock = "1.0.0"
 ]]
 
+        local _, _ = os.remove(vim.fs.joinpath(tempdir, "local-rocks.toml"))
         local fh = assert(io.open(config.config_path, "w"), "Could not open rocks.toml for writing")
         fh:write(config_content)
         fh:close()
 
-        local _, _ = os.remove(vim.fs.joinpath(tempdir, "local-rocks.toml"))
         local rocks_toml = helpers.parse_rocks_toml("local-rocks.toml")
-        assert.same("local-rocks.toml", rocks_toml.import[1])
+        assert.same(nil, rocks_toml.rocks)
     end)
-    it("Parse rocks toml passing new import path, append to imports", function()
+    it("Parse rocks toml passing existing import path", function()
         local config_content = [[
-import = ["other-rocks.toml"]
-
 [rocks]
 myrock = "1.0.0"
 ]]
+        local config_content2 = [[
+[plugins."myplugin"]
+version = "2.0.0"
+pin = true
+]]
 
+        local _, _ = os.remove(vim.fs.joinpath(tempdir, "local-rocks.toml"))
         local fh = assert(io.open(config.config_path, "w"), "Could not open rocks.toml for writing")
         fh:write(config_content)
         fh:close()
+        fh = assert(
+            io.open(vim.fs.joinpath(tempdir, "local-rocks.toml"), "w"),
+            "Could not open local rocks.toml for writing"
+        )
+        fh:write(config_content2)
+        fh:close()
 
-        local _, _ = os.remove(vim.fs.joinpath(tempdir, "local-rocks.toml"))
         local rocks_toml = helpers.parse_rocks_toml("local-rocks.toml")
-        assert.same("other-rocks.toml", rocks_toml.import[1])
-        assert.same("local-rocks.toml", rocks_toml.import[2])
+        assert.same(nil, rocks_toml.rocks)
+        assert.same("2.0.0", rocks_toml.plugins.myplugin.version)
+        assert.same(true, rocks_toml.plugins.myplugin.pin)
     end)
 end)
 
@@ -288,7 +299,7 @@ describe("operations.helpers.multi_mut_rocks_toml_wrapper", function()
         -- Table1 modified since first
         ---@diagnostic disable-next-line: inject-field
         m.z = "new_z_value"
-        assert.same("new_z_value", table1.z)
-        assert.same(nil, table2.z)
+        assert.same("new_z_value", table2.z)
+        assert.same(nil, table1.z)
     end)
 end)
