@@ -138,6 +138,28 @@ operations.sync = function(user_rocks, on_complete)
                 callback(report_progress, report_error, helpers.manage_rock_stub)
             end
 
+            adapter.synchronise_site_symlinks()
+
+            vim
+                .iter(sync_status.to_install)
+                ---@param rock_name string
+                :map(function(rock_name)
+                    return user_rocks[rock_name]
+                end)
+                ---@param rock_spec RockSpec
+                :filter(function(rock_spec)
+                    return not vim
+                        .iter(skipped_rocks)
+                        ---@param skipped_rock SyncSkippedRock
+                        :any(function(skipped_rock)
+                            return skipped_rock.spec.name == rock_spec.name
+                                and skipped_rock.spec.version == rock_spec.version
+                        end)
+                end)
+                :each(function(rock_spec)
+                    helpers.dynamic_load(rock_spec).wait()
+                end)
+
             -- rocks.nvim sync handlers should be installed now.
             -- try installing any rocks that rocks.nvim could not handle itself
             for _, skipped_rock in ipairs(skipped_rocks) do
@@ -146,6 +168,7 @@ operations.sync = function(user_rocks, on_complete)
                 local callback = handlers.get_sync_handler_callback(spec)
                 if callback then
                     callback(report_progress, report_error, helpers.manage_rock_stub)
+                    helpers.dynamic_load(spec).wait()
                 else
                     report_error(("Failed to install %s: %s"):format(spec.name, skipped_rock.reason))
                 end
@@ -249,18 +272,6 @@ operations.sync = function(user_rocks, on_complete)
                 end
                 refresh_rocks_state()
             until vim.tbl_isempty(prunable_rocks)
-
-            adapter.synchronise_site_symlinks()
-
-            vim
-                .iter(sync_status.to_install)
-                ---@param rock_name string
-                :map(function(rock_name)
-                    return user_rocks[rock_name]
-                end)
-                :each(function(rock_spec)
-                    helpers.dynamic_load(rock_spec).wait()
-                end)
 
             helpers.postInstall()
             if not vim.tbl_isempty(error_handles) then
