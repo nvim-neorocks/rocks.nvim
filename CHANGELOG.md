@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.42.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.42.2...v2.42.3) (2024-12-18)
+
+
+### Bug Fixes
+
+* **sync:** wait for installed rocks.nvim modules to load ([#608](https://github.com/nvim-neorocks/rocks.nvim/issues/608)) ([02c1046](https://github.com/nvim-neorocks/rocks.nvim/commit/02c104684fcb4164f241b83cf8e39629a86e825a))
+
 ## [2.42.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.42.1...v2.42.2) (2024-11-18)
 
 
