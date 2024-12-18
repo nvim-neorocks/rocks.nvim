@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.42.4](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.42.3...v2.42.4) (2024-12-18)
+
+
+### Bug Fixes
+
+* **sync:** [regression] load rocks.nvim modules before trying to use them ([#610](https://github.com/nvim-neorocks/rocks.nvim/issues/610)) ([74e039a](https://github.com/nvim-neorocks/rocks.nvim/commit/74e039aa21c3a67c3a5a4b33dc55df4cfd072a5d))
+
 ## [2.42.3](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.42.2...v2.42.3) (2024-12-18)
 
 
