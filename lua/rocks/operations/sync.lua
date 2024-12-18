@@ -251,6 +251,7 @@ operations.sync = function(user_rocks, on_complete)
             until vim.tbl_isempty(prunable_rocks)
 
             adapter.synchronise_site_symlinks()
+
             vim
                 .iter(sync_status.to_install)
                 ---@param rock_name string
@@ -260,7 +261,9 @@ operations.sync = function(user_rocks, on_complete)
                 :filter(function(rock_spec)
                     return rock_spec ~= nil
                 end)
-                :each(helpers.dynamic_load)
+                :each(function(rock_spec)
+                    helpers.dynamic_load(rock_spec).wait()
+                end)
 
             helpers.postInstall()
             if not vim.tbl_isempty(error_handles) then
