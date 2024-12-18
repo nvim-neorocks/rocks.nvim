@@ -258,9 +258,6 @@ operations.sync = function(user_rocks, on_complete)
                 :map(function(rock_name)
                     return user_rocks[rock_name]
                 end)
-                :filter(function(rock_spec)
-                    return rock_spec ~= nil
-                end)
                 :each(function(rock_spec)
                     helpers.dynamic_load(rock_spec).wait()
                 end)

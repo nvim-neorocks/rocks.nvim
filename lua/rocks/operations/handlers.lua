@@ -43,9 +43,7 @@ function handlers.get_install_handler_callback(rocks_toml_ref, arg_list)
             local get_callback = handler.get_install_callback
             return type(get_callback) == "function" and get_callback(rocks_toml_ref, arg_list)
         end)
-        :find(function(callback)
-            return callback ~= nil
-        end)
+        :next()
 end
 
 ---@param spec RockSpec
@@ -60,9 +58,7 @@ function handlers.get_sync_handler_callback(spec)
             ---@cast handler RockHandler
             return handler.get_sync_callback(spec)
         end)
-        :find(function(callback)
-            return callback ~= nil
-        end)
+        :next()
 end
 
 ---@overload fun(rocks_toml_ref: MultiMutRocksTomlWrapper): rock_handler_callback[]
