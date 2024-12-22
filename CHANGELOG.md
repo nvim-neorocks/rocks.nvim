@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.43.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.42.4...v2.43.0) (2024-12-22)
+
+
+### Features
+
+* option to auto-sync on startup ([#613](https://github.com/nvim-neorocks/rocks.nvim/issues/613)) ([c04a167](https://github.com/nvim-neorocks/rocks.nvim/commit/c04a16706951aeb051391b1184ac4a7e44b6e936))
+
 ## [2.42.4](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.42.3...v2.42.4) (2024-12-18)
 
 
