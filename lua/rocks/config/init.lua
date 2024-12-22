@@ -42,6 +42,10 @@ local config = {}
 --- Whether to update remote plugins after installation/upgrade. (Default: `true`).
 ---@field update_remote_plugins? boolean
 ---
+--- Whether to auto-sync if plugins cannot be found on startup. (Default: `false`).
+--- If unset, rocks.nvim will prompt to sync.
+---@field auto_sync? boolean
+---
 --- Whether to reinstall 'dev' rocks on update
 --- (Default: `true`, as rocks.nvim cannot determine if 'dev' rocks are up to date).
 ---@field reinstall_dev_rocks_on_update? boolean

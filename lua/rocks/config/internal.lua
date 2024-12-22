@@ -60,6 +60,8 @@ local default_config = {
     update_remote_plugins = true,
     ---@type boolean Whether to reinstall 'dev' rocks on update
     reinstall_dev_rocks_on_update = true,
+    ---@type boolean Whether to auto-sync if plugins cannot be found on startup
+    auto_sync = false,
     ---@type boolean Whether to use the luarocks loader to support multiple dependencies
     enable_luarocks_loader = true,
 

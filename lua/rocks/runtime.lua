@@ -78,20 +78,26 @@ function runtime.source_start_plugins(user_rocks)
         end
     end
     if #not_found > 0 then
+        local config = require("rocks.config.internal")
+        if config.auto_sync then
+            require("rocks.operations").sync()
+            return
+        end
         local rock_names = vim
             .iter(not_found)
             ---@param rock_spec RockSpec
             :map(function(rock_spec)
                 return rock_spec.name
             end)
-            :totable()
+            :join(", ")
+        local prompt = ("rocks.nvim: The following plugins were not found:\n%s.\n\nRun 'Rocks sync'?"):format(
+            rock_names
+        )
         vim.schedule(function()
-            vim.notify(
-                ("rocks.nvim: You may need to run 'Rocks sync'.\nThe following plugins were not found:\n%s."):format(
-                    vim.inspect(rock_names)
-                ),
-                vim.log.levels.WARN
-            )
+            local choice = vim.fn.confirm(prompt, "&Yes\n&No", 1, "Question")
+            if choice == 1 then
+                require("rocks.operations").sync()
+            end
         end)
     end
 end
