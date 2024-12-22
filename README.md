@@ -247,7 +247,7 @@ do
     }
     package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
 
-    -- Load all installed plugins, including rocks.nvim itself
+    -- Add rocks.nvim to the runtimepath
     vim.opt.runtimepath:append(vim.fs.joinpath(rocks_config.rocks_path, "lib", "luarocks", "rocks-5.1", "rocks.nvim", "*"))
 end
 
