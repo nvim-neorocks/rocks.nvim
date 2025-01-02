@@ -16,7 +16,7 @@
 ---                                         Rocks that have been installed with 'opt=true'
 ---                                         can be sourced with |packadd|.
 ---                                       - pin={true|false}
----                                         Rocks that have been installed with 'pim=true'
+---                                         Rocks that have been installed with 'pin=true'
 ---                                         will be ignored by ':Rocks update'.
 ---                                     Use 'Rocks! install ...' to skip prompts.
 --- prune {rock}                        Uninstall {rock} and its stale dependencies,
