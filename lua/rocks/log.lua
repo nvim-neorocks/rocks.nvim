@@ -51,6 +51,7 @@ end
 ---@package
 function log.open_logfile()
     vim.cmd.e(log.get_logfile())
+    vim.bo[0].filetype = "rockslog"
 end
 
 local logfile, openerr
