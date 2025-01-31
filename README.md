@@ -24,6 +24,13 @@
 </div>
 <!-- markdownlint-restore -->
 
+> [!WARNING]
+>
+> rocks.nvim will be [undergoing a major rewrite](https://github.com/nvim-neorocks/rocks.nvim/issues/539)
+> soon. If you're considering switching from another plugin manager
+> and you'd like to avoid churn,
+> we recommend you wait for rocks.nvim v3.0.0.
+
 ## :star2: Features
 
 - Automatic dependency and build script management.
