@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.43.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.43.0...v2.43.1) (2025-02-07)
+
+
+### Bug Fixes
+
+* **install:** don't error if generating helptags fails ([#627](https://github.com/nvim-neorocks/rocks.nvim/issues/627)) ([c4a1fe8](https://github.com/nvim-neorocks/rocks.nvim/commit/c4a1fe8cb1b380db0b73eb89ed66a1532d704922))
+
 ## [2.43.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.42.4...v2.43.0) (2024-12-22)
 
 
