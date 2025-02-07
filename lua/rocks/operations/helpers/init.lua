@@ -379,11 +379,17 @@ end, 2)
 --- Post-install actions
 function helpers.postInstall()
     if config.update_remote_plugins and type(vim.cmd.UpdateRemotePlugins) == "function" then
-        pcall(vim.cmd.UpdateRemotePlugins)
+        local ok, err = pcall(vim.cmd.UpdateRemotePlugins)
+        if not ok then
+            log.error(("error updating remote plugins: %s"):format(err or "unknown error"))
+        end
     end
     -- Re-generate help tags
     if config.generate_help_pages then
-        vim.cmd.helptags("ALL")
+        local ok, err = pcall(vim.cmd.helptags, "ALL")
+        if not ok then
+            log.error(("error updating help tags: %s"):format(err or "unknown error"))
+        end
     end
 end
 
