@@ -31,19 +31,7 @@
           export GIT2_DIR=${final.libgit2.lib}
         '';
       };
-
-  docgen = final.writeShellApplication {
-    name = "docgen";
-    runtimeInputs = [
-      inputs.vimcats.packages.${final.system}.default
-    ];
-    text = ''
-      mkdir -p doc
-      vimcats lua/rocks/{init,commands,config/init,meta,api/{init,hooks},log}.lua > doc/rocks.txt
-    '';
-  };
 in {
   integration-stable = mkNeorocksTest "integration-stable" final.neovim;
   integration-nightly = mkNeorocksTest "integration-nightly" final.neovim-nightly;
-  inherit docgen;
 }

@@ -111,7 +111,8 @@
             docgen = {
               enable = true;
               name = "docgen";
-              entry = "${pkgs.docgen}/bin/docgen";
+              entry = "make docgen";
+              extraPackages = [inputs.vimcats.packages.${system}.default];
               files = "\\.(lua)$";
               pass_filenames = false;
             };
@@ -133,7 +134,7 @@
               # to be generated
               gcc
               tree-sitter
-              docgen
+              inputs.vimcats.packages.${system}.default
             ])
             ++ oa.buildInputs
             ++ oa.propagatedBuildInputs;
@@ -151,7 +152,6 @@
           inherit
             (pkgs)
             neovim-with-rocks
-            docgen
             ;
         };
 
