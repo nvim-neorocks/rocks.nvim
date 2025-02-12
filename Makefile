@@ -5,4 +5,6 @@ check:
 	luacheck lua/rocks plugin/ installer.lua
 
 docgen:
-	docgen
+	mkdir -p doc
+	vimcats lua/rocks/{init,commands,config/init,meta,api/{init,hooks},log}.lua > doc/rocks.txt
+
