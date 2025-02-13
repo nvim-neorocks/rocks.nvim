@@ -12,7 +12,7 @@ local helpers = require("rocks.operations.helpers")
 local state = require("rocks.state")
 local config = require("rocks.config.internal")
 vim.env.PLENARY_TEST_TIMEOUT = 60000 * 5
-describe("operations", function()
+describe("#online operations", function()
     vim.system({ "mkdir", "-p", config.rocks_path }):wait()
     nio.tests.it("sync", function()
         -- Test sync without any rocks

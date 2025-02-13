@@ -19,7 +19,7 @@ local function parse_config()
 end
 
 vim.env.PLENARY_TEST_TIMEOUT = 60000 * 5
-describe("Rocks pin/unpin", function()
+describe("Rocks pin/unpin #online", function()
     nio.tests.it("pin/unpin plugin with only version", function()
         local rocks_toml = parse_config()
         rocks_toml.plugins = {}
