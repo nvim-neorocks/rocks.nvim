@@ -5,7 +5,7 @@ check:
 	luacheck lua/rocks plugin/ installer.lua
 
 test-offline:
-	NVIM_APPNAME=rocks-nvim-test busted -t online spec
+	busted --name=offline spec
 
 docgen:
 	mkdir -p doc
