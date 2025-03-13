@@ -119,8 +119,12 @@ for level, levelnr in pairs(vim.log.levels) do
         end
         local info = debug.getinfo(2, "Sl")
         local fileinfo = string.format("%s:%s", info.short_src, info.currentline)
+        local _, millis = vim.uv.gettimeofday()
         local parts = {
-            table.concat({ level, "|", os.date(log_date_format), "|", fileinfo, "|" }, " "),
+            table.concat(
+                { level, "|", os.date(log_date_format) .. "." .. tostring(millis):sub(1, 3), "|", fileinfo, "|" },
+                " "
+            ),
         }
         for i = 1, argc do
             local arg = select(i, ...)
