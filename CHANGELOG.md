@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.44.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.43.1...v2.44.0) (2025-03-13)
+
+
+### Features
+
+* log milliseconds ([#638](https://github.com/nvim-neorocks/rocks.nvim/issues/638)) ([9281f66](https://github.com/nvim-neorocks/rocks.nvim/commit/9281f66692e95b8a72c8f22c033a4201835309ef))
+
 ## [2.43.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.43.0...v2.43.1) (2025-02-07)
 
 
