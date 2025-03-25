@@ -9,7 +9,7 @@ vim.g.rocks_nvim = {
 }
 local nio = require("nio")
 vim.env.PLENARY_TEST_TIMEOUT = 60000
-describe("operations.helpers", function()
+describe("operations.helpers #online", function()
     local helpers = require("rocks.operations.helpers")
     local config = require("rocks.config.internal")
     local state = require("rocks.state")
