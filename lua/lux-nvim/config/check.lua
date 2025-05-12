@@ -1,17 +1,17 @@
----@mod rocks.config.check rocks.nvim config validation
+---@mod lux-nvim.config.check lux.nvim config validation
 --
--- Copyright (C) 2023 Neorocks Org.
+-- Copyright (C) 2025 Neorocks Org.
 --
 -- Version:    0.1.0
 -- License:    GPLv3
 -- Created:    24 Oct 2023
 -- Updated:    24 Oct 2023
--- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
+-- Homepage:   https://github.com/nvim-neorocks/lux.nvim
 -- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 --
 ---@brief [[
 --
--- rocks.nvim config validation (internal)
+-- lux.nvim config validation (internal)
 --
 ---@brief ]]
 
@@ -23,27 +23,21 @@ local check = {}
 ---@return string|nil error_message
 local function validate(tbl)
     local ok, err = pcall(vim.validate, tbl)
-    return ok or false, "Rocks: Invalid config" .. (err and ": " .. err or "")
+    return ok or false, "lux: Invalid config" .. (err and ": " .. err or "")
 end
 
 ---Validates the config.
----@param cfg RocksConfig
+---@param cfg LuxConfig
 ---@return boolean is_valid
 ---@return string|nil error_message
 function check.validate(cfg)
     local ok, err = validate({
-        rocks_path = { cfg.rocks_path, "string" },
-        config_path = { cfg.config_path, "string" },
-        luarocks_binary = { cfg.luarocks_binary, "string" },
         lazy = { cfg.lazy, "boolean" },
         dynamic_rtp = { cfg.dynamic_rtp, "boolean" },
         generate_help_pages = { cfg.generate_help_pages, "boolean" },
     })
     if not ok then
         return false, err
-    end
-    if vim.fn.executable(cfg.luarocks_binary) ~= 1 then
-        return false, ("Cannot execute %s"):format(cfg.luarocks_binary)
     end
     return true
 end
