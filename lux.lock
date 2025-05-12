@@ -2,6 +2,26 @@
   "version": "1.0.0",
   "dependencies": {
     "rocks": {
+      "092cfae92b533f27d1a40489c6b6b2947dd73f2fc7621fa8dc89f75cf91885df": {
+        "name": "pathlib.nvim",
+        "version": "2.2.3-1",
+        "pinned": false,
+        "opt": false,
+        "dependencies": [
+          "9e1642247f9208a7e65e1e76461b2adc6f35fe644ce4cdf9f7fa6f5a12c8845e"
+        ],
+        "constraint": "==2.2.3",
+        "binaries": [],
+        "source": "luarocks_rockspec+https://luarocks.org/",
+        "source_url": {
+          "type": "url",
+          "url": "https://github.com/pysan3/pathlib.nvim/archive/v2.2.3.zip"
+        },
+        "hashes": {
+          "rockspec": "sha256-kdDMqznWlwP9wIqlzPrZ5qEDp6edhlkaasAcQzWTmmM=",
+          "source": "sha256-fNO24tL8wApI8j3rk2mdLf5wbbjlUzsvCxki3n0xRw8="
+        }
+      },
       "3a7a7cc18fcf23a1d6688eb0bbf3519cd8b34c44ca052cec29a6a3c847c24b77": {
         "name": "rtp.nvim",
         "version": "1.2.0-1",
@@ -18,24 +38,6 @@
         "hashes": {
           "rockspec": "sha256-O4KiKEU+och4V0ENJ+ibDDjy4oTkWopQhXrzO6LWSUc=",
           "source": "sha256-yASe4Lny9xbVBPnTspJLa7b/ORH3/zma3IALGK9HDes="
-        }
-      },
-      "4581b4d028561caa653423559aa3a7546a8f433b968f14b00313f272a5d2069f": {
-        "name": "toml-edit",
-        "version": "0.6.1-1",
-        "pinned": false,
-        "opt": false,
-        "dependencies": [],
-        "constraint": "==0.6.1",
-        "binaries": [],
-        "source": "luarocks_rockspec+https://luarocks.org/",
-        "source_url": {
-          "type": "url",
-          "url": "https://github.com/nvim-neorocks/toml-edit.lua/archive/v0.6.1.zip"
-        },
-        "hashes": {
-          "rockspec": "sha256-nzCnzhKlgoJLCe2oFBBYBTvJnjsq5IHKsUNN516sOzM=",
-          "source": "sha256-ysr1+93I0MhxJmMFMbmYBCPSI5JmxnyeiR5SSzR3D+o="
         }
       },
       "4baf7dd39222b80f5cf99d42a7680230347c91800c8eb83782fedc6f9a8dce24": {
@@ -74,6 +76,24 @@
           "source": "sha256-5x+iHduNdyVjS6+OrqfDh17g9o2tP2YFFqKEsK6Z5zw="
         }
       },
+      "9e1642247f9208a7e65e1e76461b2adc6f35fe644ce4cdf9f7fa6f5a12c8845e": {
+        "name": "nvim-nio",
+        "version": "1.10.1-1",
+        "pinned": false,
+        "opt": false,
+        "dependencies": [],
+        "constraint": ">=1.8.0",
+        "binaries": [],
+        "source": "luarocks_rockspec+https://luarocks.org/",
+        "source_url": {
+          "type": "url",
+          "url": "https://github.com/nvim-neotest/nvim-nio/archive/21f5324bfac14e22ba26553caf69ec76ae8a7662.zip"
+        },
+        "hashes": {
+          "rockspec": "sha256-QL5OCZFBGixecdEoriGck4iG83tjM09ewYbWVSbcfa4=",
+          "source": "sha256-5x+iHduNdyVjS6+OrqfDh17g9o2tP2YFFqKEsK6Z5zw="
+        }
+      },
       "d5ae631affa6aa41efffabcb838f11fc79dd668e93334f0ec6553a44b70570e8": {
         "name": "fzy",
         "version": "1.0.3-1",
@@ -94,11 +114,12 @@
       }
     },
     "entrypoints": [
-      "4581b4d028561caa653423559aa3a7546a8f433b968f14b00313f272a5d2069f",
       "4beffe8f19bd92ebd061cfcf0f6fc22aff5a983169781cfc857b21365b619553",
       "3a7a7cc18fcf23a1d6688eb0bbf3519cd8b34c44ca052cec29a6a3c847c24b77",
       "4baf7dd39222b80f5cf99d42a7680230347c91800c8eb83782fedc6f9a8dce24",
-      "d5ae631affa6aa41efffabcb838f11fc79dd668e93334f0ec6553a44b70570e8"
+      "d5ae631affa6aa41efffabcb838f11fc79dd668e93334f0ec6553a44b70570e8",
+      "9e1642247f9208a7e65e1e76461b2adc6f35fe644ce4cdf9f7fa6f5a12c8845e",
+      "092cfae92b533f27d1a40489c6b6b2947dd73f2fc7621fa8dc89f75cf91885df"
     ]
   },
   "test_dependencies": {
