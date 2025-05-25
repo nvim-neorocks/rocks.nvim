@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.45.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.44.0...v2.45.0) (2025-05-25)
+
+
+### Features
+
+* compatibility with nvim nightly 0.12.0-dev-434 ([#648](https://github.com/nvim-neorocks/rocks.nvim/issues/648)) ([b102792](https://github.com/nvim-neorocks/rocks.nvim/commit/b1027928f83874069221ce027273a365f2a245a8))
+
 ## [2.44.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.43.1...v2.44.0) (2025-03-13)
 
 
