@@ -220,7 +220,8 @@ To create an autocommand for an event:
         })
 <
 
-rocks.user-events.data.RocksInstallPost*rocks.user-events.data.RocksInstallPost*
+                                       *rocks.user-events.data.RocksInstallPost*
+rocks.user-events.data.RocksInstallPost
 
     Fields: ~
         {spec}       (RockSpec)
@@ -360,8 +361,7 @@ RocksCmd                                                              *RocksCmd*
         {complete?}  (fun(subcmd_arg_lead:string):string[])                 Command completions callback, taking the lead of the subcommand's arguments
 
 
-                                                 *api.register_rocks_subcommand*
-api.register_rocks_subcommand({name}, {cmd})
+api.register_rocks_subcommand({name}, {cmd})     *api.register_rocks_subcommand*
     Register a `:Rocks` subcommand.
 
     Parameters: ~
@@ -438,8 +438,7 @@ rocks.InstallOpts                                            *rocks.InstallOpts*
         {callback?}      (fun(rock:Rock))      Invoked upon successful completion
 
 
-                                                                   *api.install*
-api.install({rock_name}, {version?}, {opts?})
+api.install({rock_name}, {version?}, {opts?})                      *api.install*
     Invoke ':Rocks install'
 
     Parameters: ~
