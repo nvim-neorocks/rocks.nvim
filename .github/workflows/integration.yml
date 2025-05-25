@@ -30,7 +30,7 @@ jobs:
       - name: Install Luarocks
         uses: hishamhm/gh-actions-luarocks@master
         with:
-          luarocksVersion: "3.11.0"
+          luarocksVersion: "3.11.1"
       - name: Install neovim
         uses: rhysd/action-setup-vim@v1
         with:
