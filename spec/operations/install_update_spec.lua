@@ -8,7 +8,7 @@ vim.g.rocks_nvim = {
 }
 local nio = require("nio")
 vim.env.PLENARY_TEST_TIMEOUT = 60000 * 5
-describe("install/update", function()
+describe("install/update #online", function()
     local operations = require("rocks.operations")
     local state = require("rocks.state")
     nio.tests.it("install and update rocks", function()

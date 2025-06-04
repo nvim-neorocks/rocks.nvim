@@ -208,9 +208,9 @@ adapter.synchronise_site_symlinks = nio.create(function()
 end)
 
 ---@type async fun()
-adapter.init = nio.create(function()
+adapter.init = function()
     ensure_rtp_links()
     ensure_site_links()
-end)
+end
 
 return adapter
