@@ -1,4 +1,4 @@
----@mod rocks-commands rocks.nvim commands
+---@mod lux-commands lux.nvim commands
 ---
 ---@brief [[
 ---
@@ -7,32 +7,32 @@
 --- command	  	                     action
 ---------------------------------------------------------------------------------
 ---
---- install {rock} {version?} {args[]?} Install {rock} with optional {version} and optional {args[]}.
----                                     Example: ':Lux install neorg 8.0.0 opt=true'
----                                     Will install or update to the latest version if called
----                                     without {version}.
----                                     args (optional):
----                                       - opt={true|false}
----                                         Rocks that have been installed with 'opt=true'
----                                         can be sourced with |packadd|.
----                                       - pin={true|false}
----                                         Rocks that have been installed with 'pin=true'
----                                         will be ignored by ':Lux update'.
----                                     Use 'Rocks! install ...' to skip prompts.
---- prune {rock}                        Uninstall {rock} and its stale dependencies,
----                                     and remove it from rocks.toml.
---- sync                                Synchronize installed rocks with rocks.toml.
----                                     It may take more than one sync to prune all rocks that can be pruned.
---- update {rock?}                      Search for updated rocks and install them.
----                                     If called with the optional {rock} argument, only {rock}
----                                     will be updated.
----                                     Use 'Rocks! update` to skip prompts.
----                                     with breaking changes.
---- edit                                Edit the rocks.toml file.
---- pin {rock}                          Pin {rock} to the installed version.
----                                     Pinned rocks are ignored by ':Lux update'.
---- unpin {rock}                        Unpin {rock}.
---- log                                 Open the log file.
+--- install {package} {version?} {args[]?} Install {package} with optional {version} and optional {args[]}.
+---                                        Example: ':Lux install neorg 8.0.0 opt=true'
+---                                        Will install or update to the latest version if called
+---                                        without {version}.
+---                                        args (optional):
+---                                          - opt={true|false}
+---                                            Packages that have been installed with 'opt=true'
+---                                            can be sourced with |packadd|.
+---                                          - pin={true|false}
+---                                            Packages that have been installed with 'pin=true'
+---                                            will be ignored by ':Lux update'.
+---                                        Use 'Lux! install ...' to skip prompts.
+--- prune {package}                        Uninstall {package} and its stale dependencies,
+---                                        and remove it from lux.toml.
+--- sync                                   Synchronize installed packages with lux.toml.
+---                                        It may take more than one sync to prune all packages that can be pruned.
+--- update {package?}                      Search for updated packages and install them.
+---                                        If called with the optional {packages} argument, only {packages}
+---                                        will be updated.
+---                                        Use 'Lux! update` to skip prompts.
+---                                        with breaking changes.
+--- edit                                   Edit the lux.toml file.
+--- pin {package}                          Pin {package} to the installed version.
+---                                        Pinned packages are ignored by ':Lux update'.
+--- unpin {package}                        Unpin {package}.
+--- log                                    Open the log file.
 ---
 ---@brief ]]
 ---

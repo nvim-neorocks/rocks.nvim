@@ -17,6 +17,24 @@ local config = {}
 ---@tag g:lux_nvim
 ---@class LuxConfig
 ---
+-- TODO(vhyrro): Generate these automatically from lux-lua
+---@field server string
+---@field extra_servers string[]
+---@field only_sources string
+---@field namespace string
+---@field lua_dir string
+---@field user_tree fun(lua_version: string)
+---@field no_force boolean
+---@field verbose boolean
+---@field timeout number
+---@field cache_dir string
+---@field data_dir string
+---@field entrypoint_layout table
+---@field variables table<string, string>
+---@field make_cmd string
+---@field cmake_cmd string
+---@field enabled_dev_servers string[]
+---
 --- Whether to query luarocks.org lazily (Default: `false`).
 --- Setting this to `true` may improve startup time,
 --- but features like auto-completion will lag initially.
