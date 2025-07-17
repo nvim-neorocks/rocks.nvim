@@ -93,7 +93,7 @@ local function set_up_luarocks(path)
         return false
     end
 
-    local luarocks_version = "v3.11.1"
+    local luarocks_version = "v3.12.2"
     sc = exec({
         "git",
         "checkout",
