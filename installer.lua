@@ -145,14 +145,20 @@ end
 ---@param sc vim.SystemCompleted
 ---@param level integer|nil
 local function notify_output(msg, sc, level)
-    local function remove_shell_color(s)
-        return tostring(s):gsub("\x1B%[[0-9;]+m", "")
+    local function jit_remove_shell_color(s)
+        ---@diagnostic disable-next-line: undefined-global
+        if jit then
+            ---@diagnostic disable-next-line: err-esc
+            return tostring(s):gsub("\x1B%[[0-9;]+m", "")
+        else
+            return s
+        end
     end
     vim.notify(
         table.concat({
             msg,
-            sc and "stderr: " .. remove_shell_color(sc.stderr),
-            sc and "stdout: " .. remove_shell_color(sc.stdout),
+            sc and "stderr: " .. jit_remove_shell_color(sc.stderr),
+            sc and "stdout: " .. jit_remove_shell_color(sc.stdout),
         }, "\n"),
         level
     )
