@@ -102,7 +102,6 @@ function log.set_level(level)
         assert(log_levels[level], string.format("rocks.nvim: Invalid log level: %d", level))
         log.level = level
     end
-    vim.lsp.set_log_level(log.level)
 end
 
 for level, levelnr in pairs(vim.log.levels) do
