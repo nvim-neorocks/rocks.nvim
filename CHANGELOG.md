@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.46.0](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.45.2...v2.46.0) (2025-08-18)
+
+
+### Features
+
+* remove LuaJIT requirement ([#667](https://github.com/nvim-neorocks/rocks.nvim/issues/667)) ([5c978d8](https://github.com/nvim-neorocks/rocks.nvim/commit/5c978d856f8cfd5684f9140a5425599d1b9eba71))
+
 ## [2.45.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.45.1...v2.45.2) (2025-08-18)
 
 
