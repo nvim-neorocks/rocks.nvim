@@ -96,40 +96,42 @@ operations.sync = function(user_rocks, on_complete)
 
             for _, key in ipairs(sync_status.to_install) do
                 -- Save skipped rocks for later, when an external handler may have been bootstrapped
+                local do_install = true
                 if not user_rocks[key].version then
                     table.insert(skipped_rocks, {
                         spec = user_rocks[key],
                         reason = "No version specified",
                     })
-                    goto skip_install
+                    do_install = false
                 elseif key:lower() ~= key then
                     table.insert(skipped_rocks, {
                         spec = user_rocks[key],
                         reason = "Name is not lowercase",
                     })
-                    goto skip_install
+                    do_install = false
                 end
-                nio.scheduler()
-                progress_handle:report({
-                    message = ("Installing: %s"):format(key),
-                })
-                -- If the plugin version is a development release then we pass `dev` as the version to the install function
-                -- as it gets converted to the `--dev` flag on there, allowing luarocks to pull the `scm-1` rockspec manifest
-                if vim.startswith(user_rocks[key].version, "scm-") then
-                    user_rocks[key].version = "dev"
-                end
-                local future = helpers.install(user_rocks[key])
-                local success = pcall(future.wait)
+                if do_install then
+                    nio.scheduler()
+                    progress_handle:report({
+                        message = ("Installing: %s"):format(key),
+                    })
+                    -- If the plugin version is a development release then we pass `dev` as the version to the install function
+                    -- as it gets converted to the `--dev` flag on there, allowing luarocks to pull the `scm-1` rockspec manifest
+                    if vim.startswith(user_rocks[key].version, "scm-") then
+                        user_rocks[key].version = "dev"
+                    end
+                    local future = helpers.install(user_rocks[key])
+                    local success = pcall(future.wait)
 
-                ct = ct + 1
-                nio.scheduler()
-                if not success then
-                    report_error(("Failed to install %s."):format(key))
+                    ct = ct + 1
+                    nio.scheduler()
+                    if not success then
+                        report_error(("Failed to install %s."):format(key))
+                    end
+                    progress_handle:report({
+                        message = ("Installed: %s"):format(key),
+                    })
                 end
-                progress_handle:report({
-                    message = ("Installed: %s"):format(key),
-                })
-                ::skip_install::
             end
 
             -- Sync actions handled by external modules that have registered handlers
