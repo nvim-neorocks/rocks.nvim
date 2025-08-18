@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.45.2](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.45.1...v2.45.2) (2025-08-18)
+
+
+### Bug Fixes
+
+* **log:** don't set `vim.lsp` log level ([c3015ac](https://github.com/nvim-neorocks/rocks.nvim/commit/c3015acdfd7e68d370aaa1b024461510d2b1701c))
+
 ## [2.45.1](https://github.com/nvim-neorocks/rocks.nvim/compare/v2.45.0...v2.45.1) (2025-07-14)
 
 
