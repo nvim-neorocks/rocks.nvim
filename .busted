@@ -7,6 +7,10 @@ return {
     default = {
         verbose = true,
     },
+    offline = {
+       -- pattern = "spec/*_spec.lua"
+       exclude_tags = {"online"},
+    },
     tests = {
         verbose = true,
     },
