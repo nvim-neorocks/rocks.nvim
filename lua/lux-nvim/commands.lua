@@ -1,58 +1,45 @@
----@mod rocks-commands rocks.nvim commands
+---@mod lux-commands lux.nvim commands
 ---
 ---@brief [[
 ---
---- `:Rocks[!] {command {args?}}`
+--- `:Lux[!] {command {args?}}`
 ---
 --- command	  	                     action
 ---------------------------------------------------------------------------------
 ---
---- install {rock} {version?} {args[]?} Install {rock} with optional {version} and optional {args[]}.
----                                     Example: ':Rocks install neorg 8.0.0 opt=true'
----                                     Will install or update to the latest version if called
----                                     without {version}.
----                                     args (optional):
----                                       - opt={true|false}
----                                         Rocks that have been installed with 'opt=true'
----                                         can be sourced with |packadd|.
----                                       - pin={true|false}
----                                         Rocks that have been installed with 'pin=true'
----                                         will be ignored by ':Rocks update'.
----                                     Use 'Rocks! install ...' to skip prompts.
---- prune {rock}                        Uninstall {rock} and its stale dependencies,
----                                     and remove it from rocks.toml.
---- sync                                Synchronize installed rocks with rocks.toml.
----                                     It may take more than one sync to prune all rocks that can be pruned.
---- update {rock?}                      Search for updated rocks and install them.
----                                     If called with the optional {rock} argument, only {rock}
----                                     will be updated.
----                                     Use 'Rocks! update` to skip prompts.
----                                     with breaking changes.
---- edit                                Edit the rocks.toml file.
---- pin {rock}                          Pin {rock} to the installed version.
----                                     Pinned rocks are ignored by ':Rocks update'.
---- unpin {rock}                        Unpin {rock}.
---- log                                 Open the log file.
+--- install {package} {version?} {args[]?} Install {package} with optional {version} and optional {args[]}.
+---                                        Example: ':Lux install neorg 8.0.0 opt=true'
+---                                        Will install or update to the latest version if called
+---                                        without {version}.
+---                                        args (optional):
+---                                          - opt={true|false}
+---                                            Packages that have been installed with 'opt=true'
+---                                            can be sourced with |packadd|.
+---                                          - pin={true|false}
+---                                            Packages that have been installed with 'pin=true'
+---                                            will be ignored by ':Lux update'.
+---                                        Use 'Lux! install ...' to skip prompts.
+--- prune {package}                        Uninstall {package} and its stale dependencies,
+---                                        and remove it from lux.toml.
+--- sync                                   Synchronize installed packages with lux.toml.
+---                                        It may take more than one sync to prune all packages that can be pruned.
+--- update {package?}                      Search for updated packages and install them.
+---                                        If called with the optional {packages} argument, only {packages}
+---                                        will be updated.
+---                                        Use 'Lux! update` to skip prompts.
+---                                        with breaking changes.
+--- edit                                   Edit the lux.toml file.
+--- pin {package}                          Pin {package} to the installed version.
+---                                        Pinned packages are ignored by ':Lux update'.
+--- unpin {package}                        Unpin {package}.
+--- log                                    Open the log file.
 ---
 ---@brief ]]
 ---
 
--- Copyright (C) 2024 Neorocks Org.
---
--- License:    GPLv3
--- Created:    24 Oct 2023
--- Updated:    17 Apr 2024
--- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
--- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
-
 local commands = {}
 
-local fzy = require("rocks.fzy")
-local cache = require("rocks.cache")
-local fs = require("rocks.fs")
-local constants = require("rocks.constants")
-local config = require("rocks.config.internal")
-local log = require("rocks.log")
+local fzy = require("lux-nvim.fzy")
 
 ---@param name string
 ---@param query string | nil
@@ -128,7 +115,7 @@ local rocks_command_tbl = {
     update = {
         impl = function(args, opts)
             if #args == 0 then
-                require("rocks.operations").update(nil, {
+                require("lux-nvim.operations").update(nil, {
                     skip_prompts = opts.bang,
                 })
             elseif #args == 1 then
@@ -136,18 +123,18 @@ local rocks_command_tbl = {
                 local user_rocks = config.get_user_rocks()
                 local rock = user_rocks[rock_name]
                 if not rock then
-                    vim.notify(("Rocks update: %s is not installed"):format(rock_name), vim.log.levels.ERROR)
+                    vim.notify(("lux-nvim update: %s is not installed"):format(rock_name), vim.log.levels.ERROR)
                     return
                 elseif rock.version == "dev" or rock.version == "scm" then
                     -- Skip "rock not found" prompt
                     table.insert(args, rock.version)
                 end
-                require("rocks.operations").add(args, {
+                require("lux-nvim.operations").add(args, {
                     skip_prompts = opts.bang,
                     cmd = "update",
                 })
             else
-                vim.notify("Rocks update: Too many arguments: " .. vim.inspect(args), vim.log.levels.ERROR)
+                vim.notify("lux-nvim update: Too many arguments: " .. vim.inspect(args), vim.log.levels.ERROR)
             end
         end,
         complete = function(query)
@@ -160,16 +147,16 @@ local rocks_command_tbl = {
     },
     sync = {
         impl = function(_)
-            require("rocks.operations").sync()
+            require("lux-nvim.operations").sync()
         end,
     },
     install = {
         impl = function(args, opts)
             if #args == 0 then
-                vim.notify("Rocks install: Called without required package argument.", vim.log.levels.ERROR)
+                vim.notify("lux-nvim install: Called without required package argument.", vim.log.levels.ERROR)
                 return
             end
-            require("rocks.operations").add(args, {
+            require("lux-nvim.operations").add(args, {
                 skip_prompts = opts.bang,
             })
         end,
@@ -190,11 +177,11 @@ local rocks_command_tbl = {
     prune = {
         impl = function(args)
             if #args == 0 then
-                vim.notify("Rocks prune: Called without required package argument.", vim.log.levels.ERROR)
+                vim.notify("lux-nvim prune: Called without required package argument.", vim.log.levels.ERROR)
                 return
             end
             local package = args[1]
-            require("rocks.operations").prune(package)
+            require("lux-nvim.operations").prune(package)
         end,
         complete = function(query)
             local rocks_list = complete_removable_rocks(query)
@@ -203,7 +190,7 @@ local rocks_command_tbl = {
     },
     edit = {
         impl = function(_)
-            local config_path = require("rocks.config.internal").config_path
+            local config_path = require("lux-nvim.config.internal").config_path
             if fs.file_exists(config_path) then
                 vim.cmd.e(config_path)
             else
@@ -220,7 +207,7 @@ local rocks_command_tbl = {
                 vim.notify("'pin {rock}: Missing argument {rock}", vim.log.levels.ERROR)
                 return
             end
-            require("rocks.operations").pin(rock_name)
+            require("lux-nvim.operations").pin(rock_name)
         end,
         complete = function(query)
             ---@param spec RockSpec
@@ -237,7 +224,7 @@ local rocks_command_tbl = {
                 vim.notify("'pin {rock}: Missing argument {rock}", vim.log.levels.ERROR)
                 return
             end
-            require("rocks.operations").unpin(rock_name)
+            require("lux-nvim.operations").unpin(rock_name)
         end,
         complete = function(query)
             ---@param spec RockSpec
@@ -250,16 +237,16 @@ local rocks_command_tbl = {
     packadd = {
         impl = function(args, opts)
             if #args ~= 1 then
-                vim.notify("Rocks packadd: Called without required rock argument.", vim.log.levels.ERROR)
+                vim.notify("lux-nvim packadd: Called without required rock argument.", vim.log.levels.ERROR)
                 return
             end
             local rock_name = args[1]
-            require("rocks").packadd(rock_name, { bang = opts.bang })
+            require("lux-nvim").packadd(rock_name, { bang = opts.bang })
         end,
     },
     log = {
         impl = function(_)
-            require("rocks.log").open_logfile()
+            require("lux-nvim.log").open_logfile()
         end,
     },
 }
@@ -270,7 +257,7 @@ local function rocks(opts)
     local args = #fargs > 1 and vim.list_slice(fargs, 2, #fargs) or {}
     local command = rocks_command_tbl[cmd]
     if not command then
-        vim.notify("Rocks: Unknown command: " .. cmd, vim.log.levels.ERROR)
+        vim.notify("lux-nvim: Unknown command: " .. cmd, vim.log.levels.ERROR)
         return
     end
     command.impl(args, opts)
@@ -279,7 +266,7 @@ end
 ---@package
 function commands.create_commands()
     log.trace("Creating commands")
-    vim.api.nvim_create_user_command("Rocks", rocks, {
+    vim.api.nvim_create_user_command("Lux", rocks, {
         nargs = "+",
         desc = "Interacts with currently installed rocks",
         complete = function(arg_lead, cmdline, _)
@@ -288,11 +275,11 @@ function commands.create_commands()
                     return subcmd ~= "packadd"
                 end)
                 :totable()
-            local subcmd, subcmd_arg_lead = cmdline:match("^Rocks[!]*%s(%S+)%s(.*)$")
+            local subcmd, subcmd_arg_lead = cmdline:match("^Lux[!]*%s(%S+)%s(.*)$")
             if subcmd and subcmd_arg_lead and rocks_command_tbl[subcmd] and rocks_command_tbl[subcmd].complete then
                 return rocks_command_tbl[subcmd].complete(subcmd_arg_lead)
             end
-            if cmdline:match("^Rocks[!]*%s+%w*$") then
+            if cmdline:match("^Lux[!]*%s+%w*$") then
                 return fzy.fuzzy_filter(arg_lead, rocks_commands)
             end
         end,
