@@ -146,9 +146,9 @@
           inherit devShell;
         };
 
-        packages = rec {
-          default = rocks-nvim;
-          inherit (pkgs.luajitPackages) rocks-nvim;
+        packages = {
+          default = pkgs.vimPlugins.rocks-nvim;
+          inherit (pkgs.vimPlugins) rocks-nvim;
           inherit
             (pkgs)
             neovim-with-rocks
