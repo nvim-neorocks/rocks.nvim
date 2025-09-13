@@ -1,3 +1,4 @@
+# TODO(vhyrro): Change to use `lx` commands
 format:
 	stylua -v --verify lua/rocks/ plugin/ installer.lua
 

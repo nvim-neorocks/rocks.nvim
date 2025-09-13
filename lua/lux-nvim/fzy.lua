@@ -5,16 +5,6 @@
 --- Provides an adapter to fzy
 ---
 ---@brief ]]
----
----
--- Copyright (C) 2023 Neorocks Org.
---
--- Version:    0.1.0
--- License:    GPLv3
--- Created:    05 Dec 2023
--- Updated:    05 Dec 2023
--- Homepage:   https://github.com/nvim-neorocks/rocks.nvim
--- Maintainers: NTBBloodbath <bloodbathalchemist@protonmail.com>, Vhyrro <vhyrro@gmail.com>, mrcjkb <marc@jakobi.dev>
 
 local fzy_adapter = {}
 
